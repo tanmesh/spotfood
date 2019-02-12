@@ -1,0 +1,29 @@
+
+dbConfig:
+  dbName : mogambo1
+  port : 27017
+  host : localhost
+
+server:
+  applicationConnectors:
+    - type: http
+      port: 39114
+  adminConnectors:
+    - type: http
+      port: 39115
+
+logging:
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: INFO
+  appenders:
+    - type: file
+      currentLogFilename: dropwizard-activity.log
+      threshold: ALL
+      archive: true
+      archivedLogFilenamePattern: dropwizard-activity-%d.log
+      archivedFileCount: 5
+      timeZone: UTC
+    - type: console
+      threshold: ALL
+      timeZone: UTC
+      target: stdout

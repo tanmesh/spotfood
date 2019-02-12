@@ -1,0 +1,4 @@
+.idea/
+dropwizard-activity*.log
+splatter.iml
+target/
