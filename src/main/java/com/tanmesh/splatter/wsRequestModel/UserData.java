@@ -7,14 +7,30 @@ public class UserData {
     private String nickName;
     private String emailId;
     private String password;
+    private String tag;
 
-
-    public String getPassword() {
-        return password;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public int getUserID() {
+        return userID;
+    }
+
+    public void setUserID(int userID) {
+        this.userID = userID;
     }
 
     public String getNickName() {
@@ -33,27 +49,19 @@ public class UserData {
         this.emailId = emailId;
     }
 
-    public int getUserID() {
-        return userID;
+    public String getPassword() {
+        return password;
     }
 
-    public void setUserID(int userID) {
-        this.userID = userID;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getTag() {
+        return tag;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 }

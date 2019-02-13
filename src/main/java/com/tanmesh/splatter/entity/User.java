@@ -3,6 +3,9 @@ package com.tanmesh.splatter.entity;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity(value = "user_data", noClassnameStored = true)
 public class User {
     @Id
@@ -12,8 +15,18 @@ public class User {
     private String nickName;
     private String emailId;
     private String password;
+    private Set<String> followTagList;
 
     public User() {
+        followTagList = new HashSet<>();
+    }
+
+    public Set<String> getFollowTagList() {
+        return followTagList;
+    }
+
+    public void setFollowTagList(Set<String> followTagList) {
+        this.followTagList = followTagList;
     }
 
     public String getNickName() {

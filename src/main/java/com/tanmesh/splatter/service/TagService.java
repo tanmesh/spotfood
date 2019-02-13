@@ -2,9 +2,13 @@ package com.tanmesh.splatter.service;
 
 import com.tanmesh.splatter.dao.TagDAO;
 import com.tanmesh.splatter.entity.Tag;
+import com.tanmesh.splatter.entity.User;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.wsRequestModel.TagData;
 import org.mongodb.morphia.Key;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TagService {
     private TagDAO tagDAO;
@@ -36,5 +40,17 @@ public class TagService {
         tag.setName(tagName);
         Key<Tag> tagKey = tagDAO.save(tag);
         return tagKey != null;
+    }
+
+    public List<Tag> getAllTag(TagData tagData) throws InvalidInputException {
+        List<String> tagIdList = tagDAO.findIds();
+        List<Tag> tagList = new ArrayList<>();
+        if (tagIdList == null || tagIdList.size() == 0) {
+            throw new InvalidInputException("tagIdList is NULL");
+        }
+        for (String id : tagIdList) {
+            tagList.add(tagDAO.get(id));
+        }
+        return tagList;
     }
 }

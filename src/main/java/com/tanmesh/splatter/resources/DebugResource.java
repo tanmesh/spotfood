@@ -1,7 +1,7 @@
 package com.tanmesh.splatter.resources;
 
 import com.tanmesh.splatter.entity.User;
-import com.tanmesh.splatter.service.UserService;
+import com.tanmesh.splatter.service.IUserService;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -12,9 +12,9 @@ import java.util.List;
 
 @Path("/debug")
 public class DebugResource {
-    private UserService userService;
+    private IUserService userService;
 
-    public DebugResource(UserService userService) {
+    public DebugResource(IUserService userService) {
         this.userService = userService;
     }
 
@@ -28,7 +28,7 @@ public class DebugResource {
     @Path("get_all")
     @Produces(MediaType.APPLICATION_JSON)
     public List<User> getUserInfo(@QueryParam("userId") int userID) {
-         return userService.userInfo();
+        return userService.userInfo();
 
     }
 }

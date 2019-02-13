@@ -4,7 +4,7 @@ import com.tanmesh.splatter.entity.Tag;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
 
-public class TagDAO extends BasicDAO<Tag, Integer> {
+public class TagDAO extends BasicDAO<Tag, String> {
     public TagDAO(Datastore ds) {
         super(ds);
     }

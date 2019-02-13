@@ -2,9 +2,11 @@ package com.tanmesh.splatter;
 
 import com.tanmesh.splatter.dao.TagDAO;
 import com.tanmesh.splatter.dao.UserDAO;
+import com.tanmesh.splatter.resources.AdminResource;
 import com.tanmesh.splatter.resources.DebugResource;
 import com.tanmesh.splatter.resources.TagResource;
 import com.tanmesh.splatter.resources.UserResource;
+import com.tanmesh.splatter.service.IUserService;
 import com.tanmesh.splatter.service.TagService;
 import com.tanmesh.splatter.service.UserService;
 import com.tanmesh.splatter.utils.MongoUtils;
@@ -29,17 +31,18 @@ public class App extends Application<SplatterConfiguration> {
         Datastore ds = MongoUtils.createDatastore(configuration.getDbConfig());
         UserDAO userDAO = new UserDAO(ds);
         HashMap<String, String> userToken = new HashMap<>();
-        UserService userService = new UserService(userDAO, userToken);
+        IUserService userService = new UserService(userDAO, userToken);
         TagDAO tagDAO = new TagDAO(ds);
         TagService tagService = new TagService(tagDAO);
         UserResource userResource = new UserResource(userService);
         DebugResource debugResource = new DebugResource(userService);
         TagResource tagResource = new TagResource(tagService);
-
+        AdminResource adminResource = new AdminResource(userService);
 
         environment.jersey().register(userResource);
         environment.jersey().register(debugResource);
         environment.jersey().register(tagResource);
+        environment.jersey().register(adminResource);
         environment.jersey().register(new JsonProcessingExceptionMapper(true));
 
     }
