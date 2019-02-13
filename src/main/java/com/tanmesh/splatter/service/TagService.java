@@ -24,7 +24,7 @@ public class TagService {
     // TODO: create the existence of the tag.
 
     public boolean addTag(TagData tagData) throws InvalidInputException {
-        String tagName = tagData.getName();
+        String tagName = tagData.getTagName();
         if (tagName == null || tagName.length() == 0) {
             throw new InvalidInputException("tagName is empty");
         }

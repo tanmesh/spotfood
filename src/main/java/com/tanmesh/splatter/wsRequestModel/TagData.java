@@ -1,13 +1,13 @@
 package com.tanmesh.splatter.wsRequestModel;
 
 public class TagData {
-    private String name;
+    private String tagName;
 
-    public String getName() {
-        return name;
+    public String getTagName() {
+        return tagName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
     }
 }
