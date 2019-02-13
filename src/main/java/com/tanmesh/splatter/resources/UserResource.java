@@ -84,18 +84,4 @@ public class UserResource {
         }
         return user;
     }
-
-    @POST
-    @Path("post")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public User getUserPost(String emailId) throws ApiException {
-        User user;
-        try {
-            user = userService.userPost(emailId);
-        } catch (InvalidInputException e) {
-            throw new ApiException(Response.Status.NOT_ACCEPTABLE, "no userProfile found");
-        }
-        return user;
-    }
 }
