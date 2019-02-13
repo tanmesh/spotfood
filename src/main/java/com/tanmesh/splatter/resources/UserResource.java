@@ -18,24 +18,46 @@ public class UserResource {
     }
 
     @POST
-    @Path("/add")
+    @Path("remove")
     @Consumes(MediaType.APPLICATION_JSON)
-    public boolean addUser(UserData userData) {
+    public boolean removeUser(UserData userData) {
         try {
-            return userService.addUser(userData);
+            return userService.removeUser(userData.getFirstName());
         } catch (InvalidInputException e) {
             return false;
         }
     }
 
     @POST
-    @Path("remove")
+    @Path("signup")
     @Consumes(MediaType.APPLICATION_JSON)
-    public boolean removeUser(UserData userData) {
+    public boolean signUpUser(UserData userData) {
         try {
-            return userService.removeUser(userData.getFirstName(), userData.getLastName());
+            return userService.signUpUser(userData);
         } catch (InvalidInputException e) {
             return false;
+        }
+    }
+
+    @POST
+    @Path("login")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String logInUser(UserData userData) {
+        try {
+            return userService.logInUser(userData);
+        } catch (InvalidInputException e) {
+            return "Error";
+        }
+    }
+
+    @POST
+    @Path("follow")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String followUser(UserData userData) {
+        try {
+            return userService.followUser(userData);
+        } catch (InvalidInputException e) {
+            return "Error";
         }
     }
 }
