@@ -2,10 +2,8 @@ package com.tanmesh.splatter;
 
 import com.tanmesh.splatter.dao.TagDAO;
 import com.tanmesh.splatter.dao.UserDAO;
-import com.tanmesh.splatter.resources.AdminResource;
-import com.tanmesh.splatter.resources.DebugResource;
-import com.tanmesh.splatter.resources.TagResource;
-import com.tanmesh.splatter.resources.UserResource;
+import com.tanmesh.splatter.dao.UserPostDAO;
+import com.tanmesh.splatter.resources.*;
 import com.tanmesh.splatter.service.*;
 import com.tanmesh.splatter.utils.MongoUtils;
 import io.dropwizard.Application;
@@ -36,14 +34,15 @@ public class App extends Application<SplatterConfiguration> {
         DebugResource debugResource = new DebugResource(userService);
         TagResource tagResource = new TagResource(tagService);
         AdminResource adminResource = new AdminResource(userService);
-        IUserPostService userpostService = new UserPostService();
+        UserPostDAO userPostDAO = new UserPostDAO(ds);
+        IUserPostService userpostService = new UserPostService(userPostDAO);
+        UserPostResource userPostResource = new UserPostResource(userpostService);
 
         environment.jersey().register(userResource);
-        environment.jersey().register(userpostService);
+        environment.jersey().register(userPostResource);
         environment.jersey().register(debugResource);
         environment.jersey().register(tagResource);
         environment.jersey().register(adminResource);
         environment.jersey().register(new JsonProcessingExceptionMapper(true));
-
     }
 }

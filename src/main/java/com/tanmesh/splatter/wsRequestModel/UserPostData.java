@@ -1,22 +1,13 @@
-package com.tanmesh.splatter.entity;
-
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
+package com.tanmesh.splatter.wsRequestModel;
 
 import java.util.List;
 
-@Entity(value = "userPost_data", noClassnameStored = true)
-public class Userpost {
-    @Id
+public class UserPostData {
     private String postId;
-    private List<String> tagName;
+    private List<String> tags;
     private String location;
     private String authorName;
     private int upvotes;
-    private String name;
-
-    public Userpost() {
-    }
 
     public String getPostId() {
         return postId;
@@ -26,12 +17,12 @@ public class Userpost {
         this.postId = postId;
     }
 
-    public List<String> getTagName() {
-        return tagName;
+    public List<String> getTags() {
+        return tags;
     }
 
-    public void setTagName(List<String> tagName) {
-        this.tagName = tagName;
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 
     public String getLocation() {
@@ -56,13 +47,5 @@ public class Userpost {
 
     public void setUpvotes(int upvotes) {
         this.upvotes = upvotes;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

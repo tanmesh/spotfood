@@ -1,29 +1,32 @@
-package com.tanmesh.splatter.wsRequestModel;
+package com.tanmesh.splatter.entity;
+
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
 
 import java.util.List;
 
-public class UserpostData {
+@Entity(value = "userPost_data", noClassnameStored = true)
+public class UserPost {
+    @Id
     private String postId;
-    private List<String> tagName;
+    private List<String> tags;
     private String location;
     private String authorName;
     private int upvotes;
-    private String name;
 
-    public String getPostId() {
-        return postId;
+    public UserPost() {
     }
 
-    public void setPostId(String postId) {
-        this.postId = postId;
+    public String getPostId() { return postId; }
+
+    public void setPostId(String postId) { this.postId = postId; }
+
+    public List<String> getTags() {
+        return tags;
     }
 
-    public List<String> getTagName() {
-        return tagName;
-    }
-
-    public void setTagName(List<String> tagName) {
-        this.tagName = tagName;
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 
     public String getLocation() {
@@ -48,13 +51,5 @@ public class UserpostData {
 
     public void setUpvotes(int upvotes) {
         this.upvotes = upvotes;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }
