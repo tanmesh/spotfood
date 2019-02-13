@@ -17,24 +17,24 @@ public class UserService implements IUserService {
         this.userToken = userToken;
     }
 
-    public boolean userExists(int userID) {
-        List<Integer> userIdList = userDAO.findIds();
-        if (userIdList == null || userIdList.size() == 0) {
-            return false;
-        }
-        return userIdList.contains(userID);
-    }
-
     public List<User> userInfo() {
-        List<Integer> userIdList = userDAO.findIds();
+        List<String > userIdList = userDAO.findIds();
         List<User> userList = new ArrayList<>();
         if (userIdList == null || userIdList.size() == 0) {
             return userList;
         }
-        for (int id : userIdList) {
+        for (String id : userIdList) {
             userList.add(userDAO.get(id));
         }
         return userList;
+    }
+
+    public boolean userExists(String emailId) {
+        List<String > userIdList = userDAO.findIds();
+        if (userIdList == null || userIdList.size() == 0) {
+            return false;
+        }
+        return userIdList.contains(emailId);
     }
 
     public boolean signUpUser(UserData userData) throws InvalidInputException {
@@ -43,43 +43,54 @@ public class UserService implements IUserService {
         }
         String firstName = userData.getFirstName();
         String lastName = userData.getLastName();
-        int userID = userData.getUserID();
-        String userNickName = userData.getNickName();
-        String userEmailId = userData.getEmailId();
-        String userPassword = userData.getPassword();
-        sanityCheck(firstName, "firstName is NULL");
-        if (userExists(userData.getUserID())) {
+        String nickName = userData.getNickName();
+        String emailId = userData.getEmailId();
+        String password = userData.getPassword();
+        if (firstName == null || firstName.length() == 0) {
+            throw new InvalidInputException("firstName is NULL");
+        }
+        if (lastName == null || lastName.length() == 0) {
+            throw new InvalidInputException("lastName is NULL");
+        }
+        if (nickName == null || nickName.length() == 0) {
+            throw new InvalidInputException("nickName is NULL");
+        }
+        if (emailId == null || emailId.length() == 0) {
+            throw new InvalidInputException("emailId is NULL");
+        }
+        if (password == null || password.length() == 0) {
+            throw new InvalidInputException("password is NULL");
+        }
+        if (userExists(userData.getEmailId())) {
             return false;
         }
-        return addSignUpUserHelper(firstName, lastName, userID, userNickName, userEmailId, userPassword);
+        return addSignUpUserHelper(firstName, lastName, nickName, emailId, password);
     }
 
-    private boolean addSignUpUserHelper(String firstName, String lastName, int userID, String userNickName, String userEmailId, String userPassword) {
+    private boolean addSignUpUserHelper(String firstName, String lastName, String userNickName, String userEmailId, String userPassword) {
         User user = new User();
         user.setFirstName(firstName);
         user.setLastName(lastName);
-        user.setUserID(userID);
         user.setNickName(userNickName);
         user.setEmailId(userEmailId);
         user.setPassword(userPassword);
         return updateUser(user);
     }
 
-    public String logInUser(UserData userData) throws InvalidInputException {
-        if (userData == null) {
-            throw new InvalidInputException("UserData is null");
+    public boolean logInUser(String emailId, String password) throws InvalidInputException {
+        if (emailId == null || emailId.length() == 0) {
+            throw new InvalidInputException("emailId is null");
         }
-        String enteredEmailId = userData.getEmailId();
-        String enteredPassword = userData.getPassword();
-        sanityCheck(enteredEmailId, "emailId is NULL");
-        sanityCheck(enteredPassword, "emailId is NULL");
+        if (password == null || password.length() == 0) {
+            throw new InvalidInputException("password is null");
+        }
 
-        User user = userDAO.getDatastore().createQuery(User.class).filter("emailId", enteredEmailId).filter("password", enteredPassword).get();
+        User user = userDAO.getDatastore().createQuery(User.class).filter("emailId", emailId).filter("password", password).get();
 
         String token = UUID.randomUUID().toString();
-        userToken.put(user.getEmailId(), token);
+        userToken.put(emailId, token);
 
-        return token;
+        return true;
     }
 
     //TODO: change the ID to emailId
@@ -119,12 +130,16 @@ public class UserService implements IUserService {
         if (tag == null) {
             throw new InvalidInputException("followTagList is NULL");
         }
-        sanityCheck(emailId, "emailId is NULL");
+        if (emailId == null || emailId.length() == 0) {
+            throw new InvalidInputException("emailId is NULL");
+        }
     }
 
     @Override
     public boolean deleteUser(String emailId) throws InvalidInputException {
-        sanityCheck(emailId, "emailId is NULL");
+        if (emailId == null || emailId.length() == 0) {
+            throw new InvalidInputException("emailId is NULL");
+        }
 
         User user = userDAO.getDatastore().createQuery(User.class).filter("emailId", emailId).get();
         if(user == null) {
@@ -138,6 +153,7 @@ public class UserService implements IUserService {
         sanityCheck(emailId, "emailId is NULL");
 
         User user = userDAO.getDatastore().createQuery(User.class).filter("emailId", emailId).get();
+
         return user;
     }
 
@@ -145,5 +161,10 @@ public class UserService implements IUserService {
         if (emailId == null || emailId.length() == 0) {
             throw new InvalidInputException(s);
         }
+    }
+
+    public void userPost(String emailId) throws InvalidInputException {
+        sanityCheck(emailId, "emailId is NULL");
+
     }
 }

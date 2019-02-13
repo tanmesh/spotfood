@@ -37,8 +37,10 @@ public class UserResource {
     @Path("login")
     @Consumes(MediaType.APPLICATION_JSON)
     public boolean logInUser(UserData userData) throws ApiException {
+        String emailId = userData.getEmailId();
+        String password = userData.getPassword();
         try {
-            userService.logInUser(userData);
+            userService.logInUser(emailId, password);
         } catch (InvalidInputException e) {
             throw new ApiException(Response.Status.EXPECTATION_FAILED, "unable to logIn");
         }
@@ -52,7 +54,7 @@ public class UserResource {
         try {
             userService.followTag(userData.getTag(), userData.getEmailId());
         } catch (InvalidInputException e) {
-            throw new ApiException(Response.Status.NOT_ACCEPTABLE, "following UserId does not exist");
+            throw new ApiException(Response.Status.NOT_ACCEPTABLE, "followingUserId does not exist");
         }
         return true;
     }
@@ -62,12 +64,12 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public boolean unFollowTag(UserData userData) throws ApiException {
         try {
-            userService.followTag(userData.getTag(), userData.getEmailId());
+            userService.unFollowTag(userData.getTag(), userData.getEmailId());
         } catch (InvalidInputException e) {
-            throw new ApiException(Response.Status.NOT_ACCEPTABLE, "unfollowing UserId does not exist");
+            throw new ApiException(Response.Status.NOT_ACCEPTABLE, "unfollowingUserId does not exist");
         }
         return true;
-    }
+    };
 
     @POST
     @Path("profile")
@@ -77,6 +79,20 @@ public class UserResource {
         User user;
         try {
             user = userService.userProfile(emailId);
+        } catch (InvalidInputException e) {
+            throw new ApiException(Response.Status.NOT_ACCEPTABLE, "no userProfile found");
+        }
+        return user;
+    }
+
+    @POST
+    @Path("post")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public User getUserPost(String emailId) throws ApiException {
+        User user;
+        try {
+            user = userService.userPost(emailId);
         } catch (InvalidInputException e) {
             throw new ApiException(Response.Status.NOT_ACCEPTABLE, "no userProfile found");
         }

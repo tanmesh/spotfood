@@ -20,15 +20,14 @@ public class DebugResource {
 
     @GET
     @Path("exist")
-    public boolean existenceUser(@QueryParam("userId") int userID) {
-        return userService.userExists(userID);
+    public boolean existenceUser(@QueryParam("emailId") String emailId) {
+        return userService.userExists(emailId);
     }
 
     @GET
     @Path("get_all")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<User> getUserInfo(@QueryParam("userId") int userID) {
+    public List<User> getUserInfo(@QueryParam("emailId") String emailId) {
         return userService.userInfo();
-
     }
 }

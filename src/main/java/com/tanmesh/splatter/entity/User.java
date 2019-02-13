@@ -8,11 +8,10 @@ import java.util.Set;
 
 @Entity(value = "user_data", noClassnameStored = true)
 public class User {
-    @Id
-    private int userID;
     private String firstName;
     private String lastName;
     private String nickName;
+    @Id
     private String emailId;
     private String password;
     private Set<String> followTagList;
@@ -51,14 +50,6 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public int getUserID() {
-        return userID;
-    }
-
-    public void setUserID(int userID) {
-        this.userID = userID;
     }
 
     public String getFirstName() {

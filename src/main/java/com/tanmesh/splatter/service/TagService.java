@@ -2,7 +2,6 @@ package com.tanmesh.splatter.service;
 
 import com.tanmesh.splatter.dao.TagDAO;
 import com.tanmesh.splatter.entity.Tag;
-import com.tanmesh.splatter.entity.User;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.wsRequestModel.TagData;
 import org.mongodb.morphia.Key;
