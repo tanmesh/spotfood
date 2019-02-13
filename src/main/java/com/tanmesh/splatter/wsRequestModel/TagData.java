@@ -1,22 +1,13 @@
 package com.tanmesh.splatter.wsRequestModel;
 
 public class TagData {
-    private int tagId;
-    private String tagName;
+    private String name;
 
-    public int getTagId() {
-        return tagId;
+    public String getName() {
+        return name;
     }
 
-    public void setTagId(int tagId) {
-        this.tagId = tagId;
-    }
-
-    public String getTagName() {
-        return tagName;
-    }
-
-    public void setTagName(String tagName) {
-        this.tagName = tagName;
+    public void setName(String name) {
+        this.name = name;
     }
 }

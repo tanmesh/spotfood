@@ -99,11 +99,10 @@ public class UserService {
         return token;
     }
 
-    public boolean followUser(UserData userData) throws InvalidInputException {
+    public String followUser(UserData userData) throws InvalidInputException {
         if(userData == null) {
             throw new InvalidInputException("UserData is null");
         }
-
-
+        return "Wow!";
     }
 }
