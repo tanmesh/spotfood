@@ -6,9 +6,7 @@ import com.tanmesh.splatter.resources.AdminResource;
 import com.tanmesh.splatter.resources.DebugResource;
 import com.tanmesh.splatter.resources.TagResource;
 import com.tanmesh.splatter.resources.UserResource;
-import com.tanmesh.splatter.service.IUserService;
-import com.tanmesh.splatter.service.TagService;
-import com.tanmesh.splatter.service.UserService;
+import com.tanmesh.splatter.service.*;
 import com.tanmesh.splatter.utils.MongoUtils;
 import io.dropwizard.Application;
 import io.dropwizard.jersey.jackson.JsonProcessingExceptionMapper;
@@ -38,8 +36,10 @@ public class App extends Application<SplatterConfiguration> {
         DebugResource debugResource = new DebugResource(userService);
         TagResource tagResource = new TagResource(tagService);
         AdminResource adminResource = new AdminResource(userService);
+        IUserPostService userpostService = new UserPostService();
 
         environment.jersey().register(userResource);
+        environment.jersey().register(userpostService);
         environment.jersey().register(debugResource);
         environment.jersey().register(tagResource);
         environment.jersey().register(adminResource);
