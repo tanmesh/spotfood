@@ -18,7 +18,7 @@ public class UserService implements IUserService {
     }
 
     public List<User> userInfo() {
-        List<String > userIdList = userDAO.findIds();
+        List<String> userIdList = userDAO.findIds();
         List<User> userList = new ArrayList<>();
         if (userIdList == null || userIdList.size() == 0) {
             return userList;
@@ -30,7 +30,7 @@ public class UserService implements IUserService {
     }
 
     public boolean userExists(String emailId) {
-        List<String > userIdList = userDAO.findIds();
+        List<String> userIdList = userDAO.findIds();
         if (userIdList == null || userIdList.size() == 0) {
             return false;
         }
@@ -142,14 +142,14 @@ public class UserService implements IUserService {
         }
 
         User user = userDAO.getDatastore().createQuery(User.class).filter("emailId", emailId).get();
-        if(user == null) {
+        if (user == null) {
             return false;
         }
         userDAO.delete(user);
         return true;
     }
 
-    public User userProfile(String emailId) throws InvalidInputException{
+    public User userProfile(String emailId) throws InvalidInputException {
         sanityCheck(emailId, "emailId is NULL");
 
         User user = userDAO.getDatastore().createQuery(User.class).filter("emailId", emailId).get();

@@ -12,7 +12,7 @@ public class UserPost {
     private List<String> tags;
     private String location;
     private String authorName;
-    private int upvotes;
+    private int upVotes;
 
     public UserPost() {
     }
@@ -45,11 +45,11 @@ public class UserPost {
         this.authorName = authorName;
     }
 
-    public int getUpvotes() {
-        return upvotes;
+    public int getUpVotes() {
+        return upVotes;
     }
 
-    public void setUpvotes(int upvotes) {
-        this.upvotes = upvotes;
+    public void setUpVotes(int upVotes) {
+        this.upVotes = upVotes;
     }
 }
