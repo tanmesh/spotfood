@@ -35,23 +35,6 @@ public class UserPostResource {
         return true;
     }
 
-    // TODO: "edit" API
-//    @POST
-//    @Path("edit")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    public boolean editPostDetails(UserPostData userPostData) throws ApiException {
-//        try {
-//            String postId = userPostData.getPostId();
-//            List<String> tagList = userPostData.getTags();
-//            String location = userPostData.getLocation();
-//            String authorName = userPostData.getAuthorName();
-//            userPostService.editPost(postId, tagList, location, authorName);
-//        } catch (InvalidInputException e) {
-//            throw new ApiException(Response.Status.EXPECTATION_FAILED, "unable to editPost");
-//        }
-//        return true;
-//    }
-
     @GET
     @Path("get")
     @Produces(MediaType.APPLICATION_JSON)
@@ -102,6 +85,23 @@ public class UserPostResource {
         }
         return true;
     }
+
+    // TODO: "edit" API
+//    @POST
+//    @Path("edit")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    public boolean editPostDetails(UserPostData userPostData) throws ApiException {
+//        try {
+//            String postId = userPostData.getPostId();
+//            List<String> tagList = userPostData.getTags();
+//            String location = userPostData.getLocation();
+//            String authorName = userPostData.getAuthorName();
+//            userPostService.editPost(postId, tagList, location, authorName);
+//        } catch (InvalidInputException e) {
+//            throw new ApiException(Response.Status.EXPECTATION_FAILED, "unable to editPost");
+//        }
+//        return true;
+//    }
 
 //    @POST
 //    @Path("save")

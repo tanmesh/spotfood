@@ -18,11 +18,11 @@ public class UserService implements IUserService {
         this.userToken = userToken;
     }
 
-    public List<User> userInfo() throws InvalidInputException {
+    public List<User> getAllUserInfo() {
         List<String> userIdList = userDAO.findIds();
         List<User> userList = new ArrayList<>();
         if (userIdList == null || userIdList.size() == 0) {
-            throw new InvalidInputException("userIdList is null");
+            return userList;
         }
         for (String id : userIdList) {
             userList.add(userDAO.get(id));
@@ -30,12 +30,12 @@ public class UserService implements IUserService {
         return userList;
     }
 
-    public boolean userExists(String emailId) throws InvalidInputException {
-        List<String> userIdList = userDAO.findIds();
-        if (userIdList == null || userIdList.size() == 0) {
-            throw new InvalidInputException("userIdList is null");
+    public boolean userExists(String emailId) {
+        User user = userDAO.getUser("emailId", emailId);
+        if (user == null) {
+            return false;
         }
-        return userIdList.contains(emailId);
+        return true;
     }
 
     public boolean signUpUser(UserData userData) throws InvalidInputException {

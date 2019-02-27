@@ -8,6 +8,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("/admin")
 public class AdminResource {
@@ -20,7 +21,12 @@ public class AdminResource {
     @POST
     @Path("delete")
     @Consumes(MediaType.APPLICATION_JSON)
-    public boolean removeUser(UserData userData) throws InvalidInputException {
-        return userService.deleteUser(userData.getEmailId());
+    public Response removeUser(UserData userData) {
+        try {
+            boolean deleteUser = userService.deleteUser(userData.getEmailId());
+            return Response.status(Response.Status.ACCEPTED).entity(deleteUser).build();
+        } catch (InvalidInputException e) {
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity("invalid input").build();
+        }
     }
 }

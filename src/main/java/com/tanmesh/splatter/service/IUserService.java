@@ -9,7 +9,7 @@ import java.util.List;
 public interface IUserService {
     boolean deleteUser(String emailID) throws InvalidInputException;
     boolean userExists(String emailId) throws InvalidInputException;
-    List<User> userInfo() throws InvalidInputException;
+    List<User> getAllUserInfo();
     boolean signUpUser(UserData userData) throws InvalidInputException;
     boolean followTag(String tag, String emailId) throws InvalidInputException;
     boolean unFollowTag(String tag, String emailId) throws InvalidInputException;

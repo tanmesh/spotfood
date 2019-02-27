@@ -8,6 +8,7 @@ import com.tanmesh.splatter.wsRequestModel.TagData;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Path("/tag")
@@ -21,11 +22,12 @@ public class TagResource {
     @POST
     @Path("add")
     @Consumes(MediaType.APPLICATION_JSON)
-    public boolean addTag(TagData tagData) {
+    public Response addTag(TagData tagData) {
         try {
-            return tagService.addTag(tagData);
+            boolean response = tagService.addTag(tagData);
+            return Response.status(Response.Status.ACCEPTED).entity(response).build();
         } catch (InvalidInputException e) {
-            return false;
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity("invalid input").build();
         }
     }
 

@@ -29,6 +29,6 @@ public class DebugResource {
     @Path("get_all")
     @Produces(MediaType.APPLICATION_JSON)
     public List<User> getUserInfo(@QueryParam("emailId") String emailId) throws InvalidInputException {
-        return userService.userInfo();
+        return userService.getAllUserInfo();
     }
 }
