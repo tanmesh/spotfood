@@ -6,10 +6,7 @@ import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.service.IUserService;
 import com.tanmesh.splatter.wsRequestModel.UserData;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -69,7 +66,7 @@ public class UserResource {
             throw new ApiException(Response.Status.NOT_ACCEPTABLE, "unfollowingUserId does not exist");
         }
         return true;
-    };
+    }
 
     @POST
     @Path("profile")
@@ -83,5 +80,17 @@ public class UserResource {
             throw new ApiException(Response.Status.NOT_ACCEPTABLE, "no userProfile found");
         }
         return user;
+    }
+
+    @GET
+    @Path("feed")
+    @Produces(MediaType.APPLICATION_JSON)
+    public boolean getUserFeed(String emailId) throws ApiException {
+        try {
+            userService.getUserFeed(emailId);
+        } catch (InvalidInputException e) {
+            throw new ApiException(Response.Status.NOT_ACCEPTABLE, "no userFeed found");
+        }
+        return true;
     }
 }

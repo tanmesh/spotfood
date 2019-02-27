@@ -1,6 +1,5 @@
 package com.tanmesh.splatter.service;
 
-import com.mongodb.WriteResult;
 import com.tanmesh.splatter.dao.UserPostDAO;
 import com.tanmesh.splatter.entity.UserPost;
 import com.tanmesh.splatter.exception.InvalidInputException;
@@ -18,11 +17,11 @@ public class UserPostService implements IUserPostService {
 
     @Override
     public boolean addPost(String postId, List<String> tagList, String location, String authorName) throws InvalidInputException {
-        sanityCheck(postId, "postId is NULL");
-        sanityCheck(location, "location is NULL");
-        sanityCheck(authorName, "authorName is NULL");
+        sanityCheck(postId, "postId");
+        sanityCheck(location, "location");
+        sanityCheck(authorName, "authorName");
         if (tagList == null || tagList.size() == 0) {
-            throw new InvalidInputException("tagList is NULL");
+            throw new InvalidInputException("tagList");
         }
         UserPost userPost = new UserPost();
         userPost.setPostId(postId);
@@ -39,13 +38,13 @@ public class UserPostService implements IUserPostService {
     }
 
     @Override
-    public boolean editPost(String postId, List<String> tagList, String location, String authorName) throws InvalidInputException {
+    public boolean editPost(String postId, List<String> tagList, String location, String authorName) {
         return true;
     }
 
     @Override
     public boolean deletePost(String postId) throws InvalidInputException {
-        sanityCheck(postId, "postId is NULL");
+        sanityCheck(postId, "postId");
         UserPost userPost = userPostDAO.getPost("postId", postId);
         userPostDAO.delete(userPost);
         return userPost != null;
@@ -53,7 +52,7 @@ public class UserPostService implements IUserPostService {
 
     @Override
     public UserPost likePost(String postId) throws InvalidInputException {
-        sanityCheck(postId, "postId is NULL");
+        sanityCheck(postId, "postId");
         UserPost userPost = userPostDAO.getPost("postId", postId);
         int prevCnt = userPost.getUpVotes();
         int updatedCnt = prevCnt + 1;
@@ -67,15 +66,14 @@ public class UserPostService implements IUserPostService {
 
     @Override
     public UserPost getPost(String postId) throws InvalidInputException {
-        sanityCheck(postId, "postId is NULL");
-
+        sanityCheck(postId, "postId");
         return userPostDAO.getPost("postId", postId);
     }
 
     @Override
     public List<UserPost> getAllPostOfUser(String authorName) throws InvalidInputException {
-        sanityCheck(authorName, "authorName is NULL");
-        return userPostDAO.getAllPost(authorName);
+        sanityCheck(authorName, "authorName");
+        return userPostDAO.getAllPost("authorName", authorName);
     }
 
 //    public void savePost(String imageInHex) throws InvalidInputException {
@@ -83,7 +81,7 @@ public class UserPostService implements IUserPostService {
 
     private void sanityCheck(String postId, String message) throws InvalidInputException {
         if (postId == null || postId.length() == 0) {
-            throw new InvalidInputException(message);
+            throw new InvalidInputException(message+" is NULL");
         }
     }
 }

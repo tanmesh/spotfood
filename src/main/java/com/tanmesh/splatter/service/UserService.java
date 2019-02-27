@@ -2,6 +2,7 @@ package com.tanmesh.splatter.service;
 
 import com.tanmesh.splatter.dao.UserDAO;
 import com.tanmesh.splatter.entity.User;
+import com.tanmesh.splatter.entity.UserPost;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.wsRequestModel.UserData;
 import org.mongodb.morphia.Key;
@@ -17,11 +18,11 @@ public class UserService implements IUserService {
         this.userToken = userToken;
     }
 
-    public List<User> userInfo() {
+    public List<User> userInfo() throws InvalidInputException {
         List<String> userIdList = userDAO.findIds();
         List<User> userList = new ArrayList<>();
         if (userIdList == null || userIdList.size() == 0) {
-            return userList;
+            throw new InvalidInputException("userIdList is null");
         }
         for (String id : userIdList) {
             userList.add(userDAO.get(id));
@@ -29,10 +30,10 @@ public class UserService implements IUserService {
         return userList;
     }
 
-    public boolean userExists(String emailId) {
+    public boolean userExists(String emailId) throws InvalidInputException {
         List<String> userIdList = userDAO.findIds();
         if (userIdList == null || userIdList.size() == 0) {
-            return false;
+            throw new InvalidInputException("userIdList is null");
         }
         return userIdList.contains(emailId);
     }
@@ -46,24 +47,13 @@ public class UserService implements IUserService {
         String nickName = userData.getNickName();
         String emailId = userData.getEmailId();
         String password = userData.getPassword();
-        if (firstName == null || firstName.length() == 0) {
-            throw new InvalidInputException("firstName is NULL");
-        }
-        if (lastName == null || lastName.length() == 0) {
-            throw new InvalidInputException("lastName is NULL");
-        }
-        if (nickName == null || nickName.length() == 0) {
-            throw new InvalidInputException("nickName is NULL");
-        }
-        if (emailId == null || emailId.length() == 0) {
-            throw new InvalidInputException("emailId is NULL");
-        }
-        if (password == null || password.length() == 0) {
-            throw new InvalidInputException("password is NULL");
-        }
-        if (userExists(userData.getEmailId())) {
-            return false;
-        }
+
+        sanityCheck(firstName, "firstName");
+        sanityCheck(lastName, "lastName");
+        sanityCheck(nickName, "nickName");
+        sanityCheck(emailId, "emailId");
+        sanityCheck(password, "password");
+
         return addSignUpUserHelper(firstName, lastName, nickName, emailId, password);
     }
 
@@ -78,27 +68,29 @@ public class UserService implements IUserService {
     }
 
     public boolean logInUser(String emailId, String password) throws InvalidInputException {
-        if (emailId == null || emailId.length() == 0) {
-            throw new InvalidInputException("emailId is null");
-        }
-        if (password == null || password.length() == 0) {
-            throw new InvalidInputException("password is null");
-        }
-
-        User user = userDAO.getDatastore().createQuery(User.class).filter("emailId", emailId).filter("password", password).get();
-
+        sanityCheck(password, "password");
+        sanityCheck(emailId, "emailId");
+//        User user = userDAO.getUser("emailId", emailId, "password", password);
         String token = UUID.randomUUID().toString();
         userToken.put(emailId, token);
-
         return true;
     }
 
-    //TODO: change the ID to emailId
+    @Override
+    public boolean getUserFeed(String emailId) throws InvalidInputException {
+        sanityCheck(emailId, "emailId");
+        User user = userDAO.getUser("emailId", emailId);
+        Set<String> userTags = user.getFollowTagList();
+        for (String tag : userTags) {
+            List<UserPost> userPost = userDAO.getAllPost(tag);
+        }
+        return true;
+    }
+
     public boolean followTag(String tag, String emailId) throws InvalidInputException {
-        sanityCheckOfEmailIdAndTag(tag, emailId);
-
-        User user = userDAO.getDatastore().createQuery(User.class).filter("emailId", emailId).get();
-
+        sanityCheck(tag, "tag");
+        sanityCheck(emailId, "emailId");
+        User user = userDAO.getUser("emailId", emailId);
         Set<String> tagList = user.getFollowTagList();
         if (tagList == null) {
             tagList = new HashSet<>();
@@ -109,10 +101,9 @@ public class UserService implements IUserService {
     }
 
     public boolean unFollowTag(String tag, String emailId) throws InvalidInputException {
-        sanityCheckOfEmailIdAndTag(tag, emailId);
-
-        User user = userDAO.getDatastore().createQuery(User.class).filter("emailId", emailId).get();
-
+        sanityCheck(tag, "tag");
+        sanityCheck(emailId, "emailId");
+        User user = userDAO.getUser("emailId", emailId);
         Set<String> tagList = user.getFollowTagList();
         if (tagList == null || tagList.size() == 0) {
             return false;
@@ -121,27 +112,10 @@ public class UserService implements IUserService {
         return updateUser(user);
     }
 
-    private boolean updateUser(User user) {
-        Key<User> userKey = userDAO.save(user);
-        return userKey != null;
-    }
-
-    private void sanityCheckOfEmailIdAndTag(String tag, String emailId) throws InvalidInputException {
-        if (tag == null) {
-            throw new InvalidInputException("followTagList is NULL");
-        }
-        if (emailId == null || emailId.length() == 0) {
-            throw new InvalidInputException("emailId is NULL");
-        }
-    }
-
     @Override
     public boolean deleteUser(String emailId) throws InvalidInputException {
-        if (emailId == null || emailId.length() == 0) {
-            throw new InvalidInputException("emailId is NULL");
-        }
-
-        User user = userDAO.getDatastore().createQuery(User.class).filter("emailId", emailId).get();
+        sanityCheck(emailId, "emailId");
+        User user = userDAO.getUser("emailId", emailId);
         if (user == null) {
             return false;
         }
@@ -149,22 +123,20 @@ public class UserService implements IUserService {
         return true;
     }
 
+    @Override
     public User userProfile(String emailId) throws InvalidInputException {
-        sanityCheck(emailId, "emailId is NULL");
-
-        User user = userDAO.getDatastore().createQuery(User.class).filter("emailId", emailId).get();
-
-        return user;
+        sanityCheck(emailId, "emailId");
+        return userDAO.getUser("emailId", emailId);
     }
 
-    private void sanityCheck(String emailId, String s) throws InvalidInputException {
-        if (emailId == null || emailId.length() == 0) {
-            throw new InvalidInputException(s);
+    private boolean updateUser(User user) {
+        Key<User> userKey = userDAO.save(user);
+        return userKey != null;
+    }
+
+    private void sanityCheck(String id, String msg) throws InvalidInputException {
+        if (id == null || id.length() == 0) {
+            throw new InvalidInputException(msg + " is NULL");
         }
-    }
-
-    public void userPost(String emailId) throws InvalidInputException {
-        sanityCheck(emailId, "emailId is NULL");
-
     }
 }

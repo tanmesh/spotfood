@@ -1,6 +1,7 @@
 package com.tanmesh.splatter.resources;
 
 import com.tanmesh.splatter.entity.User;
+import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.service.IUserService;
 
 import javax.ws.rs.GET;
@@ -20,14 +21,14 @@ public class DebugResource {
 
     @GET
     @Path("exist")
-    public boolean existenceUser(@QueryParam("emailId") String emailId) {
+    public boolean existenceUser(@QueryParam("emailId") String emailId) throws InvalidInputException {
         return userService.userExists(emailId);
     }
 
     @GET
     @Path("get_all")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<User> getUserInfo(@QueryParam("emailId") String emailId) {
+    public List<User> getUserInfo(@QueryParam("emailId") String emailId) throws InvalidInputException {
         return userService.userInfo();
     }
 }

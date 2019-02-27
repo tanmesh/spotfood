@@ -13,18 +13,16 @@ public class UserPostDAO extends BasicDAO<UserPost, String> {
         super(ds);
     }
 
-    public List<UserPost> getAllPost(String authorName) {
-        List<UserPost> userPostList = new ArrayList<>();
-        Query<UserPost> query = this.getDatastore().createQuery(UserPost.class).filter("authorName", authorName);
-        userPostList = this.find(query).asList();
+    public List<UserPost> getAllPost(String idName, String id) {
+        Query<UserPost> query = this.getDatastore().createQuery(UserPost.class).filter(idName, id);
+        List<UserPost> userPostList = this.find(query).asList();
         if (userPostList == null) {
             return new ArrayList<>();
         }
         return userPostList;
     }
 
-    public UserPost getPost(String condition, String matchId) {
-        return this.getDatastore().createQuery(UserPost.class).filter(condition, matchId).get();
+    public UserPost getPost(String idName, String id) {
+        return this.getDatastore().createQuery(UserPost.class).filter(idName, id).get();
     }
-
 }
