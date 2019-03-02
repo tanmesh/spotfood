@@ -7,13 +7,13 @@ import com.tanmesh.splatter.wsRequestModel.UserData;
 import java.util.List;
 
 public interface IUserService {
-    boolean deleteUser(String emailID) throws InvalidInputException;
-    boolean userExists(String emailId) throws InvalidInputException;
+    void deleteUser(String emailID) throws InvalidInputException;
+    void userExists(String emailId) throws InvalidInputException;
     List<User> userInfo() throws InvalidInputException;
-    boolean signUpUser(UserData userData) throws InvalidInputException;
-    boolean followTag(String tag, String emailId) throws InvalidInputException;
-    boolean unFollowTag(String tag, String emailId) throws InvalidInputException;
+    void signUpUser(UserData userData) throws InvalidInputException;
+    void followTag(String tag, String emailId) throws InvalidInputException;
+    void unFollowTag(String tag, String emailId) throws InvalidInputException;
     User userProfile(String emailId) throws InvalidInputException;
-    boolean logInUser(String emailId, String password) throws InvalidInputException;
-    boolean getUserFeed(String emailId) throws InvalidInputException;
+    void logInUser(String emailId, String password) throws InvalidInputException;
+    void getUserFeed(String emailId) throws InvalidInputException;
 }

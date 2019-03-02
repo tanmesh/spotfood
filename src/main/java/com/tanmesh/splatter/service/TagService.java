@@ -26,19 +26,18 @@ public class TagService {
 
     // TODO: create the existence of the tag.
 
-    public boolean addTag(TagData tagData) throws InvalidInputException {
+    public void addTag(TagData tagData) throws InvalidInputException {
         String tagName = tagData.getTagName();
         if (tagName == null || tagName.length() == 0) {
             throw new InvalidInputException("tagName is empty");
         }
-        return addTagHelper(tagName);
+        addTagHelper(tagName);
     }
 
-    private boolean addTagHelper(String tagName) {
+    private void addTagHelper(String tagName) {
         Tag tag = new Tag();
         tag.setName(tagName);
         Key<Tag> tagKey = tagDAO.save(tag);
-        return tagKey != null;
     }
 
     public List<Tag> getAllTag(TagData tagData) throws InvalidInputException {

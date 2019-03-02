@@ -1,14 +1,15 @@
 package com.tanmesh.splatter.resources;
 
 import com.tanmesh.splatter.entity.UserPost;
-import com.tanmesh.splatter.exception.ApiException;
 import com.tanmesh.splatter.exception.InvalidInputException;
+import com.tanmesh.splatter.exception.PostNotFoundException;
 import com.tanmesh.splatter.service.IUserPostService;
 import com.tanmesh.splatter.wsRequestModel.UserPostData;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.List;
 
 @Path("/user_post")
@@ -22,97 +23,75 @@ public class UserPostResource {
     @POST
     @Path("add")
     @Consumes(MediaType.APPLICATION_JSON)
-    public boolean addPostDetails(UserPostData userPostData) throws ApiException {
+    public Response addPostDetails(UserPostData userPostData) {
         try {
             String postId = userPostData.getPostId();
             List<String> tagList = userPostData.getTags();
             String location = userPostData.getLocation();
             String authorName = userPostData.getAuthorName();
-            userPostService.addPost(postId, tagList, location, authorName);
-        } catch (InvalidInputException e) {
-            throw new ApiException(Response.Status.EXPECTATION_FAILED, "unable to addPost");
+            String encodedImg = userPostData.getEncodedImg();
+            userPostService.addPost(postId, tagList, location, authorName, encodedImg);
+        } catch (InvalidInputException | IOException e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
         }
-        return true;
+        return Response.status(Response.Status.ACCEPTED).entity(true).build();
     }
-
-    // TODO: "edit" API
-//    @POST
-//    @Path("edit")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    public boolean editPostDetails(UserPostData userPostData) throws ApiException {
-//        try {
-//            String postId = userPostData.getPostId();
-//            List<String> tagList = userPostData.getTags();
-//            String location = userPostData.getLocation();
-//            String authorName = userPostData.getAuthorName();
-//            userPostService.editPost(postId, tagList, location, authorName);
-//        } catch (InvalidInputException e) {
-//            throw new ApiException(Response.Status.EXPECTATION_FAILED, "unable to editPost");
-//        }
-//        return true;
-//    }
 
     @GET
     @Path("get")
     @Produces(MediaType.APPLICATION_JSON)
-    public UserPost getPostDetails(String postId) throws ApiException {
+    public Response getPostDetails(String postId) {
         UserPost userPost;
         try {
             userPost = userPostService.getPost(postId);
         } catch (InvalidInputException e) {
-            throw new ApiException(Response.Status.EXPECTATION_FAILED, "unable to getPost");
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
         }
-        return userPost;
+        return Response.status(Response.Status.ACCEPTED).entity(userPost).build();
     }
 
     @GET
     @Path("get_all")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UserPost> getAllPostDetails(String postId) throws ApiException {
+    public Response getAllPostDetails(String postId){
         List<UserPost> userPost;
         try {
             userPost = userPostService.getAllPostOfUser(postId);
         } catch (InvalidInputException e) {
-            throw new ApiException(Response.Status.EXPECTATION_FAILED, "unable to getAllPost");
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
         }
-        return userPost;
+        return Response.status(Response.Status.ACCEPTED).entity(userPost).build();
     }
 
     @GET
     @Path("like")
     @Produces(MediaType.APPLICATION_JSON)
-    public UserPost likePostDetails(String postId) throws ApiException {
+    public Response likePostDetails(String postId) {
         UserPost userPost;
         try {
             userPost = userPostService.likePost(postId);
         } catch (InvalidInputException e) {
-            throw new ApiException(Response.Status.EXPECTATION_FAILED, "unable to likePost");
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+        } catch (PostNotFoundException e) {
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
-        return userPost;
+        return Response.status(Response.Status.ACCEPTED).entity(userPost).build();
     }
 
     @POST
     @Path("delete")
     @Consumes(MediaType.APPLICATION_JSON)
-    public boolean deletePostDetails(String postId) throws ApiException {
+    public Response deletePostDetails(String postId) {
         try {
             userPostService.deletePost(postId);
         } catch (InvalidInputException e) {
-            throw new ApiException(Response.Status.EXPECTATION_FAILED, "unable to deletePost");
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
         }
-        return true;
+        return Response.status(Response.Status.ACCEPTED).entity(true).build();
     }
 
-//    @POST
-//    @Path("save")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    public boolean savePostDetails(String imageFileInHex) throws ApiException {
-//        try {
-//            userPostService.savePost(imageFileInHex);
-//        } catch (InvalidInputException e) {
-//            throw new ApiException(Response.Status.EXPECTATION_FAILED, "unable to savePost");
-//        }
-//        return true;
-//    }
+    // TODO: "edit" API
+
+    // TODO: "save" API
 
 }

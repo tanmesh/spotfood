@@ -13,6 +13,7 @@ public class UserPost {
     private String location;
     private String authorName;
     private int upVotes;
+    private String encodedImg;
 
     public UserPost() {
     }
@@ -51,5 +52,13 @@ public class UserPost {
 
     public void setUpVotes(int upVotes) {
         this.upVotes = upVotes;
+    }
+
+    public String getEncodedImg() {
+        return encodedImg;
+    }
+
+    public void setEncodedImg(String encodedImg) {
+        this.encodedImg = encodedImg;
     }
 }

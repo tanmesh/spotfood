@@ -13,7 +13,7 @@ public class UserPostDAO extends BasicDAO<UserPost, String> {
         super(ds);
     }
 
-    public List<UserPost> getAllPost(String idName, String id) {
+    public List<UserPost> getAllPostOfUser(String idName, String id) {
         Query<UserPost> query = this.getDatastore().createQuery(UserPost.class).filter(idName, id);
         List<UserPost> userPostList = this.find(query).asList();
         if (userPostList == null) {
@@ -21,6 +21,8 @@ public class UserPostDAO extends BasicDAO<UserPost, String> {
         }
         return userPostList;
     }
+
+    // TODO: add getAllPost
 
     public UserPost getPost(String idName, String id) {
         return this.getDatastore().createQuery(UserPost.class).filter(idName, id).get();

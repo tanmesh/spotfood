@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Path("/debug")
@@ -21,14 +22,25 @@ public class DebugResource {
 
     @GET
     @Path("exist")
-    public boolean existenceUser(@QueryParam("emailId") String emailId) throws InvalidInputException {
-        return userService.userExists(emailId);
+    public Response existenceUser(@QueryParam("emailId") String emailId) {
+        try {
+            userService.userExists(emailId);
+        } catch (InvalidInputException e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+        }
+        return Response.status(Response.Status.ACCEPTED).entity(true).build();
     }
 
     @GET
     @Path("get_all")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<User> getUserInfo(@QueryParam("emailId") String emailId) throws InvalidInputException {
-        return userService.userInfo();
+    public Response getUserInfo(@QueryParam("emailId") String emailId) {
+        List<User> users;
+        try {
+            users = userService.userInfo();
+        }catch (InvalidInputException e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+        }
+        return Response.status(Response.Status.ACCEPTED).entity(users).build();
     }
 }

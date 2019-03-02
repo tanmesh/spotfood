@@ -8,6 +8,15 @@ public class UserPostData {
     private String location;
     private String authorName;
     private int upvotes;
+    private String encodedImg;
+
+    public String getEncodedImg() {
+        return encodedImg;
+    }
+
+    public void setEncodedImg(String encodedImg) {
+        this.encodedImg = encodedImg;
+    }
 
     public String getPostId() {
         return postId;
