@@ -67,11 +67,10 @@ public class UserResource {
         return Response.status(Response.Status.ACCEPTED).entity(true).build();
     }
 
-    @POST
+    @GET
     @Path("profile")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserProfile(String emailId) {
+    public Response getUserProfile(@QueryParam("emailId") String emailId) {
         User user;
         try {
             user = userService.userProfile(emailId);
@@ -81,15 +80,16 @@ public class UserResource {
         return Response.status(Response.Status.ACCEPTED).entity(user).build();
     }
 
-    @GET
-    @Path("feed")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserFeed(String emailId) {
-        try {
-            userService.getUserFeed(emailId);
-        } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
-        }
-        return Response.status(Response.Status.ACCEPTED).entity(true).build();
-    }
+    // TODO: complete feed API
+//    @GET
+//    @Path("feed")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response getUserFeed(String emailId) {
+//        try {
+//            userService.getUserFeed(emailId);
+//        } catch (InvalidInputException e) {
+//            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+//        }
+//        return Response.status(Response.Status.ACCEPTED).entity(true).build();
+//    }
 }

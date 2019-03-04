@@ -34,10 +34,10 @@ public class TagResource {
     @GET
     @Path("get_all")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllTag(TagData tagData) {
+    public Response getAllTag() {
         List<Tag> tags;
         try {
-            tags = tagService.getAllTag(tagData);
+            tags = tagService.getAllTag();
         } catch (InvalidInputException e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
         }

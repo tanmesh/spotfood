@@ -1,6 +1,8 @@
 package com.tanmesh.splatter.service;
 
+import com.tanmesh.splatter.dao.TagDAO;
 import com.tanmesh.splatter.dao.UserPostDAO;
+import com.tanmesh.splatter.entity.Tag;
 import com.tanmesh.splatter.entity.UserPost;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.exception.PostNotFoundException;
@@ -15,38 +17,50 @@ import java.util.List;
 
 public class UserPostService implements IUserPostService {
     private UserPostDAO userPostDAO;
+    private TagDAO tagDAO;
 
-    public UserPostService(UserPostDAO userPostDAO) {
+    public UserPostService(UserPostDAO userPostDAO, TagDAO tagDAO) {
         this.userPostDAO = userPostDAO;
+        this.tagDAO = tagDAO;
     }
 
     @Override
-    public boolean addPost(String postId, List<String> tagList, String location, String authorName, String encodedImg) throws InvalidInputException, IOException {
+    public void addPost(String postId, List<String> tagList, String location, String authorName, String encodedImgFilePath) throws InvalidInputException, IOException {
         sanityCheck(postId, "postId");
         sanityCheck(location, "location");
         sanityCheck(authorName, "authorName");
         if (tagList == null || tagList.size() == 0) {
             throw new InvalidInputException("tagList");
         }
-        if (encodedImg == null) {
+        if (encodedImgFilePath == null) {
             throw new InvalidInputException("encodedImg");
         }
         UserPost userPost = new UserPost();
         userPost.setPostId(postId);
         userPost.setLocation(location);
-        userPost.setAuthorName(authorName);
+        userPost.setAuthorEmailId(authorName);
         List<String> postTags = userPost.getTags();
         if (postTags == null) {
             postTags = new ArrayList<>();
         }
         postTags.addAll(tagList);
         userPost.setTags(postTags);
-        String filePath = "/Users/tanmesh/Downloads/2019-02-10.jpg";
-        byte[] fileContent = FileUtils.readFileToByteArray(new File(filePath));
-        encodedImg = Base64.getEncoder().encodeToString(fileContent);
+        byte[] fileContent = FileUtils.readFileToByteArray(new File(encodedImgFilePath));
+        String encodedImg = Base64.getEncoder().encodeToString(fileContent);
         userPost.setEncodedImg(encodedImg);
-        Key<UserPost> userPostKey = userPostDAO.save(userPost);
-        return userPostKey != null;
+        userPostDAO.save(userPost);
+        for(String tagName : tagList) {
+            if (tagName == null || tagName.length() == 0) {
+                throw new InvalidInputException("tagName is empty");
+            }
+            addTagHelper(tagName);
+        }
+    }
+
+    private void addTagHelper(String tagName) {
+        Tag tag = new Tag();
+        tag.setName(tagName);
+        tagDAO.save(tag);
     }
 
     @Override
@@ -55,11 +69,10 @@ public class UserPostService implements IUserPostService {
     }
 
     @Override
-    public boolean deletePost(String postId) throws InvalidInputException {
+    public void deletePost(String postId) throws InvalidInputException {
         sanityCheck(postId, "postId");
         UserPost userPost = userPostDAO.getPost("postId", postId);
         userPostDAO.delete(userPost);
-        return userPost != null;
     }
 
     @Override
@@ -86,18 +99,10 @@ public class UserPostService implements IUserPostService {
     }
 
     @Override
-    public List<UserPost> getAllPostOfUser(String authorName) throws InvalidInputException {
-        sanityCheck(authorName, "authorName");
-        return userPostDAO.getAllPostOfUser("authorName", authorName);
+    public List<UserPost> getAllPostOfUser(String authorEmailId) throws InvalidInputException {
+        sanityCheck(authorEmailId, "authorEmailId");
+        return userPostDAO.getAllPostOfUser("authorEmailId", authorEmailId);
     }
-
-//    @Override
-//    public List<UserPost> getAllPostOfUser() {
-//        return userPostDAO.getAllPost();
-//    }
-
-//    public void savePost(String imageInHex) throws InvalidInputException {
-//    }
 
     private void sanityCheck(String postId, String message) throws InvalidInputException {
         if (postId == null || postId.length() == 0) {

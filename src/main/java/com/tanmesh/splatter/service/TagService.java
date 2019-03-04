@@ -4,7 +4,6 @@ import com.tanmesh.splatter.dao.TagDAO;
 import com.tanmesh.splatter.entity.Tag;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.wsRequestModel.TagData;
-import org.mongodb.morphia.Key;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,7 @@ public class TagService {
     // TODO: create the existence of the tag.
 
     public void addTag(TagData tagData) throws InvalidInputException {
-        String tagName = tagData.getTagName();
+        String tagName = tagData.getName();
         if (tagName == null || tagName.length() == 0) {
             throw new InvalidInputException("tagName is empty");
         }
@@ -37,10 +36,10 @@ public class TagService {
     private void addTagHelper(String tagName) {
         Tag tag = new Tag();
         tag.setName(tagName);
-        Key<Tag> tagKey = tagDAO.save(tag);
+        tagDAO.save(tag);
     }
 
-    public List<Tag> getAllTag(TagData tagData) throws InvalidInputException {
+    public List<Tag> getAllTag() throws InvalidInputException {
         List<String> tagIdList = tagDAO.findIds();
         List<Tag> tagList = new ArrayList<>();
         if (tagIdList == null || tagIdList.size() == 0) {
@@ -50,5 +49,17 @@ public class TagService {
             tagList.add(tagDAO.get(id));
         }
         return tagList;
+    }
+
+    public void deleteTag(String name) throws InvalidInputException {
+        sanityCheck(name, "name");
+        Tag tag = tagDAO.getTag("name", name);
+        tagDAO.delete(tag);
+    }
+
+    private void sanityCheck(String id, String msg) throws InvalidInputException {
+        if (id == null || id.length() == 0) {
+            throw new InvalidInputException(msg + " is NULL");
+        }
     }
 }

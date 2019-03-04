@@ -2,10 +2,8 @@ package com.tanmesh.splatter.service;
 
 import com.tanmesh.splatter.dao.UserDAO;
 import com.tanmesh.splatter.entity.User;
-import com.tanmesh.splatter.entity.UserPost;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.wsRequestModel.UserData;
-import org.mongodb.morphia.Key;
 
 import java.util.*;
 
@@ -74,14 +72,15 @@ public class UserService implements IUserService {
         userToken.put(emailId, token);
     }
 
+    // TODO: complete getUserFeed
     @Override
     public void getUserFeed(String emailId) throws InvalidInputException {
-        sanityCheck(emailId, "emailId");
-        User user = userDAO.getUser("emailId", emailId);
-        Set<String> userTags = user.getFollowTagList();
-        for (String tag : userTags) {
-            List<UserPost> userPost = userDAO.getAllPost(tag);
-        }
+//        sanityCheck(emailId, "emailId");
+//        User user = userDAO.getUser("emailId", emailId);
+//        Set<String> userTags = user.getFollowTagList();
+//        for (String tag : userTags) {
+//            List<UserPost> userPost = userDAO.getAllPost(tag);
+//        }
     }
 
     public void followTag(String tag, String emailId) throws InvalidInputException {
@@ -126,7 +125,7 @@ public class UserService implements IUserService {
     }
 
     private void updateUser(User user) {
-        Key<User> userKey = userDAO.save(user);
+        userDAO.save(user);
     }
 
     private void sanityCheck(String id, String msg) throws InvalidInputException {

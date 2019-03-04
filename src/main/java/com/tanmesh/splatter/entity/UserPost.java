@@ -11,8 +11,9 @@ public class UserPost {
     private String postId;
     private List<String> tags;
     private String location;
-    private String authorName;
+    private String authorEmailId;
     private int upVotes;
+    private String encodedImgFilePath;
     private String encodedImg;
 
     public UserPost() {
@@ -24,6 +25,14 @@ public class UserPost {
 
     public List<String> getTags() {
         return tags;
+    }
+
+    public String getEncodedImg() {
+        return encodedImg;
+    }
+
+    public void setEncodedImg(String encodedImg) {
+        this.encodedImg = encodedImg;
     }
 
     public void setTags(List<String> tags) {
@@ -38,12 +47,12 @@ public class UserPost {
         this.location = location;
     }
 
-    public String getAuthorName() {
-        return authorName;
+    public String getAuthorEmailId() {
+        return authorEmailId;
     }
 
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
+    public void setAuthorEmailId(String authorEmailId) {
+        this.authorEmailId = authorEmailId;
     }
 
     public int getUpVotes() {
@@ -54,11 +63,11 @@ public class UserPost {
         this.upVotes = upVotes;
     }
 
-    public String getEncodedImg() {
-        return encodedImg;
+    public String getEncodedImgFilePath() {
+        return encodedImgFilePath;
     }
 
-    public void setEncodedImg(String encodedImg) {
-        this.encodedImg = encodedImg;
+    public void setEncodedImgFilePath(String encodedImgFilePath) {
+        this.encodedImgFilePath = encodedImgFilePath;
     }
 }

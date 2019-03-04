@@ -28,9 +28,9 @@ public class UserPostResource {
             String postId = userPostData.getPostId();
             List<String> tagList = userPostData.getTags();
             String location = userPostData.getLocation();
-            String authorName = userPostData.getAuthorName();
-            String encodedImg = userPostData.getEncodedImg();
-            userPostService.addPost(postId, tagList, location, authorName, encodedImg);
+            String authorName = userPostData.getAuthorEmailId();
+            String encodedImgFilePath = userPostData.getEncodedImgFilePath();
+            userPostService.addPost(postId, tagList, location, authorName, encodedImgFilePath);
         } catch (InvalidInputException | IOException e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
         }
@@ -40,7 +40,7 @@ public class UserPostResource {
     @GET
     @Path("get")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPostDetails(String postId) {
+    public Response getPostDetails(@QueryParam("postId") String postId) {
         UserPost userPost;
         try {
             userPost = userPostService.getPost(postId);
@@ -53,10 +53,10 @@ public class UserPostResource {
     @GET
     @Path("get_all")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllPostDetails(String postId){
+    public Response getAllPostDetails(@QueryParam("authorEmailId") String authorEmailId) {
         List<UserPost> userPost;
         try {
-            userPost = userPostService.getAllPostOfUser(postId);
+            userPost = userPostService.getAllPostOfUser(authorEmailId);
         } catch (InvalidInputException e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
         }
@@ -66,7 +66,7 @@ public class UserPostResource {
     @GET
     @Path("like")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response likePostDetails(String postId) {
+    public Response likePostDetails(@QueryParam("postId") String postId) {
         UserPost userPost;
         try {
             userPost = userPostService.likePost(postId);

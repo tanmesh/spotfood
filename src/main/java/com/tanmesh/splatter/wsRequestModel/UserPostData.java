@@ -6,9 +6,18 @@ public class UserPostData {
     private String postId;
     private List<String> tags;
     private String location;
-    private String authorName;
+    private String authorEmailId;
     private int upvotes;
     private String encodedImg;
+    private String encodedImgFilePath;
+
+    public String getEncodedImgFilePath() {
+        return encodedImgFilePath;
+    }
+
+    public void setEncodedImgFilePath(String encodedImgFilePath) {
+        this.encodedImgFilePath = encodedImgFilePath;
+    }
 
     public String getEncodedImg() {
         return encodedImg;
@@ -42,12 +51,12 @@ public class UserPostData {
         this.location = location;
     }
 
-    public String getAuthorName() {
-        return authorName;
+    public String getAuthorEmailId() {
+        return authorEmailId;
     }
 
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
+    public void setAuthorEmailId(String authorEmailId) {
+        this.authorEmailId = authorEmailId;
     }
 
     public int getUpvotes() {

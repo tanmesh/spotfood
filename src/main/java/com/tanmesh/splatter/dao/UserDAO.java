@@ -17,10 +17,10 @@ public class UserDAO extends BasicDAO<User, String> {
         return this.getDatastore().createQuery(User.class).filter(idName, id).get();
     }
 
-    public List<UserPost> getAllPost(String tag) {
+    // TODO: complete getAllFeed
+    public List<UserPost> getAllFeed(String tag) {
         ArrayList<UserPost> userPosts = new ArrayList<>();
-        // TODO: need to complete
-        // List<UserPost> userPost = this.getDatastore().createQuery(UserPost.class);
+//        List<UserPost> userPost = this.getDatastore().createQuery(UserPost.class);
         return userPosts;
 
     }
