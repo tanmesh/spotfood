@@ -4,6 +4,7 @@ import com.tanmesh.splatter.entity.User;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.service.IUserService;
 import com.tanmesh.splatter.wsRequestModel.UserData;
+import com.tanmesh.splatter.wsRequestModel.UserLoginData;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -17,31 +18,7 @@ public class UserResource {
         this.userService = userService;
     }
 
-    @POST
-    @Path("signup")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response signUpUser(UserData userData) {
-        try {
-            userService.signUpUser(userData);
-        } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
-        }
-        return Response.status(Response.Status.ACCEPTED).entity(true).build();
-    }
 
-    @POST
-    @Path("login")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response logInUser(UserData userData) {
-        String emailId = userData.getEmailId();
-        String password = userData.getPassword();
-        try {
-            userService.logInUser(emailId, password);
-        } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
-        }
-        return Response.status(Response.Status.ACCEPTED).entity(true).build();
-    }
 
     @POST
     @Path("follow")

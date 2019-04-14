@@ -2,18 +2,24 @@ package com.tanmesh.splatter.service;
 
 import com.tanmesh.splatter.dao.UserDAO;
 import com.tanmesh.splatter.entity.User;
+import com.tanmesh.splatter.exception.EmailIdAlreadyRegistered;
+import com.tanmesh.splatter.exception.EmailIdNotRegistered;
+import com.tanmesh.splatter.exception.IncorrectPassword;
 import com.tanmesh.splatter.exception.InvalidInputException;
+import com.tanmesh.splatter.utils.FormatUtils;
 import com.tanmesh.splatter.wsRequestModel.UserData;
+import org.mongodb.morphia.Key;
 
+import javax.ws.rs.core.Response;
 import java.util.*;
 
 public class UserService implements IUserService {
     private UserDAO userDAO;
-    private HashMap<String, String> userToken;
+    private UserAuthService userAuthService;
 
-    public UserService(UserDAO userDAO, HashMap<String, String> userToken) {
+    public UserService(UserDAO userDAO, UserAuthService userAuthService) {
         this.userDAO = userDAO;
-        this.userToken = userToken;
+        this.userAuthService = userAuthService;
     }
 
     public List<User> userInfo() throws InvalidInputException {
@@ -35,10 +41,11 @@ public class UserService implements IUserService {
         }
     }
 
-    public void signUpUser(UserData userData) throws InvalidInputException {
+    public boolean signUpUser(UserData userData) throws InvalidInputException, EmailIdAlreadyRegistered {
         if (userData == null) {
             throw new InvalidInputException("UserData is null");
         }
+
         String firstName = userData.getFirstName();
         String lastName = userData.getLastName();
         String nickName = userData.getNickName();
@@ -51,25 +58,46 @@ public class UserService implements IUserService {
         sanityCheck(emailId, "emailId");
         sanityCheck(password, "password");
 
-        addSignUpUserHelper(firstName, lastName, nickName, emailId, password);
+
+        if (userDAO.userAlreadyExists(emailId)) {
+            String errorMsg = FormatUtils.format("emailId:{0} already registered, please login", emailId);
+            throw new EmailIdAlreadyRegistered(errorMsg);
+        }
+
+        return addNewUser(firstName, lastName, nickName, emailId, password);
     }
 
-    private void addSignUpUserHelper(String firstName, String lastName, String userNickName, String userEmailId, String userPassword) {
+    private boolean addNewUser(String firstName, String lastName, String userNickName, String userEmailId, String userPassword) {
         User user = new User();
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setNickName(userNickName);
         user.setEmailId(userEmailId);
         user.setPassword(userPassword);
-        updateUser(user);
+        Key<User> key = userDAO.save(user);
+        if (key == null) {
+            return false;
+        }
+        return true;
     }
 
-    public void logInUser(String emailId, String password) throws InvalidInputException {
+    public String logInUser(String emailId, String password) throws InvalidInputException,EmailIdNotRegistered, IncorrectPassword {
         sanityCheck(password, "password");
         sanityCheck(emailId, "emailId");
-//        User user = userDAO.getUser("emailId", emailId, "password", password);
-        String token = UUID.randomUUID().toString();
-        userToken.put(emailId, token);
+
+        User user = userDAO.getUserFromEmailId(emailId);
+        if (user == null) {
+            String errorMsg = FormatUtils.format("emailId:{0} not registered, please signup", emailId);
+            throw new EmailIdNotRegistered(errorMsg);
+        }
+
+        if (!user.getPassword().equals(password)) {
+            String errorMsg = FormatUtils.format("password is incorrect for emailId:{0} ", emailId);
+            throw new IncorrectPassword(errorMsg);
+        }
+
+        String accessToken = userAuthService.addNewAccessToken(emailId);
+        return accessToken;
     }
 
     // TODO: complete getUserFeed
@@ -93,7 +121,7 @@ public class UserService implements IUserService {
         }
         tagList.add(tag);
         user.setFollowTagList(tagList);
-        updateUser(user);
+        userDAO.save(user);
     }
 
     public void unFollowTag(String tag, String emailId) throws InvalidInputException {
@@ -105,7 +133,7 @@ public class UserService implements IUserService {
             return;
         }
         tagList.remove(tag);
-        updateUser(user);
+        userDAO.save(user);
     }
 
     @Override
@@ -122,10 +150,6 @@ public class UserService implements IUserService {
     public User userProfile(String emailId) throws InvalidInputException {
         sanityCheck(emailId, "emailId");
         return userDAO.getUser("emailId", emailId);
-    }
-
-    private void updateUser(User user) {
-        userDAO.save(user);
     }
 
     private void sanityCheck(String id, String msg) throws InvalidInputException {
