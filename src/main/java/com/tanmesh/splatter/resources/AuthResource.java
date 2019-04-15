@@ -27,7 +27,7 @@ public class AuthResource {
     @POST
     @Path("signup")
     @Consumes(MediaType.APPLICATION_JSON)
-    public UserAuthResponse signUpUser(UserData userData) throws ApiException {
+    public Response signUpUser(UserData userData) throws ApiException {
         User user = null;
         Response response;
         try {
@@ -42,9 +42,9 @@ public class AuthResource {
         }
         UserAuthResponse userAuthResponse;
         if (user != null) {
-            userAuthResponse = new UserAuthResponse(user, "", response);
+            userAuthResponse = new UserAuthResponse(user, response.getStringHeaders());
         } else {
-            userAuthResponse = new UserAuthResponse(response);
+            userAuthResponse = new UserAuthResponse(response.getStringHeaders());
         }
         return userAuthResponse;
     }
@@ -73,9 +73,10 @@ public class AuthResource {
 
         UserAuthResponse userAuthResponse;
         if (user != null) {
-            userAuthResponse = new UserAuthResponse(user, UserAuthService.getAccessToken(user), response);
+            userAuthResponse = new UserAuthResponse(user, response.getStringHeaders());
+            userAuthResponse.setAccessToken(UserAuthService.getAccessToken(user));
         } else {
-            userAuthResponse = new UserAuthResponse(response);
+            userAuthResponse = new UserAuthResponse(response.getStringHeaders());
         }
         return userAuthResponse;
     }

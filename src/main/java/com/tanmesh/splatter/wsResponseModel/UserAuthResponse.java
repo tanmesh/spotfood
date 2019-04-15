@@ -17,17 +17,16 @@ public class UserAuthResponse {
     public UserAuthResponse() {
     }
 
-    public UserAuthResponse(Response response) {
-
+    public UserAuthResponse(String message) {
+        this.message = message;
     }
 
-    public UserAuthResponse(User user, String token, Response response) {
+    public UserAuthResponse(User user,String message) {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.emailId = user.getEmailId();
         this.password = user.getPassword();
-        this.message = response.toString();
-        this.accessToken = token;
+        this.message = message;
     }
 
     public void setAccessToken(String accessToken) {
