@@ -17,29 +17,29 @@ public class UserResource {
         this.userService = userService;
     }
 
-    @POST
-    @Path("follow")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response followTag(UserData userData) {
-        try {
-            userService.followTag(userData.getTag(), userData.getEmailId());
-        } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
-        }
-        return Response.status(Response.Status.ACCEPTED).entity(true).build();
-    }
-
-    @POST
-    @Path("unfollow")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response unFollowTag(UserData userData) {
-        try {
-            userService.unFollowTag(userData.getTag(), userData.getEmailId());
-        } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
-        }
-        return Response.status(Response.Status.ACCEPTED).entity(true).build();
-    }
+//    @POST
+//    @Path("follow")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    public Response followTag(UserData userData) {
+//        try {
+//            userService.followTag(userData.getTag(), userData.getEmailId());
+//        } catch (InvalidInputException e) {
+//            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+//        }
+//        return Response.status(Response.Status.ACCEPTED).entity(true).build();
+//    }
+//
+//    @POST
+//    @Path("unfollow")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    public Response unFollowTag(UserData userData) {
+//        try {
+//            userService.unFollowTag(userData.getTag(), userData.getEmailId());
+//        } catch (InvalidInputException e) {
+//            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+//        }
+//        return Response.status(Response.Status.ACCEPTED).entity(true).build();
+//    }
 
     @GET
     @Path("profile")

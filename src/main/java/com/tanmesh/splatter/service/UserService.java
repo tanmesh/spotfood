@@ -8,18 +8,14 @@ import com.tanmesh.splatter.exception.IncorrectPassword;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.utils.FormatUtils;
 import com.tanmesh.splatter.wsRequestModel.UserData;
-import org.mongodb.morphia.Key;
 
-import javax.ws.rs.core.Response;
 import java.util.*;
 
 public class UserService implements IUserService {
     private UserDAO userDAO;
-    private UserAuthService userAuthService;
 
-    public UserService(UserDAO userDAO, UserAuthService userAuthService) {
+    public UserService(UserDAO userDAO) {
         this.userDAO = userDAO;
-        this.userAuthService = userAuthService;
     }
 
     public List<User> userInfo() throws InvalidInputException {
@@ -41,7 +37,7 @@ public class UserService implements IUserService {
         }
     }
 
-    public User signUpUser(UserData userData) throws InvalidInputException, EmailIdAlreadyRegistered {
+    public void signUpUser(UserData userData) throws InvalidInputException, EmailIdAlreadyRegistered {
         if (userData == null) {
             throw new InvalidInputException("UserData is null");
         }
@@ -62,17 +58,16 @@ public class UserService implements IUserService {
             throw new EmailIdAlreadyRegistered(errorMsg);
         }
 
-        return addNewUser(firstName, lastName, emailId, password);
+        addNewUser(firstName, lastName, emailId, password);
     }
 
-    private User addNewUser(String firstName, String lastName, String userEmailId, String userPassword) {
+    private void addNewUser(String firstName, String lastName, String userEmailId, String userPassword) {
         User user = new User();
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setEmailId(userEmailId);
         user.setPassword(userPassword);
         userDAO.save(user);
-        return user;
     }
 
     public User logInUser(String emailId, String password) throws InvalidInputException,EmailIdNotRegistered, IncorrectPassword {
@@ -90,7 +85,7 @@ public class UserService implements IUserService {
             throw new IncorrectPassword(errorMsg);
         }
 
-        userAuthService.addNewAccessToken(user);
+        AuthService.addNewAccessToken(user);
         return user;
     }
 

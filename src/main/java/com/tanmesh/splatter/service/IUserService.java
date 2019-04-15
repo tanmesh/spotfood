@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface IUserService {
     // new user sign up
-    User signUpUser(UserData userData) throws InvalidInputException, EmailIdAlreadyRegistered;
+    void signUpUser(UserData userData) throws InvalidInputException, EmailIdAlreadyRegistered;
 
     // login for existing user
     User logInUser(String emailId, String password) throws InvalidInputException, EmailIdNotRegistered, IncorrectPassword;

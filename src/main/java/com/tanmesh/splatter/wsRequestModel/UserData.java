@@ -5,7 +5,6 @@ public class UserData {
     private String lastName;
     private String emailId;
     private String password;
-    private String tag;
 
     public String getFirstName() {
         return firstName;
@@ -37,13 +36,5 @@ public class UserData {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
     }
 }

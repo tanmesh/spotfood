@@ -41,8 +41,7 @@ public class App extends Application<SplatterConfiguration> {
     public void run(SplatterConfiguration configuration, Environment environment) throws Exception {
         Datastore ds = MongoUtils.createDatastore(configuration.getDbConfig());
         UserDAO userDAO = new UserDAO(ds);
-        UserAuthService userAuthService = new UserAuthService();
-        IUserService userService = new UserService(userDAO, userAuthService);
+        IUserService userService = new UserService(userDAO);
         TagDAO tagDAO = new TagDAO(ds);
         TagService tagService = new TagService(tagDAO);
         AuthResource authResource = new AuthResource(userService);

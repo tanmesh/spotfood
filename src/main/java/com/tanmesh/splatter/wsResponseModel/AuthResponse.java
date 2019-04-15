@@ -6,39 +6,26 @@ import com.tanmesh.splatter.entity.User;
 import javax.ws.rs.core.Response;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserAuthResponse {
+public class AuthResponse {
     private String accessToken;
     private String firstName;
     private String lastName;
     private String emailId;
     private String password;
-    private String message;
 
-    public UserAuthResponse() {
+    public AuthResponse() {
     }
 
-    public UserAuthResponse(String message) {
-        this.message = message;
-    }
 
-    public UserAuthResponse(User user,String message) {
+    public AuthResponse(User user, String message) {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.emailId = user.getEmailId();
         this.password = user.getPassword();
-        this.message = message;
     }
 
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public String getAccessToken() {
