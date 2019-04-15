@@ -15,7 +15,6 @@ import org.mongodb.morphia.Datastore;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import java.util.EnumSet;
-import java.util.HashMap;
 
 public class App extends Application<SplatterConfiguration> {
     public static void main(String[] args) {
@@ -46,7 +45,7 @@ public class App extends Application<SplatterConfiguration> {
         IUserService userService = new UserService(userDAO, userAuthService);
         TagDAO tagDAO = new TagDAO(ds);
         TagService tagService = new TagService(tagDAO);
-        UserAuthResource userAuthResource = new UserAuthResource(userService);
+        AuthResource authResource = new AuthResource(userService);
         UserResource userResource = new UserResource(userService);
         DebugResource debugResource = new DebugResource(userService);
         TagResource tagResource = new TagResource(tagService);
@@ -55,7 +54,7 @@ public class App extends Application<SplatterConfiguration> {
         IUserPostService userpostService = new UserPostService(userPostDAO, tagDAO);
         UserPostResource userPostResource = new UserPostResource(userpostService);
 
-        environment.jersey().register(userAuthResource);
+        environment.jersey().register(authResource);
         environment.jersey().register(userResource);
         environment.jersey().register(userPostResource);
         environment.jersey().register(debugResource);

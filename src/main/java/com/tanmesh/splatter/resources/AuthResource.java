@@ -11,18 +11,18 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("/user_auth")
-public class UserAuthResource {
+@Path("/auth")
+public class AuthResource {
     private IUserService userService;
 
-    public UserAuthResource(IUserService userService) {
+    public AuthResource(IUserService userService) {
         this.userService = userService;
     }
 
     @POST
     @Path("signup")
     @Consumes(MediaType.APPLICATION_JSON)
-    public String signUpUser(UserData userData) throws ApiException  {
+    public String signUpUser(UserData userData) {
         String retString;
         try {
             if (userService.signUpUser(userData)) {
@@ -32,10 +32,8 @@ public class UserAuthResource {
             }
         } catch (InvalidInputException e) {
             retString = "User signup data is not valid, try again with valid information";
-            //throw new ApiException(Response.Status.EXPECTATION_FAILED,retString);
         } catch (EmailIdAlreadyRegistered e) {
             retString = "Email Id already registered, please login instead";
-            //throw new ApiException(Response.Status.BAD_REQUEST, retString);
         }
         return retString;
     }
@@ -43,23 +41,24 @@ public class UserAuthResource {
     @POST
     @Path("login")
     @Consumes(MediaType.APPLICATION_JSON)
-    public String logInUser(UserLoginData userLoginData) throws ApiException {
+    public Response logInUser(UserLoginData userLoginData) {
         String emailId = userLoginData.getEmailId();
         String password = userLoginData.getPassword();
-        String retString;
+        String response;
+        String errorContext;
         try {
-            retString = userService.logInUser(emailId, password);
+            response = userService.logInUser(emailId, password);
+            return Response.status(Response.Status.ACCEPTED).entity(response).build();
         } catch (InvalidInputException e) {
-            retString = "User login data is null, try again with valid information";
-            //throw new ApiException(Response.Status.EXPECTATION_FAILED, retString);
+            errorContext = "User login data is null, try again with valid information";
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(errorContext).build();
         } catch (EmailIdNotRegistered e) {
-            retString = "Email Id not registered, please signup instead";
-            //throw new ApiException(Response.Status.BAD_REQUEST, retString);
+            errorContext = "Email Id not registered, please signup instead";
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(errorContext).build();
         } catch (IncorrectPassword e) {
-            retString = "incorrect password, please provide valid password";
-            //throw new ApiException(Response.Status.UNAUTHORIZED, retString);
+            errorContext = "incorrect password, please provide valid password";
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(errorContext).build();
         }
-        return retString;
     }
 
 }
