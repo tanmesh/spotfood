@@ -11,10 +11,10 @@ import java.util.List;
 
 public interface IUserService {
     // new user sign up
-    boolean signUpUser(UserData userData) throws InvalidInputException, EmailIdAlreadyRegistered;
+    User signUpUser(UserData userData) throws InvalidInputException, EmailIdAlreadyRegistered;
 
     // login for existing user
-    String logInUser(String emailId, String password) throws InvalidInputException, EmailIdNotRegistered, IncorrectPassword;
+    User logInUser(String emailId, String password) throws InvalidInputException, EmailIdNotRegistered, IncorrectPassword;
 
     void deleteUser(String emailID) throws InvalidInputException;
     void userExists(String emailId) throws InvalidInputException;

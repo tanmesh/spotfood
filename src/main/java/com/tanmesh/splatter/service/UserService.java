@@ -41,20 +41,18 @@ public class UserService implements IUserService {
         }
     }
 
-    public boolean signUpUser(UserData userData) throws InvalidInputException, EmailIdAlreadyRegistered {
+    public User signUpUser(UserData userData) throws InvalidInputException, EmailIdAlreadyRegistered {
         if (userData == null) {
             throw new InvalidInputException("UserData is null");
         }
 
         String firstName = userData.getFirstName();
         String lastName = userData.getLastName();
-        String nickName = userData.getNickName();
         String emailId = userData.getEmailId();
         String password = userData.getPassword();
 
         sanityCheck(firstName, "firstName");
         sanityCheck(lastName, "lastName");
-        sanityCheck(nickName, "nickName");
         sanityCheck(emailId, "emailId");
         sanityCheck(password, "password");
 
@@ -64,24 +62,20 @@ public class UserService implements IUserService {
             throw new EmailIdAlreadyRegistered(errorMsg);
         }
 
-        return addNewUser(firstName, lastName, nickName, emailId, password);
+        return addNewUser(firstName, lastName, emailId, password);
     }
 
-    private boolean addNewUser(String firstName, String lastName, String userNickName, String userEmailId, String userPassword) {
+    private User addNewUser(String firstName, String lastName, String userEmailId, String userPassword) {
         User user = new User();
         user.setFirstName(firstName);
         user.setLastName(lastName);
-        user.setNickName(userNickName);
         user.setEmailId(userEmailId);
         user.setPassword(userPassword);
-        Key<User> key = userDAO.save(user);
-        if (key == null) {
-            return false;
-        }
-        return true;
+        userDAO.save(user);
+        return user;
     }
 
-    public String logInUser(String emailId, String password) throws InvalidInputException,EmailIdNotRegistered, IncorrectPassword {
+    public User logInUser(String emailId, String password) throws InvalidInputException,EmailIdNotRegistered, IncorrectPassword {
         sanityCheck(password, "password");
         sanityCheck(emailId, "emailId");
 
@@ -96,8 +90,8 @@ public class UserService implements IUserService {
             throw new IncorrectPassword(errorMsg);
         }
 
-        String accessToken = userAuthService.addNewAccessToken(emailId);
-        return accessToken;
+        userAuthService.addNewAccessToken(user);
+        return user;
     }
 
     // TODO: complete getUserFeed

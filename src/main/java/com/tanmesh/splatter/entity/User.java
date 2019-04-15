@@ -10,7 +10,6 @@ import java.util.Set;
 public class User {
     private String firstName;
     private String lastName;
-    private String nickName;
     @Id
     private String emailId;
     private String password;
@@ -26,14 +25,6 @@ public class User {
 
     public void setFollowTagList(Set<String> followTagList) {
         this.followTagList = followTagList;
-    }
-
-    public String getNickName() {
-        return nickName;
-    }
-
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
     }
 
     public String getEmailId() {

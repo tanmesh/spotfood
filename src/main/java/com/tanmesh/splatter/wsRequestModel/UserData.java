@@ -3,7 +3,6 @@ package com.tanmesh.splatter.wsRequestModel;
 public class UserData {
     private String firstName;
     private String lastName;
-    private String nickName;
     private String emailId;
     private String password;
     private String tag;
@@ -22,14 +21,6 @@ public class UserData {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public String getNickName() {
-        return nickName;
-    }
-
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
     }
 
     public String getEmailId() {
