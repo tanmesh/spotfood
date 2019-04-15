@@ -17,10 +17,10 @@ import javax.ws.rs.core.Response;
 
 @Path("/user_auth")
 @Produces(MediaType.APPLICATION_JSON)
-public class UserAuthResource {
+public class AuthResource {
     private IUserService userService;
 
-    public UserAuthResource(IUserService userService) {
+    public AuthResource(IUserService userService) {
         this.userService = userService;
     }
 

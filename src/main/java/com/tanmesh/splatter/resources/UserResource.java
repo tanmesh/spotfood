@@ -4,7 +4,6 @@ import com.tanmesh.splatter.entity.User;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.service.IUserService;
 import com.tanmesh.splatter.wsRequestModel.UserData;
-import com.tanmesh.splatter.wsRequestModel.UserLoginData;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -17,8 +16,6 @@ public class UserResource {
     public UserResource(IUserService userService) {
         this.userService = userService;
     }
-
-
 
     @POST
     @Path("follow")
