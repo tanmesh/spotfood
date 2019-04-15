@@ -1,7 +1,10 @@
 package com.tanmesh.splatter.resources;
 
 import com.tanmesh.splatter.entity.User;
-import com.tanmesh.splatter.exception.*;
+import com.tanmesh.splatter.exception.EmailIdAlreadyRegistered;
+import com.tanmesh.splatter.exception.EmailIdNotRegistered;
+import com.tanmesh.splatter.exception.IncorrectPassword;
+import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.service.IUserService;
 import com.tanmesh.splatter.service.UserAuthService;
 import com.tanmesh.splatter.wsRequestModel.UserData;
@@ -27,7 +30,7 @@ public class AuthResource {
     @POST
     @Path("signup")
     @Consumes(MediaType.APPLICATION_JSON)
-    public UserAuthResponse signUpUser(UserData userData) throws ApiException {
+    public Response signUpUser(UserData userData) {
         User user = null;
         Response response;
         try {
@@ -46,13 +49,13 @@ public class AuthResource {
         } else {
             userAuthResponse = new UserAuthResponse(response);
         }
-        return userAuthResponse;
+        return Response.status(Response.Status.ACCEPTED).entity(userAuthResponse).build();
     }
 
     @POST
     @Path("login")
     @Consumes(MediaType.APPLICATION_JSON)
-    public UserAuthResponse logInUser(UserLoginData userLoginData) throws ApiException {
+    public Response logInUser(UserLoginData userLoginData) {
         String emailId = userLoginData.getEmailId();
         String password = userLoginData.getPassword();
         User user = null;
@@ -77,7 +80,7 @@ public class AuthResource {
         } else {
             userAuthResponse = new UserAuthResponse(response);
         }
-        return userAuthResponse;
+        return Response.status(Response.Status.ACCEPTED).entity(userAuthResponse).build();
     }
 
 }
