@@ -1,5 +1,6 @@
 package com.tanmesh.splatter.resources;
 
+import com.tanmesh.splatter.authentication.UserSession;
 import com.tanmesh.splatter.entity.User;
 import com.tanmesh.splatter.exception.EmailIdAlreadyRegistered;
 import com.tanmesh.splatter.exception.EmailIdNotRegistered;
@@ -10,6 +11,7 @@ import com.tanmesh.splatter.service.IUserService;
 import com.tanmesh.splatter.wsRequestModel.UserData;
 import com.tanmesh.splatter.wsRequestModel.UserLoginData;
 import com.tanmesh.splatter.wsResponseModel.AuthResponse;
+import io.dropwizard.auth.Auth;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -36,7 +38,7 @@ public class AuthResource {
             return Response.status(Response.Status.ACCEPTED).entity(true).build();
         } catch (InvalidInputException e) {
             String error = "User signup data is not valid, try again with valid information";
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(error).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(error).build();
         } catch (EmailIdAlreadyRegistered e) {
             String error = "Email Id already registered, please login instead";
             return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
@@ -56,7 +58,7 @@ public class AuthResource {
             return Response.status(Response.Status.ACCEPTED).entity(authResponse).build();
         } catch (InvalidInputException e) {
             String error = "User login data is null, try again with valid information";
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(error).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(error).build();
         } catch (EmailIdNotRegistered e) {
             String error = "Email Id not registered, please signup instead";
             return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
@@ -64,8 +66,19 @@ public class AuthResource {
             String error = "incorrect password, please provide valid password";
             return Response.status(Response.Status.UNAUTHORIZED).entity(error).build();
         }
+    }
 
 
+    @POST
+    @Path("/logout")
+    public Response logout(@Auth UserSession userSession) {
+        try {
+            userService.logOutUser(userSession.getEmailId(), userSession.getAccessToken());
+            return Response.status(Response.Status.ACCEPTED).entity(true).build();
+        } catch (InvalidInputException e){
+            String error = "User Id is invalid, try again with valid information";
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(error).build();
+        }
     }
 
 }

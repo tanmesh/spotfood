@@ -19,17 +19,18 @@ public class TagResource {
         this.tagService = tagService;
     }
 
-    @POST
-    @Path("add")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response addTag(TagData tagData) {
-        try {
-            tagService.addTag(tagData);
-        } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
-        }
-        return Response.status(Response.Status.ACCEPTED).entity(true).build();
-    }
+//    @POST
+//    @Path("add")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    public Response addTag(TagData tagData) {
+//        try {
+//            tagService.addTag(tagData);
+//        } catch (InvalidInputException e) {
+//            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
+//        }
+//        return Response.status(Response.Status.ACCEPTED).entity(true).build();
+//    }
+
 
     @GET
     @Path("get_all")
@@ -39,7 +40,7 @@ public class TagResource {
         try {
             tags = tagService.getAllTag();
         } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(tags).build();
     }

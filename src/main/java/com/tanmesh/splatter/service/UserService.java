@@ -89,6 +89,13 @@ public class UserService implements IUserService {
         return user;
     }
 
+    public void logOutUser(String emailId, String accessToken) throws InvalidInputException {
+        if (AuthService.removeAccessToken(emailId, accessToken) == false) {
+            String errorMsg = FormatUtils.format("emailId:{0} not valid", emailId);
+            throw new InvalidInputException(errorMsg);
+        }
+    }
+
     // TODO: complete getUserFeed
     @Override
     public void getUserFeed(String emailId) throws InvalidInputException {
@@ -100,29 +107,35 @@ public class UserService implements IUserService {
 //        }
     }
 
-    public void followTag(String tag, String emailId) throws InvalidInputException {
+    public void followTag(String emailId, String tag) throws InvalidInputException {
         sanityCheck(tag, "tag");
         sanityCheck(emailId, "emailId");
+
         User user = userDAO.getUser("emailId", emailId);
-        Set<String> tagList = user.getFollowTagList();
-        if (tagList == null) {
-            tagList = new HashSet<>();
+        if (user.followTag(tag)) {
+            userDAO.save(user);
+        } else {
+            String errorMsg = FormatUtils.format("emailId:{0} is already following tag:{1}", emailId, tag);
+            throw new InvalidInputException(errorMsg);
         }
-        tagList.add(tag);
-        user.setFollowTagList(tagList);
-        userDAO.save(user);
     }
 
     public void unFollowTag(String tag, String emailId) throws InvalidInputException {
         sanityCheck(tag, "tag");
         sanityCheck(emailId, "emailId");
+
         User user = userDAO.getUser("emailId", emailId);
-        Set<String> tagList = user.getFollowTagList();
-        if (tagList == null || tagList.size() == 0) {
-            return;
+        if (user.unfollowTag(tag)) {
+            userDAO.save(user);
+        } else {
+            String errorMsg = FormatUtils.format("emailId:{0} is not following tag:{1}", emailId, tag);
+            throw new InvalidInputException(errorMsg);
         }
-        tagList.remove(tag);
-        userDAO.save(user);
+    }
+
+    public Set<String> getFollowingTags(String emailId) {
+        User user = userDAO.getUser("emailId", emailId);
+        return user.getFollowTagList();
     }
 
     @Override

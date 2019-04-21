@@ -23,8 +23,20 @@ public class User {
         return followTagList;
     }
 
-    public void setFollowTagList(Set<String> followTagList) {
-        this.followTagList = followTagList;
+    public boolean followTag(String tag) {
+        if (!followTagList.contains(tag)) {
+            followTagList.add(tag);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean unfollowTag(String tag) {
+        if (followTagList.contains(tag)) {
+            followTagList.remove(tag);
+            return true;
+        }
+        return false;
     }
 
     public String getEmailId() {

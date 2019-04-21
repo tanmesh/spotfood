@@ -36,4 +36,20 @@ public class AuthService {
         return emailId;
     }
 
+    static public boolean isValidToken(String accessToken) {
+        if (accessTokenVsUserMap.containsKey(accessToken)) {
+            return true;
+        }
+        return false;
+    }
+
+    static public boolean removeAccessToken(String emailId, String accessToken) {
+        if (accessTokenVsUserMap.containsKey(accessToken)) {
+            accessTokenVsUserMap.remove(accessToken);
+            userVsAccessTokenMap.remove(emailId);
+            return true;
+        }
+        return false;
+    }
+
 }

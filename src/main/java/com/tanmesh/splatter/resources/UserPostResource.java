@@ -32,7 +32,7 @@ public class UserPostResource {
             String encodedImgFilePath = userPostData.getEncodedImgFilePath();
             userPostService.addPost(postId, tagList, location, authorName, encodedImgFilePath);
         } catch (InvalidInputException | IOException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(true).build();
     }
@@ -45,7 +45,7 @@ public class UserPostResource {
         try {
             userPost = userPostService.getPost(postId);
         } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(userPost).build();
     }
@@ -58,7 +58,7 @@ public class UserPostResource {
         try {
             userPost = userPostService.getAllPostOfUser(authorEmailId);
         } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(userPost).build();
     }
@@ -71,7 +71,7 @@ public class UserPostResource {
         try {
             userPost = userPostService.likePost(postId);
         } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         } catch (PostNotFoundException e) {
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
@@ -85,7 +85,7 @@ public class UserPostResource {
         try {
             userPostService.deletePost(postId);
         } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(true).build();
     }

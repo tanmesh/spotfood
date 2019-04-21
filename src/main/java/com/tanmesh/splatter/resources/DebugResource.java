@@ -26,7 +26,7 @@ public class DebugResource {
         try {
             userService.userExists(emailId);
         } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(true).build();
     }
@@ -39,7 +39,7 @@ public class DebugResource {
         try {
             users = userService.userInfo();
         }catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(users).build();
     }

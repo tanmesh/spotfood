@@ -29,7 +29,7 @@ public class AdminResource {
         try {
             userService.deleteUser(userData.getEmailId());
         } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(true).build();
     }
@@ -41,7 +41,7 @@ public class AdminResource {
         try {
             tagService.deleteTag(tagData.getName());
         } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(true).build();
     }

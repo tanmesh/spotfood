@@ -8,6 +8,7 @@ import com.tanmesh.splatter.service.*;
 import com.tanmesh.splatter.utils.MongoUtils;
 import io.dropwizard.Application;
 import io.dropwizard.jersey.jackson.JsonProcessingExceptionMapper;
+import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.mongodb.morphia.Datastore;
@@ -24,6 +25,11 @@ public class App extends Application<SplatterConfiguration> {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    @Override
+    public void initialize(Bootstrap<SplatterConfiguration> bootstrap) {
+
     }
 
     private void configureCors(Environment environment) {
@@ -59,7 +65,7 @@ public class App extends Application<SplatterConfiguration> {
         environment.jersey().register(debugResource);
         environment.jersey().register(tagResource);
         environment.jersey().register(adminResource);
-        environment.jersey().register(new JsonProcessingExceptionMapper(true));
+        environment.jersey().register(new JsonProcessingExceptionMapper());
 
         configureCors(environment);
     }
