@@ -1,12 +1,12 @@
 package com.tanmesh.splatter.resources;
 
+import com.tanmesh.splatter.authentication.AuthService;
 import com.tanmesh.splatter.authentication.UserSession;
 import com.tanmesh.splatter.entity.User;
 import com.tanmesh.splatter.exception.EmailIdAlreadyRegistered;
 import com.tanmesh.splatter.exception.EmailIdNotRegistered;
 import com.tanmesh.splatter.exception.IncorrectPassword;
 import com.tanmesh.splatter.exception.InvalidInputException;
-import com.tanmesh.splatter.service.AuthService;
 import com.tanmesh.splatter.service.IUserService;
 import com.tanmesh.splatter.wsRequestModel.UserData;
 import com.tanmesh.splatter.wsRequestModel.UserLoginData;
@@ -22,16 +22,18 @@ import javax.ws.rs.core.Response;
 
 @Path("/auth")
 @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class AuthResource {
     private IUserService userService;
+    private AuthService authService;
 
-    public AuthResource(IUserService userService) {
+    public AuthResource(IUserService userService, AuthService authService) {
         this.userService = userService;
+        this.authService = authService;
     }
 
     @POST
     @Path("signup")
-    @Consumes(MediaType.APPLICATION_JSON)
     public Response signUpUser(UserData userData) {
         try {
             userService.signUpUser(userData);
@@ -47,14 +49,13 @@ public class AuthResource {
 
     @POST
     @Path("login")
-    @Consumes(MediaType.APPLICATION_JSON)
     public Response logInUser(UserLoginData userLoginData) {
         String emailId = userLoginData.getEmailId();
         String password = userLoginData.getPassword();
 
         try {
             User user = userService.logInUser(emailId, password);
-            AuthResponse authResponse = new AuthResponse(user, AuthService.getAccessToken(user));
+            AuthResponse authResponse = new AuthResponse(user, authService.getAccessToken(user));
             return Response.status(Response.Status.ACCEPTED).entity(authResponse).build();
         } catch (InvalidInputException e) {
             String error = "User login data is null, try again with valid information";

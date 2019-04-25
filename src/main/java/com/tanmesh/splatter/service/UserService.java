@@ -1,7 +1,9 @@
 package com.tanmesh.splatter.service;
 
+import com.tanmesh.splatter.authentication.AuthService;
 import com.tanmesh.splatter.dao.UserDAO;
 import com.tanmesh.splatter.entity.User;
+import com.tanmesh.splatter.entity.UserPost;
 import com.tanmesh.splatter.exception.EmailIdAlreadyRegistered;
 import com.tanmesh.splatter.exception.EmailIdNotRegistered;
 import com.tanmesh.splatter.exception.IncorrectPassword;
@@ -13,9 +15,11 @@ import java.util.*;
 
 public class UserService implements IUserService {
     private UserDAO userDAO;
+    private AuthService authService;
 
-    public UserService(UserDAO userDAO) {
+    public UserService(UserDAO userDAO, AuthService authService) {
         this.userDAO = userDAO;
+        this.authService = authService;
     }
 
     public List<User> userInfo() throws InvalidInputException {
@@ -85,31 +89,39 @@ public class UserService implements IUserService {
             throw new IncorrectPassword(errorMsg);
         }
 
-        AuthService.addNewAccessToken(user);
+        authService.addNewAccessToken(user);
         return user;
     }
 
     public void logOutUser(String emailId, String accessToken) throws InvalidInputException {
-        if (AuthService.removeAccessToken(emailId, accessToken) == false) {
+        if (authService.removeAccessToken(emailId, accessToken) == false) {
             String errorMsg = FormatUtils.format("emailId:{0} not valid", emailId);
             throw new InvalidInputException(errorMsg);
         }
     }
 
-    // TODO: complete getUserFeed
     @Override
-    public void getUserFeed(String emailId) throws InvalidInputException {
-//        sanityCheck(emailId, "emailId");
-//        User user = userDAO.getUser("emailId", emailId);
-//        Set<String> userTags = user.getFollowTagList();
-//        for (String tag : userTags) {
-//            List<UserPost> userPost = userDAO.getAllPost(tag);
-//        }
+    public Set<UserPost> getUserFeed(String emailId) throws InvalidInputException {
+        sanityCheck(emailId, "emailId");
+
+        Set<UserPost> feeds = new HashSet<>();
+        User user = userDAO.getUser("emailId", emailId);
+        Set<String> userTags = user.getFollowTagList();
+        for (String tag : userTags) {
+            List<UserPost> userPosts = userDAO.getAllPosts(tag);
+            for (UserPost userPost : userPosts) {
+                feeds.add(userPost);
+            }
+
+            // add a timestamp field in UserPost so that feeds can be sorted based on the post timestamp
+            // for now adding all the feeds to the user post
+        }
+        return feeds;
     }
 
     public void followTag(String emailId, String tag) throws InvalidInputException {
-        sanityCheck(tag, "tag");
         sanityCheck(emailId, "emailId");
+        sanityCheck(tag, "tag");
 
         User user = userDAO.getUser("emailId", emailId);
         if (user.followTag(tag)) {
@@ -120,9 +132,9 @@ public class UserService implements IUserService {
         }
     }
 
-    public void unFollowTag(String tag, String emailId) throws InvalidInputException {
-        sanityCheck(tag, "tag");
+    public void unFollowTag(String emailId, String tag) throws InvalidInputException {
         sanityCheck(emailId, "emailId");
+        sanityCheck(tag, "tag");
 
         User user = userDAO.getUser("emailId", emailId);
         if (user.unfollowTag(tag)) {
@@ -149,7 +161,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User userProfile(String emailId) throws InvalidInputException {
+    public User getUserProfile(String emailId) throws InvalidInputException {
         sanityCheck(emailId, "emailId");
         return userDAO.getUser("emailId", emailId);
     }

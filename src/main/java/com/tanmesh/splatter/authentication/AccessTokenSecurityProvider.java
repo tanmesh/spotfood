@@ -2,6 +2,7 @@ package com.tanmesh.splatter.authentication;
 
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
+
 import com.sun.jersey.api.core.HttpContext;
 import com.sun.jersey.api.model.Parameter;
 import com.sun.jersey.core.spi.component.ComponentScope;
@@ -15,7 +16,7 @@ import io.dropwizard.auth.Authenticator;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-public class AccessTokenSecurityProvider <T> implements InjectableProvider<Auth, Parameter> {
+public class AccessTokenSecurityProvider<T> implements InjectableProvider<Auth, Parameter> {
 
     public final static String AUTHENTICATION_HEADER = "x-access-token";
 

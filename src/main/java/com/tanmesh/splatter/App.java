@@ -1,5 +1,10 @@
 package com.tanmesh.splatter;
 
+import com.tanmesh.splatter.authentication.AccessTokenAuthenticator;
+import com.tanmesh.splatter.authentication.AccessTokenSecurityProvider;
+import com.tanmesh.splatter.authentication.AuthService;
+import com.tanmesh.splatter.authentication.UserSession;
+import com.tanmesh.splatter.dao.AuthDAO;
 import com.tanmesh.splatter.dao.TagDAO;
 import com.tanmesh.splatter.dao.UserDAO;
 import com.tanmesh.splatter.dao.UserPostDAO;
@@ -46,11 +51,17 @@ public class App extends Application<SplatterConfiguration> {
 
     public void run(SplatterConfiguration configuration, Environment environment) throws Exception {
         Datastore ds = MongoUtils.createDatastore(configuration.getDbConfig());
+
+        AuthDAO authDAO = new AuthDAO(ds);
+        AuthService authService = new AuthService(authDAO);
+
         UserDAO userDAO = new UserDAO(ds);
-        IUserService userService = new UserService(userDAO);
+        IUserService userService = new UserService(userDAO, authService);
+
         TagDAO tagDAO = new TagDAO(ds);
         TagService tagService = new TagService(tagDAO);
-        AuthResource authResource = new AuthResource(userService);
+
+        AuthResource authResource = new AuthResource(userService, authService);
         UserResource userResource = new UserResource(userService);
         DebugResource debugResource = new DebugResource(userService);
         TagResource tagResource = new TagResource(tagService);
@@ -66,6 +77,7 @@ public class App extends Application<SplatterConfiguration> {
         environment.jersey().register(tagResource);
         environment.jersey().register(adminResource);
         environment.jersey().register(new JsonProcessingExceptionMapper());
+        environment.jersey().register(new AccessTokenSecurityProvider<UserSession>(new AccessTokenAuthenticator(authService)));
 
         configureCors(environment);
     }

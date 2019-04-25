@@ -1,6 +1,7 @@
 package com.tanmesh.splatter.service;
 
 import com.tanmesh.splatter.entity.User;
+import com.tanmesh.splatter.entity.UserPost;
 import com.tanmesh.splatter.exception.EmailIdAlreadyRegistered;
 import com.tanmesh.splatter.exception.EmailIdNotRegistered;
 import com.tanmesh.splatter.exception.IncorrectPassword;
@@ -34,7 +35,7 @@ public interface IUserService {
     List<User> userInfo() throws InvalidInputException;
 
 
-    User userProfile(String emailId) throws InvalidInputException;
+    User getUserProfile(String emailId) throws InvalidInputException;
 
-    void getUserFeed(String emailId) throws InvalidInputException;
+    Set<UserPost> getUserFeed(String emailId) throws InvalidInputException;
 }

@@ -3,36 +3,19 @@ package com.tanmesh.splatter.wsRequestModel;
 import java.util.List;
 
 public class UserPostData {
-    private String postId;
     private List<String> tags;
     private String location;
-    private String authorEmailId;
-    private int upvotes;
-    private String encodedImg;
-    private String encodedImgFilePath;
+    private String cuisineName;
+    private String image;
 
-    public String getEncodedImgFilePath() {
-        return encodedImgFilePath;
+    public UserPostData() {
     }
 
-    public void setEncodedImgFilePath(String encodedImgFilePath) {
-        this.encodedImgFilePath = encodedImgFilePath;
-    }
-
-    public String getEncodedImg() {
-        return encodedImg;
-    }
-
-    public void setEncodedImg(String encodedImg) {
-        this.encodedImg = encodedImg;
-    }
-
-    public String getPostId() {
-        return postId;
-    }
-
-    public void setPostId(String postId) {
-        this.postId = postId;
+    public UserPostData(List<String> tags, String location, String cuisineName, String image) {
+        this.tags = tags;
+        this.location = location;
+        this.cuisineName = cuisineName;
+        this.image = image;
     }
 
     public List<String> getTags() {
@@ -51,19 +34,29 @@ public class UserPostData {
         this.location = location;
     }
 
-    public String getAuthorEmailId() {
-        return authorEmailId;
+    public String getCuisineName() {
+        return cuisineName;
     }
 
-    public void setAuthorEmailId(String authorEmailId) {
-        this.authorEmailId = authorEmailId;
+    public void setCuisineName(String cuisineName) {
+        this.cuisineName = cuisineName;
     }
 
-    public int getUpvotes() {
-        return upvotes;
+    public String getImage() {
+        return image;
     }
 
-    public void setUpvotes(int upvotes) {
-        this.upvotes = upvotes;
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    @Override
+    public String toString() {
+        return "UserPostData{" +
+                "tags=" + tags +
+                ", location='" + location + '\'' +
+                ", cuisineName='" + cuisineName + '\'' +
+                ", image='" + image + '\'' +
+                '}';
     }
 }
