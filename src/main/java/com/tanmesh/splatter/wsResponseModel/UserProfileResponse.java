@@ -6,8 +6,8 @@ import com.tanmesh.splatter.entity.UserPost;
 import java.util.List;
 
 public class UserProfileResponse {
-    User user;
-    List<UserPost> userPostList;
+    private User user;
+    private List<UserPost> userPostList;
 
     public UserProfileResponse() {
     }
@@ -31,5 +31,9 @@ public class UserProfileResponse {
 
     public void setUserPostList(List<UserPost> userPostList) {
         this.userPostList = userPostList;
+    }
+
+    public int getUserPostCount() {
+        return userPostList.size();
     }
 }

@@ -184,7 +184,7 @@ public class UserService implements IUserService {
 
     public Set<String> getFollowingUsers(String emailId) {
         User user = userDAO.getUser("emailId", emailId);
-        return user.getFollowUserList();
+        return user.getFollowingUserList();
     }
 
     @Override
@@ -213,7 +213,7 @@ public class UserService implements IUserService {
         }
 
         // add all the posts added by user's following users
-        Set<String> followingUserIds = user.getFollowUserList();
+        Set<String> followingUserIds = user.getFollowingUserList();
         for (String followingUserId : followingUserIds) {
             List<UserPost> userPosts = userPostService.getAllPostOfUser(followingUserId);
             for (UserPost userPost : userPosts) {

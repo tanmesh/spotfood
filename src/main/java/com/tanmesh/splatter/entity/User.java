@@ -2,6 +2,7 @@ package com.tanmesh.splatter.entity;
 
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
+import scala.util.parsing.combinator.testing.Str;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,50 +20,6 @@ public class User {
     public User() {
         followTagList = new HashSet<>();
         followUserList = new HashSet<>();
-    }
-
-    public Set<String> getFollowTagList() {
-        return followTagList;
-    }
-
-    public int getFollowingTagCount() {
-        return followTagList.size();
-    }
-
-    public Set<String> getFollowUserList() {
-        return followUserList;
-    }
-
-    public boolean followTag(String tag) {
-        if (!followTagList.contains(tag)) {
-            followTagList.add(tag);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean unfollowTag(String tag) {
-        if (followTagList.contains(tag)) {
-            followTagList.remove(tag);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean followUser(String userId) {
-        if (!followUserList.contains(userId)) {
-            followUserList.add(userId);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean unfollowUser(String userId) {
-        if (followUserList.contains(userId)) {
-            followUserList.remove(userId);
-            return true;
-        }
-        return false;
     }
 
     public String getEmailId() {
@@ -95,5 +52,53 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public Set<String> getFollowTagList() {
+        return followTagList;
+    }
+
+    public int getFollowingTagCount() {
+        return followTagList.size();
+    }
+
+    public Set<String> getFollowingUserList() {
+        return followUserList;
+    }
+
+    public int getFollowingUserCount() {
+        return followUserList.size();
+    }
+
+    public boolean followTag(String tag) {
+        if (!followTagList.contains(tag)) {
+            followTagList.add(tag);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean unfollowTag(String tag) {
+        if (followTagList.contains(tag)) {
+            followTagList.remove(tag);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean followUser(String userId) {
+        if (!followUserList.contains(userId)) {
+            followUserList.add(userId);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean unfollowUser(String userId) {
+        if (followUserList.contains(userId)) {
+            followUserList.remove(userId);
+            return true;
+        }
+        return false;
     }
 }
