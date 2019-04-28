@@ -10,6 +10,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Set;
 
 @Path("tag")
 public class TagResource {
@@ -36,7 +37,7 @@ public class TagResource {
     @Path("/get_all")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllTag() {
-        List<Tag> tags;
+        Set<Tag> tags;
         try {
             tags = tagService.getAllTag();
         } catch (InvalidInputException e) {

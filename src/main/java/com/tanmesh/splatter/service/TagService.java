@@ -6,7 +6,9 @@ import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.wsRequestModel.TagData;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class TagService {
     private TagDAO tagDAO;
@@ -33,20 +35,40 @@ public class TagService {
         addTagHelper(tagName);
     }
 
-    private void addTagHelper(String tagName) {
+    private Tag addTagHelper(String tagName) {
         Tag tag = new Tag();
         tag.setName(tagName);
         tagDAO.save(tag);
+        return tag;
     }
 
-    public List<Tag> getAllTag() throws InvalidInputException {
-        List<String> tagIdList = tagDAO.findIds();
+    List<Tag> getPreInitializedTags() {
         List<Tag> tagList = new ArrayList<>();
-        if (tagIdList == null || tagIdList.size() == 0) {
-            throw new InvalidInputException("tagIdList is NULL");
+        tagList.add(addTagHelper("sweet"));
+        tagList.add(addTagHelper("yummy"));
+        tagList.add(addTagHelper("dessert"));
+        tagList.add(addTagHelper("delicious"));
+        tagList.add(addTagHelper("spicy"));
+        tagList.add(addTagHelper("vegan"));
+        tagList.add(addTagHelper("vegetarian"));
+        tagList.add(addTagHelper("non-vegetarian"));
+        tagList.add(addTagHelper("protein-rich"));
+        tagList.add(addTagHelper("low-carb"));
+        return tagList;
+    }
+
+    public Set<Tag> getAllTag() throws InvalidInputException {
+
+        Set<Tag> tagList = new HashSet<>();
+        List<Tag> initTags = getPreInitializedTags();
+        for (Tag tag : initTags) {
+            tagList.add(tag);
         }
-        for (String id : tagIdList) {
-            tagList.add(tagDAO.get(id));
+        List<String> tagIdList = tagDAO.findIds();
+        if ((tagIdList != null) && (tagIdList.size() > 0)) {
+            for (String id : tagIdList) {
+                tagList.add(tagDAO.get(id));
+            }
         }
         return tagList;
     }

@@ -11,6 +11,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Set;
 
 @Path("admin")
 public class AdminResource {
@@ -64,7 +65,7 @@ public class AdminResource {
     @Path("/get_all_tag")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllTag() {
-        List<Tag> tags;
+        Set<Tag> tags;
         try {
             tags = tagService.getAllTag();
         } catch (InvalidInputException e) {

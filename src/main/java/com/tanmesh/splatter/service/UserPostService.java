@@ -48,10 +48,10 @@ public class UserPostService implements IUserPostService {
         userPost.setLocation(location);
         userPost.setCuisineName(cuisineName);
         userPost.setTags(tags);
-
-        byte[] fileContent = FileUtils.readFileToByteArray(new File(image));
-        String encodedImg = Base64.getEncoder().encodeToString(fileContent);
-        userPost.setImage(encodedImg);
+//
+//        byte[] fileContent = FileUtils.readFileToByteArray(new File(image));
+//        String encodedImg = Base64.getEncoder().encodeToString(fileContent);
+        userPost.setImage(image);
         userPostDAO.save(userPost);
 
         for(String tagName : tags) {
