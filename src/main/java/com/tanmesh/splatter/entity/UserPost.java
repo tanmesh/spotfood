@@ -4,6 +4,7 @@ import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity(value = "user_post", noClassnameStored = true)
 public class UserPost {
@@ -73,5 +74,18 @@ public class UserPost {
 
     public void setUpVotes(int upVotes) {
         this.upVotes = upVotes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserPost userPost = (UserPost) o;
+        return postId.equals(userPost.postId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(postId);
     }
 }
