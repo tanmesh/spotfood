@@ -6,12 +6,14 @@ import com.tanmesh.splatter.entity.UserPost;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.service.IUserService;
 import com.tanmesh.splatter.wsRequestModel.UserActivityData;
+import com.tanmesh.splatter.wsResponseModel.UserProfileResponse;
 import io.dropwizard.auth.Auth;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Path("/user")
@@ -54,16 +56,50 @@ public class UserResource {
         return userService.getFollowingTags(userSession.getEmailId());
     }
 
+    @Path("/getFollowingTagCount")
     @GET
-    @Path("/profile")
-    public Response getProfile(@Auth UserSession userSession) {
-        User user;
+    public int getFollowingTagCount(@Auth UserSession userSession) {
+        return userService.getFollowingTagCount(userSession.getEmailId());
+    }
+
+    @Path("/followUser")
+    @POST
+    public Response followUser(@Auth UserSession userSession, String userId) {
         try {
-            user = userService.getUserProfile(userSession.getEmailId());
+            userService.followUser(userSession.getEmailId(), userId);
         } catch (InvalidInputException e) {
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(user).build();
+        return Response.status(Response.Status.ACCEPTED).entity(true).build();
+    }
+
+    @Path("/unfollowUser")
+    @POST
+    public Response unfollowUser(@Auth UserSession userSession, String userId) {
+        try {
+            userService.unfollowUser(userSession.getEmailId(), userId);
+        } catch (InvalidInputException e) {
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
+        }
+        return Response.status(Response.Status.ACCEPTED).entity(true).build();
+    }
+
+    @Path("/getFollowingUsers")
+    @GET
+    public Set<String> getFollowingUsers(@Auth UserSession userSession) {
+        return userService.getFollowingUsers(userSession.getEmailId());
+    }
+
+    @GET
+    @Path("/profile")
+    public Response getProfile(@Auth UserSession userSession) {
+        UserProfileResponse userProfileResponse;
+        try {
+            userProfileResponse = userService.getUserProfile(userSession.getEmailId());
+        } catch (InvalidInputException e) {
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
+        }
+        return Response.status(Response.Status.ACCEPTED).entity(userProfileResponse).build();
     }
 
     @GET

@@ -10,16 +10,25 @@ import com.tanmesh.splatter.exception.IncorrectPassword;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.utils.FormatUtils;
 import com.tanmesh.splatter.wsRequestModel.UserData;
+import com.tanmesh.splatter.wsResponseModel.UserProfileResponse;
 
 import java.util.*;
 
 public class UserService implements IUserService {
     private UserDAO userDAO;
     private AuthService authService;
+    private IUserPostService userPostService;
 
-    public UserService(UserDAO userDAO, AuthService authService) {
+    public UserService(UserDAO userDAO, AuthService authService, IUserPostService userPostService) {
         this.userDAO = userDAO;
         this.authService = authService;
+        this.userPostService = userPostService;
+    }
+
+    private void sanityCheck(String id, String msg) throws InvalidInputException {
+        if (id == null || id.length() == 0) {
+            throw new InvalidInputException(msg + " is NULL");
+        }
     }
 
     public List<User> userInfo() throws InvalidInputException {
@@ -101,23 +110,15 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Set<UserPost> getUserFeed(String emailId) throws InvalidInputException {
+    public void deleteUser(String emailId) throws InvalidInputException {
         sanityCheck(emailId, "emailId");
-
-        Set<UserPost> feeds = new HashSet<>();
         User user = userDAO.getUser("emailId", emailId);
-        Set<String> userTags = user.getFollowTagList();
-        for (String tag : userTags) {
-            List<UserPost> userPosts = userDAO.getAllPosts(tag);
-            for (UserPost userPost : userPosts) {
-                feeds.add(userPost);
-            }
-
-            // add a timestamp field in UserPost so that feeds can be sorted based on the post timestamp
-            // for now adding all the feeds to the user post
+        if (user == null) {
+            return;
         }
-        return feeds;
+        userDAO.delete(user);
     }
+
 
     public void followTag(String emailId, String tag) throws InvalidInputException {
         sanityCheck(emailId, "emailId");
@@ -150,25 +151,81 @@ public class UserService implements IUserService {
         return user.getFollowTagList();
     }
 
+    public int getFollowingTagCount(String emailId) {
+        User user = userDAO.getUser("emailId", emailId);
+        return user.getFollowingTagCount();
+    }
+
+    public void followUser(String follower, String following) throws InvalidInputException {
+        sanityCheck(follower, "followerId");
+        sanityCheck(following, "followingId");
+
+        User user = userDAO.getUser("emailId", follower);
+        if (user.followUser(following)) {
+            userDAO.save(user);
+        } else {
+            String errorMsg = FormatUtils.format("emailId:{0} is already following user:{1}", follower, following);
+            throw new InvalidInputException(errorMsg);
+        }
+    }
+
+    public void unfollowUser(String follower, String following) throws InvalidInputException{
+        sanityCheck(follower, "followerId");
+        sanityCheck(following, "followingId");
+
+        User user = userDAO.getUser("emailId", follower);
+        if (user.unfollowUser(following)) {
+            userDAO.save(user);
+        } else {
+            String errorMsg = FormatUtils.format("emailId:{0} is not following user:{1}", follower, following);
+            throw new InvalidInputException(errorMsg);
+        }
+    }
+
+    public Set<String> getFollowingUsers(String emailId) {
+        User user = userDAO.getUser("emailId", emailId);
+        return user.getFollowUserList();
+    }
+
     @Override
-    public void deleteUser(String emailId) throws InvalidInputException {
+    public UserProfileResponse getUserProfile(String emailId) throws InvalidInputException {
         sanityCheck(emailId, "emailId");
         User user = userDAO.getUser("emailId", emailId);
-        if (user == null) {
-            return;
-        }
-        userDAO.delete(user);
+        List<UserPost> userPosts = userPostService.getAllPostOfUser(emailId);
+        UserProfileResponse userProfileResponse = new UserProfileResponse(user, userPosts);
+        return userProfileResponse;
     }
 
     @Override
-    public User getUserProfile(String emailId) throws InvalidInputException {
+    public Set<UserPost> getUserFeed(String emailId) throws InvalidInputException {
         sanityCheck(emailId, "emailId");
-        return userDAO.getUser("emailId", emailId);
-    }
 
-    private void sanityCheck(String id, String msg) throws InvalidInputException {
-        if (id == null || id.length() == 0) {
-            throw new InvalidInputException(msg + " is NULL");
+        Set<UserPost> feeds = new HashSet<>();
+        User user = userDAO.getUser("emailId", emailId);
+
+        // add all the posts containing user's following tags
+        Set<String> userTags = user.getFollowTagList();
+        for (String tag : userTags) {
+            List<UserPost> userPosts = userDAO.getAllPosts(tag);
+            for (UserPost userPost : userPosts) {
+                feeds.add(userPost);
+            }
         }
+
+        // add all the posts added by user's following users
+        Set<String> followingUserIds = user.getFollowUserList();
+        for (String followingUserId : followingUserIds) {
+            List<UserPost> userPosts = userPostService.getAllPostOfUser(followingUserId);
+            for (UserPost userPost : userPosts) {
+                feeds.add(userPost);
+            }
+        }
+
+
+        // add a timestamp field in UserPost so that feeds can be sorted based on the post timestamp
+        // for now adding all the feeds to the user post
+        // limit the number of feeds with the timestamp
+
+        return feeds;
     }
 }

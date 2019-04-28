@@ -55,20 +55,22 @@ public class App extends Application<SplatterConfiguration> {
         AuthDAO authDAO = new AuthDAO(ds);
         AuthService authService = new AuthService(authDAO);
 
-        UserDAO userDAO = new UserDAO(ds);
-        IUserService userService = new UserService(userDAO, authService);
-
         TagDAO tagDAO = new TagDAO(ds);
         TagService tagService = new TagService(tagDAO);
+
+        UserPostDAO userPostDAO = new UserPostDAO(ds);
+        IUserPostService userPostService = new UserPostService(userPostDAO, tagDAO);
+        UserPostResource userPostResource = new UserPostResource(userPostService);
+
+        UserDAO userDAO = new UserDAO(ds);
+        IUserService userService = new UserService(userDAO, authService, userPostService);
 
         AuthResource authResource = new AuthResource(userService, authService);
         UserResource userResource = new UserResource(userService);
         DebugResource debugResource = new DebugResource(userService);
         TagResource tagResource = new TagResource(tagService);
         AdminResource adminResource = new AdminResource(userService, tagService);
-        UserPostDAO userPostDAO = new UserPostDAO(ds);
-        IUserPostService userpostService = new UserPostService(userPostDAO, tagDAO);
-        UserPostResource userPostResource = new UserPostResource(userpostService);
+
 
         environment.jersey().register(authResource);
         environment.jersey().register(userResource);

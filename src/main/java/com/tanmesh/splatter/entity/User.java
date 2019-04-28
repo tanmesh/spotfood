@@ -14,13 +14,23 @@ public class User {
     private String emailId;
     private String password;
     private Set<String> followTagList;
+    private Set<String> followUserList;
 
     public User() {
         followTagList = new HashSet<>();
+        followUserList = new HashSet<>();
     }
 
     public Set<String> getFollowTagList() {
         return followTagList;
+    }
+
+    public int getFollowingTagCount() {
+        return followTagList.size();
+    }
+
+    public Set<String> getFollowUserList() {
+        return followUserList;
     }
 
     public boolean followTag(String tag) {
@@ -34,6 +44,22 @@ public class User {
     public boolean unfollowTag(String tag) {
         if (followTagList.contains(tag)) {
             followTagList.remove(tag);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean followUser(String userId) {
+        if (!followUserList.contains(userId)) {
+            followUserList.add(userId);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean unfollowUser(String userId) {
+        if (followUserList.contains(userId)) {
+            followUserList.remove(userId);
             return true;
         }
         return false;
