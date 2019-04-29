@@ -1,10 +1,13 @@
 package com.tanmesh.splatter.resources;
 
 
+import com.tanmesh.splatter.authentication.UserSession;
 import com.tanmesh.splatter.entity.Tag;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.service.TagService;
 import com.tanmesh.splatter.wsRequestModel.TagData;
+import com.tanmesh.splatter.wsResponseModel.TagResponse;
+import io.dropwizard.auth.Auth;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -36,13 +39,13 @@ public class TagResource {
     @GET
     @Path("/get_all")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllTag() {
-        Set<Tag> tags;
+    public Response getAllTag(@Auth UserSession userSession) {
+        Set<TagResponse> tagResponses;
         try {
-            tags = tagService.getAllTag();
+            tagResponses = tagService.getAllTag(userSession.getEmailId());
         } catch (InvalidInputException e) {
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(tags).build();
+        return Response.status(Response.Status.ACCEPTED).entity(tagResponses).build();
     }
 }

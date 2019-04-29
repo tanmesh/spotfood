@@ -2,8 +2,10 @@ package com.tanmesh.splatter.service;
 
 import com.tanmesh.splatter.dao.TagDAO;
 import com.tanmesh.splatter.entity.Tag;
+import com.tanmesh.splatter.entity.User;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.wsRequestModel.TagData;
+import com.tanmesh.splatter.wsResponseModel.TagResponse;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,9 +14,11 @@ import java.util.Set;
 
 public class TagService {
     private TagDAO tagDAO;
+    private IUserService userService;
 
-    public TagService(TagDAO TagDAO) {
+    public TagService(TagDAO TagDAO, IUserService userService) {
         this.tagDAO = TagDAO;
+        this.userService = userService;
     }
 
     public TagDAO getTagDAO() {
@@ -58,7 +62,6 @@ public class TagService {
     }
 
     public Set<Tag> getAllTag() throws InvalidInputException {
-
         Set<Tag> tagList = new HashSet<>();
         List<Tag> initTags = getPreInitializedTags();
         for (Tag tag : initTags) {
@@ -71,6 +74,34 @@ public class TagService {
             }
         }
         return tagList;
+    }
+
+    public Set<TagResponse> getAllTag(String userId) throws InvalidInputException {
+
+        Set<Tag> tagList = new HashSet<>();
+        List<Tag> initTags = getPreInitializedTags();
+        for (Tag tag : initTags) {
+            tagList.add(tag);
+        }
+        List<String> tagIdList = tagDAO.findIds();
+        if ((tagIdList != null) && (tagIdList.size() > 0)) {
+            for (String id : tagIdList) {
+                tagList.add(tagDAO.get(id));
+            }
+        }
+
+        User user = userService.getUser(userId);
+        if (user == null) {
+            throw new InvalidInputException("Invalid user Id");
+        }
+
+        Set<TagResponse> tagResponses = new HashSet<>();
+        for (Tag tag : tagList) {
+            boolean follow = user.isFollowingTag(tag);
+            TagResponse tagResponse = new TagResponse(tag, follow);
+            tagResponses.add(tagResponse);
+        }
+        return tagResponses;
     }
 
     public void deleteTag(String name) throws InvalidInputException {

@@ -47,7 +47,10 @@ public interface IUserService {
     void userExists(String emailId) throws InvalidInputException;
     List<User> userInfo() throws InvalidInputException;
 
+    // get User Class
+    User getUser(String emailId);
 
+    // get complete user profile (User class info and user posts
     UserProfileResponse getUserProfile(String emailId) throws InvalidInputException;
 
     Set<UserPost> getUserFeed(String emailId) throws InvalidInputException;

@@ -228,4 +228,8 @@ public class UserService implements IUserService {
 
         return feeds;
     }
+
+    public User getUser(String emailId) {
+        return userDAO.getUserFromEmailId(emailId);
+    }
 }

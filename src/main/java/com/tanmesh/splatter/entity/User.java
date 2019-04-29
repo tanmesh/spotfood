@@ -86,6 +86,13 @@ public class User {
         return false;
     }
 
+    public boolean isFollowingTag(Tag tag) {
+        if (followTagList.contains(tag.getName())) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean followUser(String userId) {
         if (!followUserList.contains(userId)) {
             followUserList.add(userId);

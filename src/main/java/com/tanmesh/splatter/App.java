@@ -56,7 +56,7 @@ public class App extends Application<SplatterConfiguration> {
         AuthService authService = new AuthService(authDAO);
 
         TagDAO tagDAO = new TagDAO(ds);
-        TagService tagService = new TagService(tagDAO);
+
 
         UserPostDAO userPostDAO = new UserPostDAO(ds);
         IUserPostService userPostService = new UserPostService(userPostDAO, tagDAO);
@@ -64,6 +64,7 @@ public class App extends Application<SplatterConfiguration> {
 
         UserDAO userDAO = new UserDAO(ds);
         IUserService userService = new UserService(userDAO, authService, userPostService);
+        TagService tagService = new TagService(tagDAO, userService);
 
         AuthResource authResource = new AuthResource(userService, authService);
         UserResource userResource = new UserResource(userService);
