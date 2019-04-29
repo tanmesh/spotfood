@@ -58,6 +58,18 @@ public class TagService {
         tagList.add(addTagHelper("non-vegetarian"));
         tagList.add(addTagHelper("protein-rich"));
         tagList.add(addTagHelper("low-carb"));
+        tagList.add(addTagHelper("creamy"));
+        tagList.add(addTagHelper("crunchy"));
+        tagList.add(addTagHelper("soft"));
+        tagList.add(addTagHelper("indian"));
+        tagList.add(addTagHelper("thai"));
+        tagList.add(addTagHelper("chinese"));
+        tagList.add(addTagHelper("american"));
+        tagList.add(addTagHelper("mexican"));
+        tagList.add(addTagHelper("appetizer"));
+        tagList.add(addTagHelper("beverage"));
+        tagList.add(addTagHelper("snacks"));
+        tagList.add(addTagHelper("healthy"));
         return tagList;
     }
 
