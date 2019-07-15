@@ -8,7 +8,9 @@ import java.util.List;
 
 public interface IUserService {
     void deleteUser(String emailID) throws InvalidInputException;
+
     void userExists(String emailId) throws InvalidInputException;
+
     List<User> userInfo() throws InvalidInputException;
     void signUpUser(UserData userData) throws InvalidInputException;
     void followTag(String tag, String emailId) throws InvalidInputException;
