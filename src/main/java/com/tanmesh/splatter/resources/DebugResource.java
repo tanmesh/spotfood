@@ -1,8 +1,10 @@
 package com.tanmesh.splatter.resources;
 
+import com.tanmesh.splatter.authentication.UserSession;
 import com.tanmesh.splatter.entity.User;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.service.IUserService;
+import io.dropwizard.auth.Auth;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -22,13 +24,14 @@ public class DebugResource {
 
     @GET
     @Path("exist")
-    public Response existenceUser(@QueryParam("emailId") String emailId) {
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response existenceUser(@Auth UserSession userSession, @QueryParam("emailId") String emailId) {
         try {
             userService.userExists(emailId);
         } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(true).build();
+        return Response.status(Response.Status.ACCEPTED).entity(userSession).build();
     }
 
     @GET
@@ -39,7 +42,7 @@ public class DebugResource {
         try {
             users = userService.userInfo();
         }catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(users).build();
     }

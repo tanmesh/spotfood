@@ -8,15 +8,15 @@ import com.tanmesh.splatter.authentication.UserSession;
  * Time: 07:17
  */
 public interface AccessTokenService {
-    UserSession createAccessToken(UserSession userSession);
+//    UserSession createAccessToken(UserSession userSession);
 
-    UserSession saveAccessToken(UserSession userSession);
+    boolean saveAccessToken(UserSession userSession);
 
     UserSession getUserFromAccessToken(String accessToken);
 
     boolean isValidToken(String accessToken);
 
-    void removeAccessToken(String accessToken);
+    boolean removeAccessToken(String accessToken);
 
     void removeUser(String userName);
 }

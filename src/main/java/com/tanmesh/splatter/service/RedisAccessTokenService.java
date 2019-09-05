@@ -6,14 +6,16 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-import java.util.UUID;
-
 /**
  * Created by tanmesh
  * Date: 2019-07-14
  * Time: 07:21
  */
-public class RedisAccessTokenService implements AccessTokenService{
+public class RedisAccessTokenService implements AccessTokenService {
+    /*
+        un --> userName
+        at --> accessToken
+    */
 
     private ObjectMapper objectMapper;
     private JedisPool jedisPool;
@@ -24,78 +26,63 @@ public class RedisAccessTokenService implements AccessTokenService{
     }
 
     @Override
-    public UserSession createAccessToken(UserSession userSession) {
-        try(Jedis jedis = jedisPool.getResource()) {
-            String accessToken = UUID.randomUUID().toString();
-            System.out.println("AccessToken is " + accessToken);
-            userSession.setAccessToken(accessToken);
-
-//            String emailIdKey = getUserNameKey(String.valueOf(userSession.getEmailId()));
-//            String agentJson = objectMapper.writeValueAsString(userSession);
-//            jedis.set(emailIdKey, agentJson);
-
-            userSession = saveAccessToken(userSession);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        return userSession;
-    }
-
-    @Override
-    //why it is returning?
-    public UserSession saveAccessToken(UserSession userSession) {
-        try(Jedis jedis = jedisPool.getResource()) {
-            String emailIdKey = getUserNameKey(String.valueOf(userSession.getEmailId()));
+    public boolean saveAccessToken(UserSession userSession) {
+        boolean flag = false;
+        try (Jedis jedis = jedisPool.getResource()) {
+            String emailId = String.valueOf(userSession.getEmailId());
+            String emailIdKey = getUserNameKey(emailId);
             String agentJson = objectMapper.writeValueAsString(userSession);
-            jedis.set(emailIdKey, agentJson);
+            jedis.set(emailIdKey, agentJson);                           // {emailId, json}
+
+            String accessToken = userSession.getAccessToken();
+            jedis.set(getAccessTokenKey(accessToken), agentJson);       // {token, json}
+            flag = true;
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return userSession;
-    }
-
-    @Override
-    public UserSession getUserFromAccessToken(String accessToken) {
-        try(Jedis jedis = jedisPool.getResource()) {
-            String emailId = "";
-            String userSession = "";
-            if (jedis.exists(getAccessTokenKey(accessToken))) {
-                userSession = jedis.get(getAccessTokenKey(accessToken));
-                // objectmapper
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-
-    @Override
-    public boolean isValidToken(String accessToken) {
-        return false;
-    }
-
-    @Override
-    public void removeAccessToken(String accessToken) {
-
-    }
-
-    @Override
-    public void removeUser(String userName) {
-
+        return flag;
     }
 
     private String getUserNameKey(String emailId) {
         return "unToAt:" + emailId;
     }
 
-    private String getAccessTokenKey(String newAccessToken) {
-        return "atToUn:" + newAccessToken;
+    private String getAccessTokenKey(String accessToken) {
+        return "atToUn:" + accessToken;
     }
 
-    public static void main(String[] args) {
-        Jedis jedis = new Jedis("localhost");
-        AccessTokenService accessTokenService = new RedisAccessTokenService();
-        UserSession agent = accessTokenService.createAccessToken(new UserSession("tanm@gmail.com"));
-        agent = accessTokenService.saveAccessToken(agent);
+    @Override
+    public UserSession getUserFromAccessToken(String accessToken) {
+        UserSession userSession = null;
+        try (Jedis jedis = jedisPool.getResource()) {
+            String agentJson = jedis.get(getAccessTokenKey(accessToken));
+            userSession = objectMapper.readValue(agentJson, UserSession.class);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return userSession;
+    }
+
+    @Override
+    public boolean isValidToken(String accessToken) {
+        UserSession userSession = getUserFromAccessToken(accessToken);
+        return userSession != null;
+    }
+
+    @Override
+    public boolean removeAccessToken(String accessToken) {
+        boolean flag = false;
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.del(getAccessTokenKey(accessToken));
+            flag = true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return flag;
+    }
+
+    @Override
+    public void removeUser(String userName) {
+
     }
 }
