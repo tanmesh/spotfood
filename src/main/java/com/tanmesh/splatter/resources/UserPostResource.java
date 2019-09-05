@@ -1,10 +1,12 @@
 package com.tanmesh.splatter.resources;
 
+import com.tanmesh.splatter.authentication.UserSession;
 import com.tanmesh.splatter.entity.UserPost;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.exception.PostNotFoundException;
 import com.tanmesh.splatter.service.IUserPostService;
 import com.tanmesh.splatter.wsRequestModel.UserPostData;
+import io.dropwizard.auth.Auth;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -23,7 +25,7 @@ public class UserPostResource {
     @POST
     @Path("add")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addPostDetails(UserPostData userPostData) {
+    public Response addPostDetails(@Auth UserSession userSession, UserPostData userPostData) {
         try {
             String postId = userPostData.getPostId();
             List<String> tagList = userPostData.getTags();
@@ -32,7 +34,7 @@ public class UserPostResource {
             String encodedImgFilePath = userPostData.getEncodedImgFilePath();
             userPostService.addPost(postId, tagList, location, authorName, encodedImgFilePath);
         } catch (InvalidInputException | IOException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(true).build();
     }
@@ -40,12 +42,12 @@ public class UserPostResource {
     @GET
     @Path("get")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPostDetails(@QueryParam("postId") String postId) {
+    public Response getPostDetails(@Auth UserSession userSession, @QueryParam("postId") String postId) {
         UserPost userPost;
         try {
             userPost = userPostService.getPost(postId);
         } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(userPost).build();
     }
@@ -53,12 +55,12 @@ public class UserPostResource {
     @GET
     @Path("get_all")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllPostDetails(@QueryParam("authorEmailId") String authorEmailId) {
+    public Response getAllPostDetails(@Auth UserSession userSession, @QueryParam("authorEmailId") String authorEmailId) {
         List<UserPost> userPost;
         try {
             userPost = userPostService.getAllPostOfUser(authorEmailId);
         } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(userPost).build();
     }
@@ -66,12 +68,12 @@ public class UserPostResource {
     @GET
     @Path("like")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response likePostDetails(@QueryParam("postId") String postId) {
+    public Response likePostDetails(@Auth UserSession userSession, @QueryParam("postId") String postId) {
         UserPost userPost;
         try {
             userPost = userPostService.likePost(postId);
         } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         } catch (PostNotFoundException e) {
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
@@ -81,11 +83,11 @@ public class UserPostResource {
     @POST
     @Path("delete")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response deletePostDetails(String postId) {
+    public Response deletePostDetails(@Auth UserSession userSession, String postId) {
         try {
             userPostService.deletePost(postId);
         } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(true).build();
     }

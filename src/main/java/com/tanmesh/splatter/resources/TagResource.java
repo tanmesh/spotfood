@@ -26,7 +26,7 @@ public class TagResource {
         try {
             tagService.addTag(tagData);
         } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(true).build();
     }
@@ -39,7 +39,7 @@ public class TagResource {
         try {
             tags = tagService.getAllTag();
         } catch (InvalidInputException e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(tags).build();
     }

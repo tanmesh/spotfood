@@ -12,10 +12,14 @@ public interface IUserService {
     void userExists(String emailId) throws InvalidInputException;
 
     List<User> userInfo() throws InvalidInputException;
+
     void signUpUser(UserData userData) throws InvalidInputException;
+
     void followTag(String tag, String emailId) throws InvalidInputException;
+
     void unFollowTag(String tag, String emailId) throws InvalidInputException;
-    User userProfile(String emailId) throws InvalidInputException;
-    void logInUser(String emailId, String password) throws InvalidInputException;
+
+    User getUserProfile(String emailId) throws InvalidInputException;
+
     void getUserFeed(String emailId) throws InvalidInputException;
 }

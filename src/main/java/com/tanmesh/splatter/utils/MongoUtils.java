@@ -42,7 +42,7 @@ public class MongoUtils {
         ServerAddress addr = new ServerAddress(dbConfig.getHost(), dbConfig.getPort());
         List<MongoCredential> credentialsList = new ArrayList<>();
 //        MongoCredential credentia = MongoCredential.createCredential(
-////                dbConfig.getUser(), dbConfig.getDbName(), dbConfig.getPassword().toCharArray());
+////                dbConfig.getUserByEmailId(), dbConfig.getDbName(), dbConfig.getPassword().toCharArray());
 ////        credentialsList.add(credentia);
 
         MongoClient client = new MongoClient(addr, credentialsList);
@@ -74,9 +74,9 @@ public class MongoUtils {
 //
 //        List<MongoCredential> credList = new LinkedList<>();
 //        for (MongoDBConfig mongoDBConfig : dbConfig) {
-//            if(mongoDBConfig.getUser() != null) {
+//            if(mongoDBConfig.getUserByEmailId() != null) {
 //                credList.add(MongoCredential.createMongoCRCredential(mongoDBConfig
-//                        .getUser(), mongoDBConfig.getDbName(), mongoDBConfig.getPassword().toCharArray()));
+//                        .getUserByEmailId(), mongoDBConfig.getDbName(), mongoDBConfig.getPassword().toCharArray()));
 //            }
 //        }
 //

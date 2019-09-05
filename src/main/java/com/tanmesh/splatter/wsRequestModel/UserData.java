@@ -7,6 +7,15 @@ public class UserData {
     private String emailId;
     private String password;
     private String tag;
+    private String token;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public String getFirstName() {
         return firstName;
