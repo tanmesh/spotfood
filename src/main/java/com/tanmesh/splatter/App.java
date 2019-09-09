@@ -2,6 +2,7 @@ package com.tanmesh.splatter;
 
 import com.tanmesh.splatter.authentication.AccessTokenAuthenticator;
 import com.tanmesh.splatter.authentication.AccessTokenSecurityProvider;
+import com.tanmesh.splatter.autocomplete.TagTrie;
 import com.tanmesh.splatter.dao.TagDAO;
 import com.tanmesh.splatter.dao.UserDAO;
 import com.tanmesh.splatter.dao.UserPostDAO;
@@ -44,17 +45,19 @@ public class App extends Application<SplatterConfiguration> {
     public void run(SplatterConfiguration configuration, Environment environment) throws Exception {
         Datastore ds = MongoUtils.createDatastore(configuration.getDbConfig());
         UserDAO userDAO = new UserDAO(ds);
-        IUserService userService = new UserService(userDAO);
-        TagDAO tagDAO = new TagDAO(ds);
-        TagService tagService = new TagService(tagDAO);
         AccessTokenService accessTokenService = new RedisAccessTokenService();
+        IUserService userService = new UserService(userDAO, accessTokenService);
+        TagDAO tagDAO = new TagDAO(ds);
+        TagTrie tagTrie = new TagTrie();
+        ITagService tagService = new TagService(tagDAO, tagTrie);
+        IImageService imageService = new ImageService();
         UserResource userResource = new UserResource(userService, accessTokenService);
-        DebugResource debugResource = new DebugResource(userService);
+        DebugResource debugResource = new DebugResource(userService, tagService);
         TagResource tagResource = new TagResource(tagService);
         AdminResource adminResource = new AdminResource(userService, tagService);
         UserPostDAO userPostDAO = new UserPostDAO(ds);
-        IUserPostService userpostService = new UserPostService(userPostDAO, tagDAO);
-        UserPostResource userPostResource = new UserPostResource(userpostService);
+        IUserPostService userpostService = new UserPostService(userPostDAO, tagDAO, imageService, userService);
+        UserPostResource userPostResource = new UserPostResource(userpostService, accessTokenService);
 
         environment.jersey().register(userResource);
         environment.jersey().register(userPostResource);

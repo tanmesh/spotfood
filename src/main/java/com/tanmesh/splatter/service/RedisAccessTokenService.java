@@ -6,6 +6,9 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by tanmesh
  * Date: 2019-07-14
@@ -19,6 +22,7 @@ public class RedisAccessTokenService implements AccessTokenService {
 
     private ObjectMapper objectMapper;
     private JedisPool jedisPool;
+    private Map<String, String> keyMap = new HashMap<String, String>();
 
     public RedisAccessTokenService() {
         this.objectMapper = new ObjectMapper();
@@ -52,7 +56,7 @@ public class RedisAccessTokenService implements AccessTokenService {
     }
 
     @Override
-    public UserSession getUserFromAccessToken(String accessToken) {
+    public UserSession getUserSessionFromAccessToken(String accessToken) {
         UserSession userSession = null;
         try (Jedis jedis = jedisPool.getResource()) {
             String agentJson = jedis.get(getAccessTokenKey(accessToken));
@@ -65,7 +69,7 @@ public class RedisAccessTokenService implements AccessTokenService {
 
     @Override
     public boolean isValidToken(String accessToken) {
-        UserSession userSession = getUserFromAccessToken(accessToken);
+        UserSession userSession = getUserSessionFromAccessToken(accessToken);
         return userSession != null;
     }
 

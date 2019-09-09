@@ -16,8 +16,7 @@ public class UserDAO extends BasicDAO<User, String> {
     public User getUserByEmailId(String emailId) {
         return this.getDatastore().createQuery(User.class).filter("emailId", emailId).get();
     }
-
-    // TODO: complete getAllFeed
+    
     public List<UserPost> getAllFeed(String tag) {
         ArrayList<UserPost> userPosts = new ArrayList<>();
 //        List<UserPost> userPost = this.getDatastore().createQuery(UserPost.class);

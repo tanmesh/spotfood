@@ -1,20 +1,20 @@
 package com.tanmesh.splatter.service;
 
+import com.tanmesh.splatter.authentication.UserSession;
 import com.tanmesh.splatter.dao.UserDAO;
 import com.tanmesh.splatter.entity.User;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.wsRequestModel.UserData;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class UserService implements IUserService {
     private UserDAO userDAO;
+    private AccessTokenService accessTokenService;
 
-    public UserService(UserDAO userDAO) {
+    public UserService(UserDAO userDAO, AccessTokenService accessTokenService) {
         this.userDAO = userDAO;
+        this.accessTokenService = accessTokenService;
     }
 
     @Override
@@ -39,39 +39,39 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void signUpUser(UserData userData) throws InvalidInputException {
-        if (userData == null) {
-            throw new InvalidInputException("UserData is null");
-        }
-        String firstName = userData.getFirstName();
-        String lastName = userData.getLastName();
-        String nickName = userData.getNickName();
-        String emailId = userData.getEmailId();
-        String password = userData.getPassword();
-
-        sanityCheck(firstName, "firstName");
-        sanityCheck(lastName, "lastName");
-        sanityCheck(nickName, "nickName");
-        sanityCheck(emailId, "emailId");
-        sanityCheck(password, "password");
-
-        addSignUpUserHelper(firstName, lastName, nickName, emailId, password);
-    }
-
-    private void addSignUpUserHelper(String firstName, String lastName, String userNickName, String userEmailId, String userPassword) {
+    public void signUpUser(UserData userData) {
         User user = new User();
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setNickName(userNickName);
-        user.setEmailId(userEmailId);
-        user.setPassword(userPassword);
-        updateUser(user);
+        user.setFirstName(userData.getFirstName());
+        user.setLastName(userData.getLastName());
+        user.setNickName(userData.getNickName());
+        user.setEmailId(userData.getEmailId());
+        user.setPassword(userData.getPassword());
+        userDAO.save(user);
     }
 
-    // TODO: complete getUserFeed
+    public UserSession logInUser(String emailId, String inputPassword) throws Exception {
+        User user = getUserProfile(emailId);
+        if (user == null) {
+            throw new NullPointerException("user not found");
+        }
+        UserSession userSession;
+        try {
+            if (!(user.getPassword()).equals(inputPassword)) {
+                throw new InvalidInputException("Password is wrong");
+            }
+            String accessToken = UUID.randomUUID().toString();
+            userSession = new UserSession(accessToken, user.getEmailId());
+            if (!accessTokenService.saveAccessToken(userSession)) {
+                throw new InvalidInputException("Unable to save the new token");
+            }
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+        return userSession;
+    }
 
     @Override
-    public void getUserFeed(String emailId) throws InvalidInputException {
+    public void getUserFeed(String emailId) {
 //        sanityCheck(emailId, "emailId");
 //        User user = userDAO.getUserByEmailId("emailId", emailId);
 //        Set<String> userTags = user.getFollowTagList();
@@ -81,9 +81,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void followTag(String tag, String emailId) throws InvalidInputException {
-        sanityCheck(tag, "tag");
-        sanityCheck(emailId, "emailId");
+    public void followTag(String tag, String emailId) {
         User user = userDAO.getUserByEmailId(emailId);
         Set<String> tagList = user.getFollowTagList();
         if (tagList == null) {
@@ -91,25 +89,22 @@ public class UserService implements IUserService {
         }
         tagList.add(tag);
         user.setFollowTagList(tagList);
-        updateUser(user);
+        userDAO.save(user);
     }
 
     @Override
-    public void unFollowTag(String tag, String emailId) throws InvalidInputException {
-        sanityCheck(tag, "tag");
-        sanityCheck(emailId, "emailId");
+    public void unFollowTag(String tag, String emailId) {
         User user = userDAO.getUserByEmailId(emailId);
         Set<String> tagList = user.getFollowTagList();
-        if (tagList == null || tagList.size() == 0) {
+        if (tagList == null) {
             return;
         }
         tagList.remove(tag);
-        updateUser(user);
+        userDAO.save(user);
     }
 
     @Override
-    public void deleteUser(String emailId) throws InvalidInputException {
-        sanityCheck(emailId, "emailId");
+    public void deleteUser(String emailId) {
         User user = userDAO.getUserByEmailId(emailId);
         if (user == null) {
             return;
@@ -118,18 +113,9 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User getUserProfile(String emailId) throws InvalidInputException {
-        sanityCheck(emailId, "emailId");
+    public User getUserProfile(String emailId) {
         return userDAO.getUserByEmailId(emailId);
     }
 
-    private void updateUser(User user) {
-        userDAO.save(user);
-    }
-
-    private void sanityCheck(String id, String msg) throws InvalidInputException {
-        if (id == null || id.length() == 0) {
-            throw new InvalidInputException(msg + " is NULL");
-        }
-    }
+    // TODO: complete getUserFeed
 }

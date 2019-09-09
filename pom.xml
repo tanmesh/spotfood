@@ -41,6 +41,16 @@
             <artifactId>dropwizard-auth</artifactId>
             <version>0.7.0</version>
         </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec</artifactId>
+            <version>4.0.25.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jvnet.mimepull</groupId>
+            <artifactId>mimepull</artifactId>
+            <version>1.9.3</version>
+        </dependency>
     </dependencies>
 
 

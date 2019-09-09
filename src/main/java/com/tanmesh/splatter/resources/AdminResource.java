@@ -1,8 +1,9 @@
 package com.tanmesh.splatter.resources;
 
+import com.google.common.base.Preconditions;
 import com.tanmesh.splatter.exception.InvalidInputException;
+import com.tanmesh.splatter.service.ITagService;
 import com.tanmesh.splatter.service.IUserService;
-import com.tanmesh.splatter.service.TagService;
 import com.tanmesh.splatter.wsRequestModel.TagData;
 import com.tanmesh.splatter.wsRequestModel.UserData;
 
@@ -15,9 +16,9 @@ import javax.ws.rs.core.Response;
 @Path("/admin")
 public class AdminResource {
     private IUserService userService;
-    private TagService tagService;
+    private ITagService tagService;
 
-    public AdminResource(IUserService userService, TagService tagService) {
+    public AdminResource(IUserService userService, ITagService tagService) {
         this.userService = userService;
         this.tagService = tagService;
     }
@@ -27,6 +28,8 @@ public class AdminResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response removeUser(UserData userData){
         try {
+            Preconditions.checkNotNull(userData.getEmailId(), "email Id should not be null");
+
             userService.deleteUser(userData.getEmailId());
         } catch (InvalidInputException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
@@ -39,12 +42,11 @@ public class AdminResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response removeTag(TagData tagData){
         try {
+            Preconditions.checkNotNull(tagData.getName(), "Name should not be null");
             tagService.deleteTag(tagData.getName());
-        } catch (InvalidInputException e) {
+        } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(true).build();
     }
-
-    // TODO "get_all_post" API
 }

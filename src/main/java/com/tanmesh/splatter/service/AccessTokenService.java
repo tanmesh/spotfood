@@ -12,7 +12,7 @@ public interface AccessTokenService {
 
     boolean saveAccessToken(UserSession userSession);
 
-    UserSession getUserFromAccessToken(String accessToken);
+    UserSession getUserSessionFromAccessToken(String accessToken);
 
     boolean isValidToken(String accessToken);
 

@@ -4,6 +4,7 @@ import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity(value = "userPost_data", noClassnameStored = true)
 public class UserPost {
@@ -13,8 +14,7 @@ public class UserPost {
     private String location;
     private String authorEmailId;
     private int upVotes;
-    private String encodedImgFilePath;
-    private String encodedImg;
+    private String encodedImgString;
 
     public UserPost() {
     }
@@ -27,12 +27,12 @@ public class UserPost {
         return tags;
     }
 
-    public String getEncodedImg() {
-        return encodedImg;
+    public String getEncodedImgString() {
+        return encodedImgString;
     }
 
-    public void setEncodedImg(String encodedImg) {
-        this.encodedImg = encodedImg;
+    public void setEncodedImgString(String encodedImgString) {
+        this.encodedImgString = encodedImgString;
     }
 
     public void setTags(List<String> tags) {
@@ -63,11 +63,16 @@ public class UserPost {
         this.upVotes = upVotes;
     }
 
-    public String getEncodedImgFilePath() {
-        return encodedImgFilePath;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserPost userPost = (UserPost) o;
+        return Objects.equals(postId, userPost.postId);
     }
 
-    public void setEncodedImgFilePath(String encodedImgFilePath) {
-        this.encodedImgFilePath = encodedImgFilePath;
+    @Override
+    public int hashCode() {
+        return Objects.hash(postId);
     }
 }
