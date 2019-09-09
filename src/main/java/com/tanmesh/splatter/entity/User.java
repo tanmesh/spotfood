@@ -15,9 +15,18 @@ public class User {
     private String nickName;
     private String password;
     private Set<String> followTagList;
+    private LatLong lastUpdatedLocation;
 
     public User() {
         followTagList = new HashSet<>();
+    }
+
+    public LatLong getLastUpdatedLocation() {
+        return lastUpdatedLocation;
+    }
+
+    public void setLastUpdatedLocation(LatLong lastUpdatedLocation) {
+        this.lastUpdatedLocation = lastUpdatedLocation;
     }
 
     public Set<String> getFollowTagList() {

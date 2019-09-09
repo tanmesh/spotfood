@@ -5,11 +5,29 @@ import java.util.List;
 public class UserPostData {
     private String postId;
     private List<String> tags;
-    private String location;
+    private String locationName;
     private String authorEmailId;
     private int upvotes;
     private String encodedImgString;
     private String fileExtenstion;
+    private Double latitude;
+    private Double longitude;
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
 
     public String getFileExtenstion() {
         return fileExtenstion;
@@ -43,12 +61,12 @@ public class UserPostData {
         this.tags = tags;
     }
 
-    public String getLocation() {
-        return location;
+    public String getLocationName() {
+        return locationName;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
     }
 
     public String getAuthorEmailId() {

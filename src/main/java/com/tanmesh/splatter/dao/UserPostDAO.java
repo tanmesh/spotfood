@@ -3,10 +3,12 @@ package com.tanmesh.splatter.dao;
 import com.google.common.collect.Sets;
 import com.tanmesh.splatter.entity.UserPost;
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.aggregation.GeoNear;
 import org.mongodb.morphia.dao.BasicDAO;
 import org.mongodb.morphia.query.Query;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -37,5 +39,20 @@ public class UserPostDAO extends BasicDAO<UserPost, String> {
             }
         }
         return userPosts;
+    }
+
+    public Set<UserPost> getNearBy(String tagName, double latitude, double longitude) {
+        Query<UserPost> query = this.getDatastore().createQuery(UserPost.class).field("tags").contains(tagName);
+        Iterator<UserPost> userPostIterator = this.getDatastore().createAggregation(UserPost.class)
+                .geoNear(GeoNear.builder("distance").setNear(latitude, longitude).setSpherical(true).build()).match(query)
+                .aggregate(UserPost.class);
+
+        Set<UserPost> userPostSet = Sets.newHashSet();
+        while (userPostIterator.hasNext()) {
+            UserPost userPost = userPostIterator.next();
+            userPostSet.add(userPost);
+        }
+
+        return userPostSet;
     }
 }

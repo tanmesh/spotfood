@@ -34,8 +34,10 @@ public class UserPostResource {
     public Response addPostDetails(@Auth UserSession userSession, UserPostData userPostData) {
         try {
             Preconditions.checkNotNull(userPostData.getTags(), "tags should not be null");
-            Preconditions.checkNotNull(userPostData.getLocation(), "location should not be null");
+            Preconditions.checkNotNull(userPostData.getLocationName(), "location should not be null");
             Preconditions.checkNotNull(userPostData.getEncodedImgString(), "image should not be null");
+            Preconditions.checkNotNull(userPostData.getLatitude(), "latitude should not be null");
+            Preconditions.checkNotNull(userPostData.getLongitude(), "longitude should not be null");
 
             String emailId = userSession.getEmailId();
 

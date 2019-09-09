@@ -44,30 +44,32 @@ public class App extends Application<SplatterConfiguration> {
 
     public void run(SplatterConfiguration configuration, Environment environment) throws Exception {
         Datastore ds = MongoUtils.createDatastore(configuration.getDbConfig());
+
         UserDAO userDAO = new UserDAO(ds);
         AccessTokenService accessTokenService = new RedisAccessTokenService();
         IUserService userService = new UserService(userDAO, accessTokenService);
         TagDAO tagDAO = new TagDAO(ds);
         TagTrie tagTrie = new TagTrie();
+        UserPostDAO userPostDAO = new com.tanmesh.splatter.dao.UserPostDAO(ds);
+        ISearchService searchService = new SearchService(userService, userPostDAO);
         ITagService tagService = new TagService(tagDAO, tagTrie);
         IImageService imageService = new ImageService();
         UserResource userResource = new UserResource(userService, accessTokenService);
+        SearchResource searchResource = new SearchResource(searchService);
         DebugResource debugResource = new DebugResource(userService, tagService);
         TagResource tagResource = new TagResource(tagService);
         AdminResource adminResource = new AdminResource(userService, tagService);
-        UserPostDAO userPostDAO = new UserPostDAO(ds);
         IUserPostService userpostService = new UserPostService(userPostDAO, tagDAO, imageService, userService);
         UserPostResource userPostResource = new UserPostResource(userpostService, accessTokenService);
+        AccessTokenAuthenticator accessTokenAuthenticator = new AccessTokenAuthenticator(accessTokenService);
 
         environment.jersey().register(userResource);
         environment.jersey().register(userPostResource);
         environment.jersey().register(debugResource);
         environment.jersey().register(tagResource);
+        environment.jersey().register(searchResource);
         environment.jersey().register(adminResource);
         environment.jersey().register(new JsonProcessingExceptionMapper());
-
-        AccessTokenAuthenticator accessTokenAuthenticator = new AccessTokenAuthenticator(accessTokenService);
-
         environment.jersey().register(new AccessTokenSecurityProvider<>(accessTokenAuthenticator));
 //        configureCors(environment);
     }

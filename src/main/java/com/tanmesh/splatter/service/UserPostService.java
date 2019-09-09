@@ -1,23 +1,20 @@
 package com.tanmesh.splatter.service;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
-import com.tanmesh.splatter.dao.TagDAO;
-import com.tanmesh.splatter.dao.UserPostDAO;
-import com.tanmesh.splatter.entity.Image;
-import com.tanmesh.splatter.entity.Tag;
-import com.tanmesh.splatter.entity.User;
-import com.tanmesh.splatter.entity.UserPost;
-import com.tanmesh.splatter.exception.PostNotFoundException;
-import com.tanmesh.splatter.wsRequestModel.UserPostData;
-import org.mongodb.morphia.Key;
+        import com.google.common.base.Preconditions;
+        import com.google.common.collect.Sets;
+        import com.tanmesh.splatter.dao.TagDAO;
+        import com.tanmesh.splatter.dao.UserPostDAO;
+        import com.tanmesh.splatter.entity.*;
+        import com.tanmesh.splatter.exception.PostNotFoundException;
+        import com.tanmesh.splatter.wsRequestModel.UserPostData;
+        import org.mongodb.morphia.Key;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+        import javax.imageio.ImageIO;
+        import java.awt.image.BufferedImage;
+        import java.io.*;
+        import java.util.ArrayList;
+        import java.util.List;
+        import java.util.Set;
 
 public class UserPostService implements IUserPostService {
     private UserPostDAO userPostDAO;
@@ -35,18 +32,19 @@ public class UserPostService implements IUserPostService {
     @Override
     public void addPost(UserPostData userPostData, String emailId) throws IOException {
         UserPost userPost = new UserPost();
-        userPost.setLocation(userPostData.getLocation());
+        userPost.setLocationName(userPostData.getLocationName());
         userPost.setAuthorEmailId(emailId);
-
+        List<Double> coordinates = new ArrayList<>();
+        coordinates.add(userPostData.getLatitude());
+        coordinates.add(userPostData.getLongitude());
+        userPost.setLatLong(new LatLong(coordinates));
+        userPost.setEncodedImgString(userPostData.getEncodedImgString());
         List<String> postTags = userPost.getTags();
         if (postTags == null) {
             postTags = new ArrayList<>();
         }
         postTags.addAll(userPostData.getTags());
         userPost.setTags(postTags);
-        userPost.setEncodedImgString(userPostData.getEncodedImgString());
-
-        userPostDAO.save(userPost);
 
         for (String tagName : userPostData.getTags()) {
             Preconditions.checkNotNull(tagName, "tag name should not be null");
@@ -54,6 +52,8 @@ public class UserPostService implements IUserPostService {
             tag.setName(tagName);
             tagDAO.save(tag);
         }
+
+        userPostDAO.save(userPost);
 
         String data = userPostData.getEncodedImgString();
         String base64Image = data.split(",")[1];

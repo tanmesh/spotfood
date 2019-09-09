@@ -1,27 +1,44 @@
 package com.tanmesh.splatter.entity;
 
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.*;
+import org.mongodb.morphia.utils.IndexType;
 
 import java.util.List;
 import java.util.Objects;
 
-@Entity(value = "userPost_data", noClassnameStored = true)
+@Entity(value = "user_posts", noClassnameStored = true)
+@Indexes({
+        @Index(fields = @Field(value = "latLong", type = IndexType.GEO2DSPHERE))
+})
 public class UserPost {
     @Id
     private String postId;
     private List<String> tags;
-    private String location;
+    private String locationName;
     private String authorEmailId;
     private int upVotes;
     private String encodedImgString;
 
+    private LatLong latLong;
+
     public UserPost() {
     }
 
-    public String getPostId() { return postId; }
+    public LatLong getLatLong() {
+        return latLong;
+    }
 
-    public void setPostId(String postId) { this.postId = postId; }
+    public void setLatLong(LatLong latLong) {
+        this.latLong = latLong;
+    }
+
+    public String getPostId() {
+        return postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
+    }
 
     public List<String> getTags() {
         return tags;
@@ -39,12 +56,12 @@ public class UserPost {
         this.tags = tags;
     }
 
-    public String getLocation() {
-        return location;
+    public String getLocationName() {
+        return locationName;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
     }
 
     public String getAuthorEmailId() {

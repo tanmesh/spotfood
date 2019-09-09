@@ -38,7 +38,6 @@ public class MongoUtils {
     }
 
     public static Datastore createDatastore(MongoDBConfig dbConfig) throws UnknownHostException {
-        Morphia morphia = new Morphia();
         ServerAddress addr = new ServerAddress(dbConfig.getHost(), dbConfig.getPort());
         List<MongoCredential> credentialsList = new ArrayList<>();
 //        MongoCredential credentia = MongoCredential.createCredential(
@@ -46,7 +45,8 @@ public class MongoUtils {
 ////        credentialsList.add(credentia);
 
         MongoClient client = new MongoClient(addr, credentialsList);
-        Datastore datastore = morphia.createDatastore(client, dbConfig.getDbName());
+        Datastore datastore = new Morphia().mapPackage("com.tanmesh.splatter.entity").createDatastore(client, dbConfig.getDbName());
+        datastore.ensureIndexes(true);
         return datastore;
 
     }
