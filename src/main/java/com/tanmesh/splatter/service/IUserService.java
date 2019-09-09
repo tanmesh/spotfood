@@ -1,5 +1,6 @@
 package com.tanmesh.splatter.service;
 
+import com.tanmesh.splatter.authentication.UserSession;
 import com.tanmesh.splatter.entity.User;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.wsRequestModel.UserData;
@@ -13,13 +14,15 @@ public interface IUserService {
 
     List<User> userInfo() throws InvalidInputException;
 
-    void signUpUser(UserData userData) throws InvalidInputException;
-
     void followTag(String tag, String emailId) throws InvalidInputException;
 
     void unFollowTag(String tag, String emailId) throws InvalidInputException;
 
-    User getUserProfile(String emailId) throws InvalidInputException;
+    User getUserProfile(String emailId);
+
+    void signUpUser(UserData userData);
 
     void getUserFeed(String emailId) throws InvalidInputException;
+
+    UserSession logInUser(String emailId, String password) throws Exception;
 }

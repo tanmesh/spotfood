@@ -1,49 +1,32 @@
 package com.tanmesh.splatter.service;
 
+import com.tanmesh.splatter.autocomplete.TagTrie;
 import com.tanmesh.splatter.dao.TagDAO;
 import com.tanmesh.splatter.entity.Tag;
-import com.tanmesh.splatter.exception.InvalidInputException;
-import com.tanmesh.splatter.wsRequestModel.TagData;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TagService {
+public class TagService implements ITagService {
     private TagDAO tagDAO;
+    private TagTrie tagTrie;
 
-    public TagService(TagDAO TagDAO) {
-        this.tagDAO = TagDAO;
+    public TagService(TagDAO tagDAO, TagTrie tagTrie) {
+        this.tagDAO = tagDAO;
+        this.tagTrie = tagTrie;
     }
 
-    public TagDAO getTagDAO() {
-        return tagDAO;
-    }
-
-    public void setTagDAO(TagDAO TagDAO) {
-        this.tagDAO = TagDAO;
-    }
-
-    // TODO: create the existence of the tag.
-
-    public void addTag(TagData tagData) throws InvalidInputException {
-        String tagName = tagData.getName();
-        if (tagName == null || tagName.length() == 0) {
-            throw new InvalidInputException("tagName is empty");
-        }
-        addTagHelper(tagName);
-    }
-
-    private void addTagHelper(String tagName) {
+    public void addTag(String tagName) {
         Tag tag = new Tag();
         tag.setName(tagName);
         tagDAO.save(tag);
     }
 
-    public List<Tag> getAllTag() throws InvalidInputException {
+    public List<Tag> getAllTag() {
         List<String> tagIdList = tagDAO.findIds();
         List<Tag> tagList = new ArrayList<>();
-        if (tagIdList == null || tagIdList.size() == 0) {
-            throw new InvalidInputException("tagIdList is NULL");
+        if (tagIdList == null) {
+            return tagList;
         }
         for (String id : tagIdList) {
             tagList.add(tagDAO.get(id));
@@ -51,15 +34,21 @@ public class TagService {
         return tagList;
     }
 
-    public void deleteTag(String name) throws InvalidInputException {
-        sanityCheck(name, "name");
+    public void deleteTag(String name) {
         Tag tag = tagDAO.getTag("name", name);
         tagDAO.delete(tag);
     }
 
-    private void sanityCheck(String id, String msg) throws InvalidInputException {
-        if (id == null || id.length() == 0) {
-            throw new InvalidInputException(msg + " is NULL");
+    public List<String> autocompleteTags(String inputPrefix) {
+        return tagTrie.autocomplete(inputPrefix);
+    }
+
+    public void insertAllTagForAutocomplete() {
+        List<Tag> allTagList = getAllTag();
+        for (Tag inputPrefix : allTagList) {
+            tagTrie.insert(inputPrefix.getName());
         }
     }
+
+    // TODO: create the existence of the tag.
 }

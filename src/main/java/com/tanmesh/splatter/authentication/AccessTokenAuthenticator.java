@@ -10,7 +10,7 @@ import io.dropwizard.auth.Authenticator;
  * Date: 2019-09-05
  * Time: 12:52
  */
-public class AccessTokenAuthenticator implements Authenticator<AccessTokenCredentials,UserSession> {
+public class AccessTokenAuthenticator implements Authenticator<AccessTokenCredentials, UserSession> {
     private AccessTokenService accessTokenService;
 
     public AccessTokenAuthenticator(AccessTokenService accessTokenService) {
@@ -19,11 +19,10 @@ public class AccessTokenAuthenticator implements Authenticator<AccessTokenCreden
 
     @Override
     public Optional<UserSession> authenticate(AccessTokenCredentials accessTokenCredentials) throws AuthenticationException {
-        if(accessTokenService.isValidToken(accessTokenCredentials.getToken())){
-            UserSession agent=accessTokenService.getUserFromAccessToken(accessTokenCredentials.getToken());
+        if (accessTokenService.isValidToken(accessTokenCredentials.getToken())) {
+            UserSession agent = accessTokenService.getUserSessionFromAccessToken(accessTokenCredentials.getToken());
             return Optional.fromNullable(agent);
-        }
-        else{
+        } else {
             throw new AuthenticationException("Invalid credentials");
         }
     }

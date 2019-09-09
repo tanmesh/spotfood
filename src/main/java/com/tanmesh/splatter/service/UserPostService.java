@@ -1,66 +1,78 @@
 package com.tanmesh.splatter.service;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import com.tanmesh.splatter.dao.TagDAO;
 import com.tanmesh.splatter.dao.UserPostDAO;
+import com.tanmesh.splatter.entity.Image;
 import com.tanmesh.splatter.entity.Tag;
+import com.tanmesh.splatter.entity.User;
 import com.tanmesh.splatter.entity.UserPost;
-import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.exception.PostNotFoundException;
-import org.apache.commons.io.FileUtils;
+import com.tanmesh.splatter.wsRequestModel.UserPostData;
 import org.mongodb.morphia.Key;
 
-import java.io.File;
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
+import java.util.Set;
 
 public class UserPostService implements IUserPostService {
     private UserPostDAO userPostDAO;
     private TagDAO tagDAO;
+    private IImageService imageService;
+    private IUserService userService;
 
-    public UserPostService(UserPostDAO userPostDAO, TagDAO tagDAO) {
+    public UserPostService(UserPostDAO userPostDAO, TagDAO tagDAO, IImageService imageService, IUserService userService) {
         this.userPostDAO = userPostDAO;
         this.tagDAO = tagDAO;
+        this.imageService = imageService;
+        this.userService = userService;
     }
 
     @Override
-    public void addPost(String postId, List<String> tagList, String location, String authorName, String encodedImgFilePath) throws InvalidInputException, IOException {
-        sanityCheck(postId, "postId");
-        sanityCheck(location, "location");
-        sanityCheck(authorName, "authorName");
-        if (tagList == null || tagList.size() == 0) {
-            throw new InvalidInputException("tagList");
-        }
-        if (encodedImgFilePath == null) {
-            throw new InvalidInputException("encodedImg");
-        }
+    public void addPost(UserPostData userPostData, String emailId) throws IOException {
         UserPost userPost = new UserPost();
-        userPost.setPostId(postId);
-        userPost.setLocation(location);
-        userPost.setAuthorEmailId(authorName);
+        userPost.setLocation(userPostData.getLocation());
+        userPost.setAuthorEmailId(emailId);
+
         List<String> postTags = userPost.getTags();
         if (postTags == null) {
             postTags = new ArrayList<>();
         }
-        postTags.addAll(tagList);
+        postTags.addAll(userPostData.getTags());
         userPost.setTags(postTags);
-        byte[] fileContent = FileUtils.readFileToByteArray(new File(encodedImgFilePath));
-        String encodedImg = Base64.getEncoder().encodeToString(fileContent);
-        userPost.setEncodedImg(encodedImg);
-        userPostDAO.save(userPost);
-        for(String tagName : tagList) {
-            if (tagName == null || tagName.length() == 0) {
-                throw new InvalidInputException("tagName is empty");
-            }
-            addTagHelper(tagName);
-        }
-    }
+        userPost.setEncodedImgString(userPostData.getEncodedImgString());
 
-    private void addTagHelper(String tagName) {
-        Tag tag = new Tag();
-        tag.setName(tagName);
-        tagDAO.save(tag);
+        userPostDAO.save(userPost);
+
+        for (String tagName : userPostData.getTags()) {
+            Preconditions.checkNotNull(tagName, "tag name should not be null");
+            Tag tag = new Tag();
+            tag.setName(tagName);
+            tagDAO.save(tag);
+        }
+
+        String data = userPostData.getEncodedImgString();
+        String base64Image = data.split(",")[1];
+        byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image);
+        String filePath = "/Users/tanmesh/Downloads/test_image.jpeg";
+        File file = new File(filePath);
+        try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))) {
+            outputStream.write(imageBytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        BufferedImage bimg = ImageIO.read(file);
+
+        String fileExtention = ".jpeg";
+        Image original = imageService.getOriginalImage(bimg, fileExtention);
+        Image thumbnail = imageService.getThumbnail(original, bimg);
+        Image lowImage = imageService.getLowImage(original, bimg);
+        Image stdImage = imageService.getStdImage(original, bimg);
     }
 
     @Override
@@ -69,17 +81,30 @@ public class UserPostService implements IUserPostService {
     }
 
     @Override
-    public void deletePost(String postId) throws InvalidInputException {
-        sanityCheck(postId, "postId");
-        UserPost userPost = userPostDAO.getPost("postId", postId);
+    public Set<UserPost> getUserFeed(String emailId) {
+        // 1. all posts from followed tags
+        User user = userService.getUserProfile(emailId);
+        if (user == null) {
+            return Sets.newHashSet();
+        }
+        Set<String> followedTags = user.getFollowTagList();
+
+        Set<UserPost> userPosts = userPostDAO.getAllPostForTags(followedTags);
+
+        // 2. all posts from followed users
+        return userPosts;
+    }
+
+    @Override
+    public void deletePost(String emailId) {
+        UserPost userPost = userPostDAO.getPost("postId", emailId); // emailId
         userPostDAO.delete(userPost);
     }
 
     @Override
-    public UserPost likePost(String postId) throws InvalidInputException, PostNotFoundException {
-        sanityCheck(postId, "postId");
-        UserPost userPost = userPostDAO.getPost("postId", postId);
-        if(userPost == null) {
+    public UserPost likePost(String emailId) throws PostNotFoundException {
+        UserPost userPost = userPostDAO.getPost("postId", emailId);  // emailId
+        if (userPost == null) {
             throw new PostNotFoundException("user post is NULL");
         }
         int prevCnt = userPost.getUpVotes();
@@ -93,20 +118,12 @@ public class UserPostService implements IUserPostService {
     }
 
     @Override
-    public UserPost getPost(String postId) throws InvalidInputException {
-        sanityCheck(postId, "postId");
-        return userPostDAO.getPost("postId", postId);
+    public UserPost getPost(String emailId) {
+        return userPostDAO.getPost("authorEmailId", emailId);
     }
 
     @Override
-    public List<UserPost> getAllPostOfUser(String authorEmailId) throws InvalidInputException {
-        sanityCheck(authorEmailId, "authorEmailId");
-        return userPostDAO.getAllPostOfUser("authorEmailId", authorEmailId);
-    }
-
-    private void sanityCheck(String postId, String message) throws InvalidInputException {
-        if (postId == null || postId.length() == 0) {
-            throw new InvalidInputException(message+" is NULL");
-        }
+    public List<UserPost> getAllPostOfUser(String authorEmailId) {
+        return userPostDAO.getAllPostOfUser(authorEmailId);
     }
 }

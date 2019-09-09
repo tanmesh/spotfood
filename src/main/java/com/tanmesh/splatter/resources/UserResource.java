@@ -12,7 +12,6 @@ import io.dropwizard.auth.Auth;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.UUID;
 
 @Path("/user")
 public class UserResource {
@@ -30,12 +29,28 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response signUpUser(UserData userData) {
         try {
+            if (userData == null) {
+                throw new InvalidInputException("UserData is null");
+            }
+            String firstName = userData.getFirstName();
+            String lastName = userData.getLastName();
+            String nickName = userData.getNickName();
+            String emailId = userData.getEmailId();
+            String password = userData.getPassword();
+
+            Preconditions.checkNotNull(firstName, "firstName should not be null");
+            Preconditions.checkNotNull(lastName, "lastName should not be null");
+            Preconditions.checkNotNull(nickName, "nickName should not be null");
+            Preconditions.checkNotNull(emailId, "emailId should not be null");
+            Preconditions.checkNotNull(password, "password should not be null");
+
             userService.signUpUser(userData);
         } catch (InvalidInputException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(true).build();
+        return Response.status(Response.Status.ACCEPTED).entity(userData).build();
     }
+
 
     @POST
     @Path("login")
@@ -44,36 +59,18 @@ public class UserResource {
     public Response logInUser(UserData userData) {
         String emailId = userData.getEmailId();
         String password = userData.getPassword();
+
+        Preconditions.checkNotNull(userData.getEmailId(), "email Id should not be null");
+        Preconditions.checkNotNull(userData.getPassword(), "Password should not be null");
         UserSession userSession;
         try {
-            userSession = logInUserHelper(emailId, password);
-        } catch (InvalidInputException | NullPointerException e) {
+            userSession = userService.logInUser(emailId, password);
+        } catch (NullPointerException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(userSession).build();
-    }
-
-    private UserSession logInUserHelper(String emailId, String inputPassword) throws Exception {
-        Preconditions.checkNotNull(emailId, "email id should not be null");
-        Preconditions.checkNotNull(inputPassword, "input password should not be null");
-
-        User user = userService.getUserProfile(emailId);
-        UserSession userSession;
-        try {
-            if (!(user.getPassword()).equals(inputPassword)) {
-                throw new InvalidInputException("Password is wrong");
-            }
-            String accessToken = UUID.randomUUID().toString();
-            userSession = new UserSession(accessToken, user.getEmailId());
-            if (!accessTokenService.saveAccessToken(userSession)) {
-                throw new InvalidInputException("Unable to save the new token");
-            }
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-        return userSession;
     }
 
     @POST
@@ -87,12 +84,13 @@ public class UserResource {
 
 
     @POST
-    @Path("follow")
+    @Path("follow_tag")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response followTag(@Auth UserSession userSession, UserData userData) {
         try {
-            userService.followTag(userData.getTag(), userData.getEmailId());
+            Preconditions.checkNotNull(userData.getTag(), "input password should not be null");
+            userService.followTag(userData.getTag(), userSession.getEmailId());
         } catch (InvalidInputException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
@@ -100,12 +98,13 @@ public class UserResource {
     }
 
     @POST
-    @Path("unfollow")
+    @Path("unfollow_tag")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response unFollowTag(@Auth UserSession userSession, UserData userData) {
         try {
-            userService.unFollowTag(userData.getTag(), userData.getEmailId());
+            Preconditions.checkNotNull(userData.getTag(), "input password should not be null");
+            userService.unFollowTag(userData.getTag(), userSession.getEmailId());
         } catch (InvalidInputException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
@@ -116,14 +115,8 @@ public class UserResource {
     @Path("profile")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUserProfile(@Auth UserSession userSession) {
-        User user;
-        try {
-            user = userService.getUserProfile(userSession.getEmailId());
-        } catch (InvalidInputException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-        }
+        Preconditions.checkNotNull(userSession.getEmailId(), "email Id should not be null");
+        User user = userService.getUserProfile(userSession.getEmailId());
         return Response.status(Response.Status.ACCEPTED).entity(user).build();
     }
-
-    // TODO: "feed" API
 }

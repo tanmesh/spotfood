@@ -8,23 +8,23 @@ public class UserPostData {
     private String location;
     private String authorEmailId;
     private int upvotes;
-    private String encodedImg;
-    private String encodedImgFilePath;
+    private String encodedImgString;
+    private String fileExtenstion;
 
-    public String getEncodedImgFilePath() {
-        return encodedImgFilePath;
+    public String getFileExtenstion() {
+        return fileExtenstion;
     }
 
-    public void setEncodedImgFilePath(String encodedImgFilePath) {
-        this.encodedImgFilePath = encodedImgFilePath;
+    public void setFileExtenstion(String fileExtenstion) {
+        this.fileExtenstion = fileExtenstion;
     }
 
-    public String getEncodedImg() {
-        return encodedImg;
+    public String getEncodedImgString() {
+        return encodedImgString;
     }
 
-    public void setEncodedImg(String encodedImg) {
-        this.encodedImg = encodedImg;
+    public void setEncodedImgString(String encodedImgString) {
+        this.encodedImgString = encodedImgString;
     }
 
     public String getPostId() {

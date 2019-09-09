@@ -8,11 +8,11 @@ import java.util.Set;
 
 @Entity(value = "user_data", noClassnameStored = true)
 public class User {
+    @Id
+    private String emailId;
     private String firstName;
     private String lastName;
     private String nickName;
-    @Id
-    private String emailId;
     private String password;
     private Set<String> followTagList;
 

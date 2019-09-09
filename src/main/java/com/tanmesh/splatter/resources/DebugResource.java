@@ -1,8 +1,10 @@
 package com.tanmesh.splatter.resources;
 
+import com.google.common.base.Preconditions;
 import com.tanmesh.splatter.authentication.UserSession;
 import com.tanmesh.splatter.entity.User;
 import com.tanmesh.splatter.exception.InvalidInputException;
+import com.tanmesh.splatter.service.ITagService;
 import com.tanmesh.splatter.service.IUserService;
 import io.dropwizard.auth.Auth;
 
@@ -17,9 +19,11 @@ import java.util.List;
 @Path("/debug")
 public class DebugResource {
     private IUserService userService;
+    private ITagService tagService;
 
-    public DebugResource(IUserService userService) {
+    public DebugResource(IUserService userService, ITagService tagService) {
         this.userService = userService;
+        this.tagService = tagService;
     }
 
     @GET
@@ -41,9 +45,38 @@ public class DebugResource {
         List<User> users;
         try {
             users = userService.userInfo();
-        }catch (InvalidInputException e) {
+        } catch (InvalidInputException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(users).build();
     }
+
+    @GET
+    @Path("autocompleteTag")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response autocompleteTag(@QueryParam("inputPrefix") String inputPrefix) {
+        List<String> tags;
+        try {
+            Preconditions.checkNotNull(inputPrefix, "input prefix should not be null");
+            tags = tagService.autocompleteTags(inputPrefix);
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+        return Response.status(Response.Status.ACCEPTED).entity(tags).build();
+    }
+
+    @GET
+    @Path("addAllTagForAutocomplete")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response insertAllTagForAutocomplete(@QueryParam("inputPrefix") String inputPrefix) {
+        try {
+            Preconditions.checkNotNull(inputPrefix, "input prefix should not be null");
+            tagService.insertAllTagForAutocomplete();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+        return Response.status(Response.Status.ACCEPTED).entity(true).build();
+    }
+
 }
