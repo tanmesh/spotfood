@@ -1,25 +1,37 @@
 package com.tanmesh.splatter.entity;
 
+import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.*;
 import org.mongodb.morphia.utils.IndexType;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
+import static org.mongodb.morphia.utils.IndexType.DESC;
+
+/*
+    TODO:
+    1. how to add secondary index on `lastTimestamp`
+    https://morphia.dev/morphia/1.6/indexing.html
+ */
 @Entity(value = "user_posts", noClassnameStored = true)
 @Indexes({
-        @Index(fields = @Field(value = "latLong", type = IndexType.GEO2DSPHERE))
+        @Index(fields = @Field(value = "latLong", type = IndexType.GEO2DSPHERE)),
+        @Index(fields = @Field(value = "creationTimestamp", type = DESC)),
 })
 public class UserPost {
     @Id
-    private String postId;
-    private List<String> tags;
+    private ObjectId postId;
+    @Embedded
+    private Set<Tag> tagList;
     private String locationName;
     private String authorEmailId;
     private int upVotes;
-    private String encodedImgString;
-
+    private String imageS3Path;
     private LatLong latLong;
+    @Property
+    private long creationTimestamp;
 
     public UserPost() {
     }
@@ -32,28 +44,36 @@ public class UserPost {
         this.latLong = latLong;
     }
 
-    public String getPostId() {
+    public ObjectId getPostId() {
         return postId;
     }
 
-    public void setPostId(String postId) {
+    public void setPostId(ObjectId postId) {
         this.postId = postId;
     }
 
-    public List<String> getTags() {
-        return tags;
+    public Set<Tag> getTags() {
+        return tagList;
     }
 
-    public String getEncodedImgString() {
-        return encodedImgString;
+    public String getImageS3Path() {
+        return imageS3Path;
     }
 
-    public void setEncodedImgString(String encodedImgString) {
-        this.encodedImgString = encodedImgString;
+    public void setImageS3Path(String imageS3Path) {
+        this.imageS3Path = imageS3Path;
     }
 
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+    public void setTags(Set<Tag> tagList) {
+        this.tagList = tagList;
+    }
+
+    public Set<String> getTagsString() {
+        Set<String> res = new HashSet<>();
+        for (Tag tag : tagList) {
+            res.add(tag.getName());
+        }
+        return res;
     }
 
     public String getLocationName() {
@@ -91,5 +111,13 @@ public class UserPost {
     @Override
     public int hashCode() {
         return Objects.hash(postId);
+    }
+
+    public long getCreationTimestamp() {
+        return creationTimestamp;
+    }
+
+    public void setCreationTimestamp(long creationTimestamp) {
+        this.creationTimestamp = creationTimestamp;
     }
 }

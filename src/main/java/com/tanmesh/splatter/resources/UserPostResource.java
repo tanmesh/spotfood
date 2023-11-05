@@ -33,16 +33,28 @@ public class UserPostResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response addPostDetails(@Auth UserSession userSession, UserPostData userPostData) {
         try {
-            Preconditions.checkNotNull(userPostData.getTags(), "tags should not be null");
+            Preconditions.checkNotNull(userPostData.getTagList(), "tags should not be null");
             Preconditions.checkNotNull(userPostData.getLocationName(), "location should not be null");
-            Preconditions.checkNotNull(userPostData.getEncodedImgString(), "image should not be null");
+            Preconditions.checkNotNull(userPostData.getImgUrl(), "image should not be null");
             Preconditions.checkNotNull(userPostData.getLatitude(), "latitude should not be null");
             Preconditions.checkNotNull(userPostData.getLongitude(), "longitude should not be null");
 
             String emailId = userSession.getEmailId();
 
-            //  TODO: need to work on the image
             userPostService.addPost(userPostData, emailId);
+        } catch (InvalidInputException | IOException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+        return Response.status(Response.Status.ACCEPTED).entity(true).build();
+    }
+
+    @POST
+    @Path("add_dummy")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addDummyPostDetails() {
+        try {
+            userPostService.addDummyPost();
         } catch (InvalidInputException | IOException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
@@ -52,19 +64,19 @@ public class UserPostResource {
     @GET
     @Path("get")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPostDetails(@Auth UserSession userSession) {
+    public Response getPostDetails(@Auth UserSession userSession, @QueryParam("postId") String postId) {
         UserPost userPost;
         try {
-            String emailId = userSession.getEmailId();
-            userPost = userPostService.getPost(emailId);
-        } catch (InvalidInputException e) {
+            Preconditions.checkNotNull(postId, "postId id should not be null");
+            userPost = userPostService.getPost(postId);
+        } catch (InvalidInputException | PostNotFoundException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(userPost).build();
     }
 
     @GET
-    @Path("get_specific_user_posts")
+    @Path("get_user_posts")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllPostDetails(@Auth UserSession userSession, @QueryParam("authorEmailId") String authorEmailId) {
         List<UserPost> userPost;
@@ -84,7 +96,7 @@ public class UserPostResource {
         UserPost userPost;
         try {
             Preconditions.checkNotNull(postId, "post id should not be null");
-            userPost = userPostService.likePost(postId);
+            userPost = userPostService.likePost(userSession.getEmailId(), postId);
         } catch (InvalidInputException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         } catch (PostNotFoundException e) {
@@ -93,15 +105,31 @@ public class UserPostResource {
         return Response.status(Response.Status.ACCEPTED).entity(userPost).build();
     }
 
+    @GET
+    @Path("unlike")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response unlikePostDetails(@Auth UserSession userSession, @QueryParam("postId") String postId) {
+        UserPost userPost;
+        try {
+            Preconditions.checkNotNull(postId, "post id should not be null");
+            userPostService.unlikePost(userSession.getEmailId(), postId);
+        } catch (InvalidInputException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        } catch (PostNotFoundException e) {
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
+        }
+        return Response.status(Response.Status.ACCEPTED).entity(true).build();
+    }
+
     @POST
     @Path("delete")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deletePostDetails(@Auth UserSession userSession, String postId) {
+    public Response deletePostDetails(@Auth UserSession userSession, @QueryParam("postId") String postId) {
         try {
             Preconditions.checkNotNull(postId, "post id should not be null");
             userPostService.deletePost(postId);
-        } catch (InvalidInputException e) {
+        } catch (InvalidInputException | PostNotFoundException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(true).build();
@@ -111,11 +139,31 @@ public class UserPostResource {
     @Path("feeds")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response userFeeds(@Auth UserSession userSession) {
+    public Response userFeeds(@Auth UserSession userSession) throws InvalidInputException {
         String emailId = userSession.getEmailId();
-        Set<UserPost> feeds = userPostService.getUserFeed(emailId);
+        Set<UserPostData> feeds = userPostService.getUserFeed(emailId, -1);
         return Response.status(Response.Status.ACCEPTED).entity(feeds).build();
     }
 
-    // TODO: "edit" API
+    @GET
+    @Path("explore")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response userExplore(@Auth UserSession userSession) throws InvalidInputException {
+        String emailId = userSession.getEmailId();
+        Set<UserPostData> feeds = userPostService.getUserExplore(-1);
+        return Response.status(Response.Status.ACCEPTED).entity(feeds).build();
+    }
+
+    @GET
+    @Path("feeds/{startAfter}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response userFeeds(@Auth UserSession userSession, @PathParam("startAfter") int startAfter) throws InvalidInputException {
+        String emailId = userSession.getEmailId();
+        Set<UserPostData> feeds = userPostService.getUserFeed(emailId, startAfter);
+        return Response.status(Response.Status.ACCEPTED).entity(feeds).build();
+    }
+
+    // TODO: edit User Post
 }

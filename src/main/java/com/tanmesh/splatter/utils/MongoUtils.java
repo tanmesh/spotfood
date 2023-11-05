@@ -41,14 +41,14 @@ public class MongoUtils {
         ServerAddress addr = new ServerAddress(dbConfig.getHost(), dbConfig.getPort());
         List<MongoCredential> credentialsList = new ArrayList<>();
 //        MongoCredential credentia = MongoCredential.createCredential(
-////                dbConfig.getUserByEmailId(), dbConfig.getDbName(), dbConfig.getPassword().toCharArray());
-////        credentialsList.add(credentia);
+//                dbConfig.getUserByEmailId(), dbConfig.getDbName(), dbConfig.getPassword().toCharArray());
+//        credentialsList.add(credentia);
 
         MongoClient client = new MongoClient(addr, credentialsList);
+//        Datastore datastore = new Morphia().mapPackage("com.tanmesh.spotfood.entity").createDatastore(client, dbConfig.getDbName());
         Datastore datastore = new Morphia().mapPackage("com.tanmesh.splatter.entity").createDatastore(client, dbConfig.getDbName());
         datastore.ensureIndexes(true);
         return datastore;
-
     }
 
     public static Datastore createDatastore(Mongo mongo, String dbName) {

@@ -1,0 +1,4 @@
+MongoDB         - cd /Users/tanmeshnm/dev/splatter && mongosh
+Redis           - cd /Users/tanmeshnm/dev/splatter && redis-server
+ZK              - cd /Users/tanmeshnm/Downloads/kafka-3.5.0-src && bin/zookeeper-server-start.sh config/zookeeper.properties
+Kafka broker    - cd /Users/tanmeshnm/Downloads/kafka-3.5.0-src && bin/kafka-server-start.sh config/server.properties

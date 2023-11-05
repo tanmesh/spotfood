@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Time: 12:47
  */
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum SearchEntityType {
+public enum SearchType {
     TAG,
     LOCALITY,
     CITY,

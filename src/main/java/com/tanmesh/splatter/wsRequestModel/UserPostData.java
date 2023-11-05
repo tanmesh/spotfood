@@ -1,17 +1,36 @@
 package com.tanmesh.splatter.wsRequestModel;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class UserPostData {
     private String postId;
-    private List<String> tags;
+    private Set<String> tagList = new HashSet<>();
     private String locationName;
     private String authorEmailId;
     private int upvotes;
-    private String encodedImgString;
+    private String imgUrl;
     private String fileExtenstion;
     private Double latitude;
     private Double longitude;
+    private long lastTimestamp;
+    private boolean liked;
+
+    public UserPostData() {
+    }
+
+    public UserPostData(String postId, Set<String> tagList, String locationName, String authorEmailId, int upvotes, String imgUrl, Double latitude, Double longitude, long lastTimestamp) {
+        this.postId = postId;
+        this.tagList = tagList;
+        this.locationName = locationName;
+        this.authorEmailId = authorEmailId;
+        this.upvotes = upvotes;
+        this.imgUrl = imgUrl;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.lastTimestamp = lastTimestamp;
+        this.liked = false;
+    }
 
     public Double getLatitude() {
         return latitude;
@@ -37,12 +56,12 @@ public class UserPostData {
         this.fileExtenstion = fileExtenstion;
     }
 
-    public String getEncodedImgString() {
-        return encodedImgString;
+    public String getImgUrl() {
+        return imgUrl;
     }
 
-    public void setEncodedImgString(String encodedImgString) {
-        this.encodedImgString = encodedImgString;
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 
     public String getPostId() {
@@ -53,12 +72,12 @@ public class UserPostData {
         this.postId = postId;
     }
 
-    public List<String> getTags() {
-        return tags;
+    public Set<String> getTagList() {
+        return tagList;
     }
 
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+    public void setTagList(Set<String> tagList) {
+        this.tagList = tagList;
     }
 
     public String getLocationName() {
@@ -77,11 +96,27 @@ public class UserPostData {
         this.authorEmailId = authorEmailId;
     }
 
-    public int getUpvotes() {
+    public int getUpvotes(int upVotes) {
         return upvotes;
     }
 
     public void setUpvotes(int upvotes) {
         this.upvotes = upvotes;
+    }
+
+    public long getLastTimestamp() {
+        return lastTimestamp;
+    }
+
+    public void setLastTimestamp(long lastTimestamp) {
+        this.lastTimestamp = lastTimestamp;
+    }
+
+    public boolean isLiked() {
+        return liked;
+    }
+
+    public void setLiked(boolean liked) {
+        this.liked = liked;
     }
 }

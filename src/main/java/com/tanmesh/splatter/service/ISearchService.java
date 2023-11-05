@@ -1,7 +1,7 @@
 package com.tanmesh.splatter.service;
 
 import com.tanmesh.splatter.entity.UserPost;
-import com.tanmesh.splatter.entity.search.SearchEntity;
+import com.tanmesh.splatter.wsRequestModel.SearchData;
 
 import java.util.Set;
 
@@ -11,5 +11,7 @@ import java.util.Set;
  * Time: 11:32
  */
 public interface ISearchService {
-    Set<UserPost> getNearbySearchResult(String emailId, SearchEntity searchEntity, Boolean near);
+    Set<UserPost> getSearchResult(String emailId, SearchData searchEntity);
+
+    Set<UserPost> getSearchTagsResults(String emailId, SearchData searchData);
 }

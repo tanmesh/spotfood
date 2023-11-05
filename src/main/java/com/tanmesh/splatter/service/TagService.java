@@ -7,6 +7,11 @@ import com.tanmesh.splatter.entity.Tag;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+    TODO:
+    1. complete autocomplete feature using WebSockets
+    https://chat.openai.com/share/108778f7-483f-40ae-b608-fc26d234513f
+ */
 public class TagService implements ITagService {
     private TagDAO tagDAO;
     private TagTrie tagTrie;
@@ -20,6 +25,7 @@ public class TagService implements ITagService {
         Tag tag = new Tag();
         tag.setName(tagName);
         tagDAO.save(tag);
+        tagTrie.insert(tagName);
     }
 
     public List<Tag> getAllTag() {
@@ -37,6 +43,7 @@ public class TagService implements ITagService {
     public void deleteTag(String name) {
         Tag tag = tagDAO.getTag("name", name);
         tagDAO.delete(tag);
+        tagTrie.delete(tag);
     }
 
     public List<String> autocompleteTags(String inputPrefix) {
@@ -49,6 +56,4 @@ public class TagService implements ITagService {
             tagTrie.insert(inputPrefix.getName());
         }
     }
-
-    // TODO: create the existence of the tag.
 }

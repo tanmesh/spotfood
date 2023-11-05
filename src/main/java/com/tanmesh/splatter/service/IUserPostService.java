@@ -12,15 +12,21 @@ import java.util.Set;
 public interface IUserPostService {
     void addPost(UserPostData userPostData, String emailId) throws InvalidInputException, IOException;
 
-    void deletePost(String emailId) throws InvalidInputException;
+    void deletePost(String postid) throws InvalidInputException, PostNotFoundException;
 
-    UserPost likePost(String emailId) throws InvalidInputException, PostNotFoundException;
+    UserPost likePost(String emailId, String postId) throws InvalidInputException, PostNotFoundException;
 
-    UserPost getPost(String emailId) throws InvalidInputException;
+    void unlikePost(String emailId, String postId) throws InvalidInputException, PostNotFoundException;
+
+    UserPost getPost(String postId) throws InvalidInputException, PostNotFoundException;
 
     List<UserPost> getAllPostOfUser(String emailId) throws InvalidInputException;
 
     boolean editPost(String postId, List<String> tagList, String location, String authorName) throws InvalidInputException;
 
-    Set<UserPost> getUserFeed(String emailId);
+    Set<UserPostData> getUserFeed(String emailId, int startAfter);
+
+    Set<UserPostData> getUserExplore(int startAfter);
+
+    void addDummyPost() throws InvalidInputException, IOException;
 }

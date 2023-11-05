@@ -2,6 +2,7 @@ package com.tanmesh.splatter.service;
 
 import com.tanmesh.splatter.authentication.UserSession;
 import com.tanmesh.splatter.dao.UserDAO;
+import com.tanmesh.splatter.entity.Tag;
 import com.tanmesh.splatter.entity.User;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.wsRequestModel.UserData;
@@ -50,7 +51,7 @@ public class UserService implements IUserService {
     }
 
     public UserSession logInUser(String emailId, String inputPassword) throws Exception {
-        User user = getUserProfile(emailId);
+        User user = userDAO.getUserByEmailId(emailId);
         if (user == null) {
             throw new NullPointerException("user not found");
         }
@@ -71,35 +72,65 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void getUserFeed(String emailId) {
-//        sanityCheck(emailId, "emailId");
-//        User user = userDAO.getUserByEmailId("emailId", emailId);
-//        Set<String> userTags = user.getFollowTagList();
-//        for (String tag : userTags) {
-//            List<UserPost> userPost = userDAO.getAllPost(tag);
-//        }
-    }
-
-    @Override
-    public void followTag(String tag, String emailId) {
+    public void followUser(String connectionEmailId, String emailId) throws InvalidInputException {
         User user = userDAO.getUserByEmailId(emailId);
-        Set<String> tagList = user.getFollowTagList();
-        if (tagList == null) {
-            tagList = new HashSet<>();
+        Set<String> followersList = user.getFollowersList();
+        if (followersList == null) {
+            followersList = new HashSet<>();
         }
-        tagList.add(tag);
-        user.setFollowTagList(tagList);
+        followersList.add(connectionEmailId);
+        user.setFollowersList(followersList);
         userDAO.save(user);
     }
 
     @Override
-    public void unFollowTag(String tag, String emailId) {
+    public void unFollowUser(String connectionEmailId, String emailId) throws InvalidInputException {
         User user = userDAO.getUserByEmailId(emailId);
-        Set<String> tagList = user.getFollowTagList();
+        Set<String> followersList = user.getFollowersList();
+        if (followersList == null) {
+            return;
+        }
+        followersList.remove(connectionEmailId);
+        user.setFollowersList(followersList);
+        userDAO.save(user);
+    }
+
+    @Override
+    public UserData edit(String emailId, UserData userData) throws Exception {
+        User user = userDAO.getUserByEmailId(emailId);
+
+        user.setFirstName(userData.getFirstName());
+        user.setLastName(userData.getLastName());
+        user.setNickName(userData.getNickName());
+        user.setTagList(userData.getTagList());
+        userDAO.save(user);
+
+        return userData;
+    }
+
+    @Override
+    public void followTag(Set<String> tags, String emailId) {
+        User user = userDAO.getUserByEmailId(emailId);
+        Set<Tag> tagList = user.getTagList();
+        if (tagList == null) {
+            tagList = new HashSet<>();
+        }
+        for (String tag : tags) {
+            tagList.add(new Tag(tag));
+        }
+        userDAO.save(user);
+    }
+
+    @Override
+    public void unFollowTag(Set<String> tags, String emailId) {
+        User user = userDAO.getUserByEmailId(emailId);
+        Set<Tag> tagList = user.getTagList();
         if (tagList == null) {
             return;
         }
-        tagList.remove(tag);
+        for (String tag : tags) {
+            tagList.remove(new Tag(tag));
+        }
         userDAO.save(user);
     }
 
@@ -113,9 +144,11 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User getUserProfile(String emailId) {
-        return userDAO.getUserByEmailId(emailId);
-    }
+    public UserData getUserProfile(String emailId) {
+        User user = userDAO.getUserByEmailId(emailId);
 
-    // TODO: complete getUserFeed
+        UserData userData = new UserData(user);
+
+        return userData;
+    }
 }

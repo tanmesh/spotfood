@@ -6,6 +6,7 @@ import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.wsRequestModel.UserData;
 
 import java.util.List;
+import java.util.Set;
 
 public interface IUserService {
     void deleteUser(String emailID) throws InvalidInputException;
@@ -14,15 +15,19 @@ public interface IUserService {
 
     List<User> userInfo() throws InvalidInputException;
 
-    void followTag(String tag, String emailId) throws InvalidInputException;
+    void followTag(Set<String> tag, String emailId) throws InvalidInputException;
 
-    void unFollowTag(String tag, String emailId) throws InvalidInputException;
+    void unFollowTag(Set<String> tag, String emailId) throws InvalidInputException;
 
-    User getUserProfile(String emailId);
+    UserData getUserProfile(String emailId);
 
     void signUpUser(UserData userData);
 
-    void getUserFeed(String emailId) throws InvalidInputException;
-
     UserSession logInUser(String emailId, String password) throws Exception;
+
+    void followUser(String connectionEmailId, String emailId) throws InvalidInputException;
+
+    void unFollowUser(String connectionEmailId, String emailId) throws InvalidInputException;
+
+    UserData edit(String emailId, UserData userData) throws Exception;
 }

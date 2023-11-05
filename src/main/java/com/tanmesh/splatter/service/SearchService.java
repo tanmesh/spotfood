@@ -2,7 +2,7 @@ package com.tanmesh.splatter.service;
 
 import com.tanmesh.splatter.dao.UserPostDAO;
 import com.tanmesh.splatter.entity.UserPost;
-import com.tanmesh.splatter.entity.search.SearchEntity;
+import com.tanmesh.splatter.wsRequestModel.SearchData;
 
 import java.util.Set;
 
@@ -20,23 +20,29 @@ public class SearchService implements ISearchService {
         this.userPostDAO = userPostDAO;
     }
 
+    // TODO: incomplete
     @Override
-    public Set<UserPost> getNearbySearchResult(String emailId, SearchEntity searchEntity, Boolean near) {
-//         only for the tags
+    public Set<UserPost> getSearchResult(String emailId, SearchData searchEntity) {
+
+        Set<UserPost> searchFeed;
+
+        return userPostDAO.getNearBy("sweet", 26.803087, 80.891247);
+    }
+
+    @Override
+    public Set<UserPost> getSearchTagsResults(String emailId, SearchData searchData) {
 //        Set<UserPost> userPosts = null;
-//        if (near && searchEntity.getEntityType().equals(SearchEntityType.TAG)) {
-//            String tagName = searchEntity.getEntityName();
-//            User user = userService.getUserProfile(emailId);
-//            if(user != null) {
-//                LatLong latlong = user.getLastUpdatedLocation();
-//                if (latlong != null) {
-//                    Double latitude = latlong.getCoordinates().get(0);
-//                    Double longitude = latlong.getCoordinates().get(1);
-//                    userPosts = userPostDAO.getNearBy(tagName, latitude, longitude);
-//                }
+//        String tagName = searchData.getName();
+//        User user = userService.getUserProfile(emailId);
+//        if(user != null) {
+//            LatLong latlong = user.getLastUpdatedLocation();
+//            if (latlong != null) {
+//                double latitude = latlong.getCoordinates()[0];
+//                double longitude = latlong.getCoordinates()[1];
+//                userPosts = userPostDAO.getNearBy(tagName, latitude, longitude);
 //            }
 //        }
 //        return userPosts;
-        return userPostDAO.getNearBy("chilli", 26.803087, 80.891247);
+        return null;
     }
 }

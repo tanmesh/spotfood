@@ -23,7 +23,6 @@ import javax.ws.rs.core.Response;
 
 public class AccessTokenSecurityProvider<T> implements InjectableProvider<Auth, Parameter> {
     public final static String AUTHENTICATION_HEADER = "x-access-token";
-
     private final Authenticator<AccessTokenCredentials, T> authenticator;
 
     public AccessTokenSecurityProvider(Authenticator<AccessTokenCredentials, T> authenticator) {

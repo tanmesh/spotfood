@@ -3,6 +3,7 @@ package com.tanmesh.splatter.autocomplete;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.tanmesh.splatter.entity.Tag;
 
 import java.util.List;
 import java.util.Map;
@@ -66,11 +67,11 @@ public class TagTrie implements ITagTrie {
     @Override
     public List<String> autocomplete(String prefix) {
         TagTrie node = this;
-        for (char c : prefix.toCharArray()) {
-            if (!node.children.containsKey(c)) {
+        for (char ch : prefix.toCharArray()) {
+            if (!node.children.containsKey(ch)) {
                 return Lists.newArrayList();
             }
-            node = node.children.get(c);
+            node = node.children.get(ch);
         }
         return node.getAllPrefixesList();
     }
@@ -87,5 +88,9 @@ public class TagTrie implements ITagTrie {
             results.addAll(childPrefixes);
         }
         return results;
+    }
+
+    // TODO: complete delete(tag)
+    public void delete(Tag tag) {
     }
 }

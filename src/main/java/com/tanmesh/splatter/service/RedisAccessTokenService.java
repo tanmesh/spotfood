@@ -19,7 +19,6 @@ public class RedisAccessTokenService implements AccessTokenService {
         un --> userName
         at --> accessToken
     */
-
     private ObjectMapper objectMapper;
     private JedisPool jedisPool;
     private Map<String, String> keyMap = new HashMap<String, String>();
@@ -32,14 +31,13 @@ public class RedisAccessTokenService implements AccessTokenService {
     @Override
     public boolean saveAccessToken(UserSession userSession) {
         boolean flag = false;
+        int ttlInSeconds = 60 * 60 * 24; // 24 hr
+
         try (Jedis jedis = jedisPool.getResource()) {
-            String emailId = String.valueOf(userSession.getEmailId());
-            String emailIdKey = getUserNameKey(emailId);
             String agentJson = objectMapper.writeValueAsString(userSession);
-            jedis.set(emailIdKey, agentJson);                           // {emailId, json}
 
             String accessToken = userSession.getAccessToken();
-            jedis.set(getAccessTokenKey(accessToken), agentJson);       // {token, json}
+            jedis.setex(getAccessTokenKey(accessToken), ttlInSeconds, agentJson);       // {token, json}
             flag = true;
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -69,22 +67,21 @@ public class RedisAccessTokenService implements AccessTokenService {
 
     @Override
     public boolean isValidToken(String accessToken) {
-        UserSession userSession = getUserSessionFromAccessToken(accessToken);
-        return userSession != null;
+        return getUserSessionFromAccessToken(accessToken) != null;
     }
 
     @Override
     public boolean removeAccessToken(String accessToken) {
-        boolean flag = false;
         try (Jedis jedis = jedisPool.getResource()) {
             jedis.del(getAccessTokenKey(accessToken));
-            flag = true;
+            return true;
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return flag;
+        return false;
     }
 
+    // TODO: remove user
     @Override
     public void removeUser(String userName) {
 

@@ -1,8 +1,23 @@
-
 dbConfig:
-  dbName : mogambo1
-  port : 27017
-  host : localhost
+  dbName: spotfood
+  port: 27017
+  host: localhost
+
+awsConfig:
+  accessKey: AKIAQJFI7P4NILKIXKGW
+  secretKey: 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
+  region: us-east-2
+
+#kafkaProducerConfig:
+#  bootstrapServers: localhost:9092
+#  keySerializer: org.apache.kafka.common.serialization.StringSerializer
+#  valueSerializer: org.apache.kafka.common.serialization.StringSerializer
+#
+#kafkaConsumerConfig:
+#  bootstrapServers: localhost:9092
+#  keyDeserializer: org.apache.kafka.common.serialization.StringDeserializer
+#  valueDeserializer: org.apache.kafka.common.serialization.StringDeserializer
+#  groupId: consumer-group
 
 server:
   applicationConnectors:

@@ -7,7 +7,6 @@ package com.tanmesh.splatter.authentication;
  */
 public class AccessTokenCredentials {
     private String token;
-
     public AccessTokenCredentials(String token) {
         this.token = token;
     }

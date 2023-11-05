@@ -6,7 +6,7 @@ import org.mongodb.morphia.annotations.Id;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity(value = "user_data", noClassnameStored = true)
+@Entity(value = "user", noClassnameStored = true)
 public class User {
     @Id
     private String emailId;
@@ -14,35 +14,19 @@ public class User {
     private String lastName;
     private String nickName;
     private String password;
-    private Set<String> followTagList;
+    private Set<String> followingList = new HashSet<>();
+    private Set<String> followersList = new HashSet<>();
+    private Set<Tag> tagList = new HashSet<>();
     private LatLong lastUpdatedLocation;
 
-    public User() {
-        followTagList = new HashSet<>();
+    public Set<Tag> getTagList() {
+        return tagList;
     }
 
-    public LatLong getLastUpdatedLocation() {
-        return lastUpdatedLocation;
-    }
-
-    public void setLastUpdatedLocation(LatLong lastUpdatedLocation) {
-        this.lastUpdatedLocation = lastUpdatedLocation;
-    }
-
-    public Set<String> getFollowTagList() {
-        return followTagList;
-    }
-
-    public void setFollowTagList(Set<String> followTagList) {
-        this.followTagList = followTagList;
-    }
-
-    public String getNickName() {
-        return nickName;
-    }
-
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
+    public void setTagList(Set<String> tagList2) {
+        for(String tag: tagList2) {
+            this.tagList.add(new Tag(tag));
+        }
     }
 
     public String getEmailId() {
@@ -51,14 +35,6 @@ public class User {
 
     public void setEmailId(String emailId) {
         this.emailId = emailId;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getFirstName() {
@@ -75,5 +51,45 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Set<String> getFollowingList() {
+        return followingList;
+    }
+
+    public void setFollowingList(Set<String> followingList) {
+        this.followingList = followingList;
+    }
+
+    public Set<String> getFollowersList() {
+        return followersList;
+    }
+
+    public void setFollowersList(Set<String> followersList) {
+        this.followersList = followersList;
+    }
+
+    public LatLong getLastUpdatedLocation() {
+        return lastUpdatedLocation;
+    }
+
+    public void setLastUpdatedLocation(LatLong lastUpdatedLocation) {
+        this.lastUpdatedLocation = lastUpdatedLocation;
     }
 }

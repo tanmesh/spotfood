@@ -3,6 +3,10 @@ package com.tanmesh.splatter.wsRequestModel;
 public class TagData {
     private String name;
 
+    public TagData(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }

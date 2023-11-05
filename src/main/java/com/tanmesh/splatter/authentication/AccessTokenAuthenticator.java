@@ -12,11 +12,9 @@ import io.dropwizard.auth.Authenticator;
  */
 public class AccessTokenAuthenticator implements Authenticator<AccessTokenCredentials, UserSession> {
     private AccessTokenService accessTokenService;
-
     public AccessTokenAuthenticator(AccessTokenService accessTokenService) {
         this.accessTokenService = accessTokenService;
     }
-
     @Override
     public Optional<UserSession> authenticate(AccessTokenCredentials accessTokenCredentials) throws AuthenticationException {
         if (accessTokenService.isValidToken(accessTokenCredentials.getToken())) {

@@ -1,7 +1,5 @@
 package com.tanmesh.splatter.entity;
 
-import java.util.List;
-
 /**
  * Created by tanmesh
  * Date: 2019-09-09
@@ -9,9 +7,11 @@ import java.util.List;
  */
 public class LatLong {
     private String type;
-    private List<Double> coordinates;
+    private double[] coordinates;
+    public LatLong() {
+    }
 
-    public LatLong(List<Double> coordinates) {
+    public LatLong(double[] coordinates) {
         this.type = "Point";
         this.coordinates = coordinates;
     }
@@ -24,11 +24,11 @@ public class LatLong {
         this.type = type;
     }
 
-    public List<Double> getCoordinates() {
+    public double[] getCoordinates() {
         return coordinates;
     }
 
-    public void setCoordinates(List<Double> coordinates) {
+    public void setCoordinates(double[] coordinates) {
         this.coordinates = coordinates;
     }
 }
