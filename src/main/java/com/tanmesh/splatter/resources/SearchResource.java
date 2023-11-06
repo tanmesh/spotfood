@@ -1,15 +1,12 @@
 package com.tanmesh.splatter.resources;
 
 import com.tanmesh.splatter.authentication.UserSession;
-import com.tanmesh.splatter.entity.UserPost;
 import com.tanmesh.splatter.service.ISearchService;
 import com.tanmesh.splatter.wsRequestModel.SearchData;
+import com.tanmesh.splatter.wsRequestModel.UserPostData;
 import io.dropwizard.auth.Auth;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.HashSet;
@@ -36,13 +33,16 @@ public class SearchResource {
     public Response getNearbySearchResult(@Auth UserSession userSession, SearchData searchData) {
         String emailId = userSession.getEmailId();
 
-        Set<UserPost> userPosts = new HashSet<>();
+        Set<UserPostData> userPostsData = new HashSet<>();
         switch (searchData.getType()) {
             case TAG:
-                userPosts = searchService.getSearchTagsResults(emailId, searchData);
+                userPostsData = searchService.getSearchTagsResults(emailId, searchData);
+                break;
+            case LOCALITY:
+                userPostsData = searchService.getSearchLocalityResults(emailId, searchData);
                 break;
         }
 
-        return Response.status(Response.Status.ACCEPTED).entity(userPosts).build();
+        return Response.status(Response.Status.ACCEPTED).entity(userPostsData).build();
     }
 }

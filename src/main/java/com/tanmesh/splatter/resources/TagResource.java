@@ -31,7 +31,6 @@ public class TagResource {
         return Response.status(Response.Status.ACCEPTED).entity(true).build();
     }
 
-    @GET
     @Path("get_all")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)

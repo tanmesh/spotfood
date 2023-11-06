@@ -89,7 +89,7 @@ public class UserPostResource {
         return Response.status(Response.Status.ACCEPTED).entity(userPost).build();
     }
 
-    @GET
+    @POST
     @Path("like")
     @Produces(MediaType.APPLICATION_JSON)
     public Response likePostDetails(@Auth UserSession userSession, @QueryParam("postId") String postId) {
@@ -105,7 +105,7 @@ public class UserPostResource {
         return Response.status(Response.Status.ACCEPTED).entity(userPost).build();
     }
 
-    @GET
+    @POST
     @Path("unlike")
     @Produces(MediaType.APPLICATION_JSON)
     public Response unlikePostDetails(@Auth UserSession userSession, @QueryParam("postId") String postId) {
@@ -145,6 +145,7 @@ public class UserPostResource {
         return Response.status(Response.Status.ACCEPTED).entity(feeds).build();
     }
 
+    // TODO: fix this
     @GET
     @Path("explore")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -165,5 +166,5 @@ public class UserPostResource {
         return Response.status(Response.Status.ACCEPTED).entity(feeds).build();
     }
 
-    // TODO: edit User Post
+    // TODO: add edit User Post
 }

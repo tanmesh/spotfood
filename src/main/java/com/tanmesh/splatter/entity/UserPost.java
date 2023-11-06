@@ -25,15 +25,34 @@ public class UserPost {
     private ObjectId postId;
     @Embedded
     private Set<Tag> tagList;
+    @Property
+    private long creationTimestamp;
     private String locationName;
     private String authorEmailId;
     private int upVotes;
-    private String imageS3Path;
+    private String imgUrl;
     private LatLong latLong;
-    @Property
-    private long creationTimestamp;
+    private boolean liked;
+
+    private String AuthorName;
 
     public UserPost() {
+    }
+
+    public String getAuthorName() {
+        return AuthorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        AuthorName = authorName;
+    }
+
+    public boolean getLiked() {
+        return liked;
+    }
+
+    public void setLiked(boolean liked) {
+        this.liked = liked;
     }
 
     public LatLong getLatLong() {
@@ -52,19 +71,19 @@ public class UserPost {
         this.postId = postId;
     }
 
-    public Set<Tag> getTags() {
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
+    public Set<Tag> getTagList() {
         return tagList;
     }
 
-    public String getImageS3Path() {
-        return imageS3Path;
-    }
-
-    public void setImageS3Path(String imageS3Path) {
-        this.imageS3Path = imageS3Path;
-    }
-
-    public void setTags(Set<Tag> tagList) {
+    public void setTagList(Set<Tag> tagList) {
         this.tagList = tagList;
     }
 

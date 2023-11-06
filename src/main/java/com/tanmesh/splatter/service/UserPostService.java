@@ -19,7 +19,9 @@ import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.exception.PostNotFoundException;
 import com.tanmesh.splatter.scrachpad.dummyData.FillDummyData;
 import com.tanmesh.splatter.scrachpad.dummyData.RestaurantInfo;
+import com.tanmesh.splatter.wsRequestModel.UserData;
 import com.tanmesh.splatter.wsRequestModel.UserPostData;
+import org.bson.types.ObjectId;
 import org.mongodb.morphia.Key;
 
 import javax.imageio.ImageIO;
@@ -56,6 +58,7 @@ public class UserPostService implements IUserPostService {
         String locationName = userPostData.getLocationName();
         userPost.setLocationName(locationName);
         userPost.setAuthorEmailId(emailId);
+        userPost.setAuthorName(userDAO.getUserName(emailId));
         userPost.setCreationTimestamp(System.currentTimeMillis());
 
         double[] coordinates = new double[2];
@@ -63,16 +66,16 @@ public class UserPostService implements IUserPostService {
         coordinates[1] = userPostData.getLatitude();
         userPost.setLatLong(new LatLong(coordinates));
 
-        userPost.setImageS3Path(userPostData.getImgUrl());
+        userPost.setImgUrl(userPostData.getImgUrl());
 
-        Set<Tag> postTags = userPost.getTags();
+        Set<Tag> postTags = userPost.getTagList();
         if (postTags == null) {
             postTags = new HashSet<>();
         }
         for (String tag : userPostData.getTagList()) {
             postTags.add(new Tag(tag));
         }
-        userPost.setTags(postTags);
+        userPost.setTagList(postTags);
 
         for (String tagName : userPostData.getTagList()) {
             Preconditions.checkNotNull(tagName, "tag name should not be null");
@@ -112,17 +115,7 @@ public class UserPostService implements IUserPostService {
                 Set<UserPost> postFromTags = userPostDAO.getAllPostForTags(tag);
                 if (postFromTags != null) {
                     for (UserPost userPost : postFromTags) {
-                        UserPostData userPostData = new UserPostData(
-                                userPost.getPostId().toString(),
-                                userPost.getTagsString(),
-                                userPost.getLocationName(),
-                                userPost.getAuthorEmailId(),
-                                userPost.getUpVotes(),
-                                userPost.getImageS3Path(),
-                                userPost.getLatLong().getCoordinates()[0],
-                                userPost.getLatLong().getCoordinates()[1],
-                                userPost.getCreationTimestamp()
-                        );
+                        UserPostData userPostData = new UserPostData(userPost);
                         userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
                         feed.add(userPostData);
                     }
@@ -137,17 +130,7 @@ public class UserPostService implements IUserPostService {
                 List<UserPost> postFromEmailId = userPostDAO.getAllPostOfUser(followerEmailId);
                 if (postFromEmailId != null) {
                     for (UserPost userPost : postFromEmailId) {
-                        UserPostData userPostData = new UserPostData(
-                                userPost.getPostId().toString(),
-                                userPost.getTagsString(),
-                                userPost.getLocationName(),
-                                userPost.getAuthorEmailId(),
-                                userPost.getUpVotes(),
-                                userPost.getImageS3Path(),
-                                userPost.getLatLong().getCoordinates()[0],
-                                userPost.getLatLong().getCoordinates()[1],
-                                userPost.getCreationTimestamp()
-                        );
+                        UserPostData userPostData = new UserPostData(userPost);
                         userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
                         feed.add(userPostData);
                     }
@@ -181,17 +164,7 @@ public class UserPostService implements IUserPostService {
                 Set<UserPost> postFromTags = userPostDAO.getAllPostForTags(tag);
                 if (postFromTags != null) {
                     for (UserPost userPost : postFromTags) {
-                        UserPostData userPostData = new UserPostData(
-                                userPost.getPostId().toString(),
-                                userPost.getTagsString(),
-                                userPost.getLocationName(),
-                                userPost.getAuthorEmailId(),
-                                userPost.getUpVotes(),
-                                userPost.getImageS3Path(),
-                                userPost.getLatLong().getCoordinates()[0],
-                                userPost.getLatLong().getCoordinates()[1],
-                                userPost.getCreationTimestamp()
-                        );
+                        UserPostData userPostData = new UserPostData(userPost);
                         userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
                         feed_.add(userPostData);
                     }
@@ -206,17 +179,7 @@ public class UserPostService implements IUserPostService {
                 List<UserPost> postFromEmailId = userPostDAO.getAllPostOfUser(followerEmailId);
                 if (postFromEmailId != null) {
                     for (UserPost userPost : postFromEmailId) {
-                        UserPostData userPostData = new UserPostData(
-                                userPost.getPostId().toString(),
-                                userPost.getTagsString(),
-                                userPost.getLocationName(),
-                                userPost.getAuthorEmailId(),
-                                userPost.getUpVotes(),
-                                userPost.getImageS3Path(),
-                                userPost.getLatLong().getCoordinates()[0],
-                                userPost.getLatLong().getCoordinates()[1],
-                                userPost.getCreationTimestamp()
-                        );
+                        UserPostData userPostData = new UserPostData(userPost);
                         userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
                         feed_.add(userPostData);
                     }
@@ -245,17 +208,7 @@ public class UserPostService implements IUserPostService {
                 Set<UserPost> postFromTags = userPostDAO.getAllPostForTags(tag);
                 if (postFromTags != null) {
                     for (UserPost userPost : postFromTags) {
-                        UserPostData userPostData = new UserPostData(
-                                userPost.getPostId().toString(),
-                                userPost.getTagsString(),
-                                userPost.getLocationName(),
-                                userPost.getAuthorEmailId(),
-                                userPost.getUpVotes(),
-                                userPost.getImageS3Path(),
-                                userPost.getLatLong().getCoordinates()[0],
-                                userPost.getLatLong().getCoordinates()[1],
-                                userPost.getCreationTimestamp()
-                        );
+                        UserPostData userPostData = new UserPostData(userPost);
                         userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
                         feed.add(userPostData);
                     }
@@ -275,17 +228,7 @@ public class UserPostService implements IUserPostService {
                 List<UserPost> postFromEmailId = userPostDAO.getAllPostOfUser(followerEmailId);
                 if (postFromEmailId != null) {
                     for (UserPost userPost : postFromEmailId) {
-                        UserPostData userPostData = new UserPostData(
-                                userPost.getPostId().toString(),
-                                userPost.getTagsString(),
-                                userPost.getLocationName(),
-                                userPost.getAuthorEmailId(),
-                                userPost.getUpVotes(),
-                                userPost.getImageS3Path(),
-                                userPost.getLatLong().getCoordinates()[0],
-                                userPost.getLatLong().getCoordinates()[1],
-                                userPost.getCreationTimestamp()
-                        );
+                        UserPostData userPostData = new UserPostData(userPost);
                         userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
                         feed.add(userPostData);
                     }
@@ -301,13 +244,8 @@ public class UserPostService implements IUserPostService {
 
         List<UserPost> userPosts = userPostDAO.getAllPost();
 
-        for (UserPost userPost: userPosts) {
-            UserPostData userPostData = new UserPostData();
-            userPostData.setImgUrl(userPost.getImageS3Path());
-            userPostData.setLocationName(userPost.getLocationName());
-            userPostData.setAuthorEmailId(userPost.getAuthorEmailId());
-            userPostData.setUpvotes(userPost.getUpVotes());
-            feed.add(userPostData);
+        for (UserPost userPost : userPosts) {
+            feed.add(new UserPostData(userPost));
         }
 
         return feed;
@@ -349,13 +287,18 @@ public class UserPostService implements IUserPostService {
     @Override
     public void addDummyPost() throws InvalidInputException, IOException {
         FillDummyData fillDummyData = new FillDummyData();
-        List<Set<String>> tags = FillDummyData.getTags();
-        List<String> imgPath = FillDummyData.readImages();
-        List<RestaurantInfo> restaurantInfos = FillDummyData.getRestaurantInfo();
-        List<String> userEmailId = FillDummyData.getEmailId();
+        List<Set<String>> tags = fillDummyData.getTags();
+        List<String> imgPath = fillDummyData.readImages();
+        List<RestaurantInfo> restaurantInfos = fillDummyData.getRestaurantInfo();
+        List<UserData> users = fillDummyData.getDummyUser();
+
+        for(UserData user: users) {
+
+            userService.signUpUser(user);
+        }
 
         for (int i = 0; i < 20; ++i) {
-            String emailId = userEmailId.get(i % 4);
+            String emailId = users.get(i % 4).getEmailId();
             String imgUrl = setImgUrl(imgPath.get(i), restaurantInfos.get(i).getName());
 
             UserPostData userPostData = new UserPostData();
@@ -374,7 +317,7 @@ public class UserPostService implements IUserPostService {
 
     private String setImgUrl(String imagePath, String locationName) {
         String bucketName = "spotfood-images";
-        String filePath = "location/" + locationName + ".jpeg";
+        String filePath = "location/" + locationName + ".jpg";
         try {
             File imageFile = new File(imagePath);
             if (!imageFile.exists()) {
@@ -387,7 +330,7 @@ public class UserPostService implements IUserPostService {
             }
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ImageIO.write(bufferedImage, "jpeg", outputStream);
+            ImageIO.write(bufferedImage, "jpg", outputStream);
 
             // Encode the byte array to base64
             byte[] imageBytes = outputStream.toByteArray();
@@ -410,7 +353,7 @@ public class UserPostService implements IUserPostService {
 
     @Override
     public void deletePost(String postId) throws PostNotFoundException {
-        UserPost userPost = userPostDAO.getPostFromIds(postId);
+        UserPost userPost = userPostDAO.getPostFromIds(new ObjectId(postId));
         if (userPost == null) {
             throw new PostNotFoundException("user post is NULL");
         }
@@ -425,7 +368,7 @@ public class UserPostService implements IUserPostService {
     @Override
     public UserPost likePost(String emailId, String postId) throws PostNotFoundException {
         try {
-            UserPost userPost = userPostDAO.getPostFromIds(postId);
+            UserPost userPost = userPostDAO.getPostFromIds(new ObjectId(postId));
 
             // does Post exist?
             if (userPost == null) {
@@ -462,7 +405,7 @@ public class UserPostService implements IUserPostService {
     @Override
     public void unlikePost(String emailId, String postId) throws PostNotFoundException {
         try {
-            UserPost userPost = userPostDAO.getPostFromIds(postId);
+            UserPost userPost = userPostDAO.getPostFromIds(new ObjectId(postId));
 
             // does Post exist?
             if (userPost == null) {
@@ -477,7 +420,7 @@ public class UserPostService implements IUserPostService {
 
     @Override
     public UserPost getPost(String postId) throws PostNotFoundException {
-        UserPost userPost = userPostDAO.getPostFromIds(postId);
+        UserPost userPost = userPostDAO.getPostFromIds(new ObjectId(postId));
         if (userPost == null) {
             throw new PostNotFoundException("user post is NULL");
         }

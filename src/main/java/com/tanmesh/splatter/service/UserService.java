@@ -102,7 +102,7 @@ public class UserService implements IUserService {
         user.setFirstName(userData.getFirstName());
         user.setLastName(userData.getLastName());
         user.setNickName(userData.getNickName());
-        user.setTagList(userData.getTagList());
+        user.setTagList(tagListStringToTag(userData.getTagList()));
         userDAO.save(user);
 
         return userData;
@@ -124,13 +124,19 @@ public class UserService implements IUserService {
     @Override
     public void unFollowTag(Set<String> tags, String emailId) {
         User user = userDAO.getUserByEmailId(emailId);
+
         Set<Tag> tagList = user.getTagList();
         if (tagList == null) {
             return;
         }
-        for (String tag : tags) {
-            tagList.remove(new Tag(tag));
+        Iterator<Tag> iterator = tagList.iterator();
+        while (iterator.hasNext()) {
+            Tag tag = iterator.next();
+            if (tags.contains(tag.getName())) {
+                iterator.remove();
+            }
         }
+        user.setTagList(tagList);
         userDAO.save(user);
     }
 
@@ -147,8 +153,14 @@ public class UserService implements IUserService {
     public UserData getUserProfile(String emailId) {
         User user = userDAO.getUserByEmailId(emailId);
 
-        UserData userData = new UserData(user);
+        return new UserData(user);
+    }
 
-        return userData;
+    private Set<Tag> tagListStringToTag(Set<String> tagList2) {
+        Set<Tag> tagList = new HashSet<>();
+        for (String tag : tagList2) {
+            tagList.add(new Tag(tag));
+        }
+        return tagList;
     }
 }

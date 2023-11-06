@@ -8,26 +8,37 @@ import com.tanmesh.splatter.enums.SearchType;
  * Time: 12:45
  */
 public class SearchData {
-    private String name;
     private SearchType type;
-
+    private String tag;
     private int radius;
+    private Double longitude;
+    private Double latitude;
 
     public SearchData() {
     }
 
-    public SearchData(String name, SearchType type, int radius) {
-        this.name = name;
-        this.type = type;
-        this.radius = radius;
+    public Double getLongitude() {
+        return longitude;
     }
 
-    public String getName() {
-        return name;
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     public SearchType getType() {
@@ -36,5 +47,13 @@ public class SearchData {
 
     public void setType(SearchType type) {
         this.type = type;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
     }
 }

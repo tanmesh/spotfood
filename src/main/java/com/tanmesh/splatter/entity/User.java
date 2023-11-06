@@ -23,10 +23,8 @@ public class User {
         return tagList;
     }
 
-    public void setTagList(Set<String> tagList2) {
-        for(String tag: tagList2) {
-            this.tagList.add(new Tag(tag));
-        }
+    public void setTagList(Set<Tag> tagList) {
+        this.tagList = tagList;
     }
 
     public String getEmailId() {

@@ -1,5 +1,7 @@
 package com.tanmesh.splatter.wsRequestModel;
 
+import com.tanmesh.splatter.entity.UserPost;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -8,28 +10,45 @@ public class UserPostData {
     private Set<String> tagList = new HashSet<>();
     private String locationName;
     private String authorEmailId;
-    private int upvotes;
+    private String authorName;
+    private int upVotes;
     private String imgUrl;
-    private String fileExtenstion;
     private Double latitude;
     private Double longitude;
-    private long lastTimestamp;
+    private long creationTimestamp;
     private boolean liked;
 
     public UserPostData() {
     }
 
-    public UserPostData(String postId, Set<String> tagList, String locationName, String authorEmailId, int upvotes, String imgUrl, Double latitude, Double longitude, long lastTimestamp) {
-        this.postId = postId;
-        this.tagList = tagList;
-        this.locationName = locationName;
-        this.authorEmailId = authorEmailId;
-        this.upvotes = upvotes;
-        this.imgUrl = imgUrl;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.lastTimestamp = lastTimestamp;
-        this.liked = false;
+    public UserPostData(UserPost userPost) {
+        this.postId = userPost.getPostId().toString();
+        this.tagList = userPost.getTagsString();
+        this.locationName = userPost.getLocationName();
+        this.authorEmailId = userPost.getAuthorEmailId();
+        this.upVotes = userPost.getUpVotes();
+        this.imgUrl = userPost.getImgUrl();
+        this.latitude = userPost.getLatLong().getCoordinates()[1];
+        this.longitude = userPost.getLatLong().getCoordinates()[0];
+        this.creationTimestamp = userPost.getCreationTimestamp();
+        this.liked = userPost.getLiked();
+        this.authorName = userPost.getAuthorName();
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
+    }
+
+    public int getUpVotes() {
+        return upVotes;
+    }
+
+    public void setUpVotes(int upVotes) {
+        this.upVotes = upVotes;
     }
 
     public Double getLatitude() {
@@ -46,14 +65,6 @@ public class UserPostData {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
-    }
-
-    public String getFileExtenstion() {
-        return fileExtenstion;
-    }
-
-    public void setFileExtenstion(String fileExtenstion) {
-        this.fileExtenstion = fileExtenstion;
     }
 
     public String getImgUrl() {
@@ -96,20 +107,12 @@ public class UserPostData {
         this.authorEmailId = authorEmailId;
     }
 
-    public int getUpvotes(int upVotes) {
-        return upvotes;
+    public long getCreationTimestamp() {
+        return creationTimestamp;
     }
 
-    public void setUpvotes(int upvotes) {
-        this.upvotes = upvotes;
-    }
-
-    public long getLastTimestamp() {
-        return lastTimestamp;
-    }
-
-    public void setLastTimestamp(long lastTimestamp) {
-        this.lastTimestamp = lastTimestamp;
+    public void setCreationTimestamp(long creationTimestamp) {
+        this.creationTimestamp = creationTimestamp;
     }
 
     public boolean isLiked() {

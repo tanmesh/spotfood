@@ -12,6 +12,15 @@ public class UserDAO extends BasicDAO<User, String> {
         super(ds);
     }
 
+    public String getUserName(String emailId) {
+        User user = this.getDatastore()
+                .createQuery(User.class)
+                .filter("emailId", emailId)
+                .get();
+
+        return user.getFirstName() + " " + user.getLastName();
+    }
+
     public User getUserByEmailId(String emailId) {
         return this.getDatastore()
                 .createQuery(User.class)

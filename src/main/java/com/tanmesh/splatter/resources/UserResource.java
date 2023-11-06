@@ -109,6 +109,7 @@ public class UserResource {
         return Response.status(Response.Status.ACCEPTED).entity(true).build();
     }
 
+    // TODO: shouldnt be moved to a Tag Service?
     @POST
     @Path("follow_tag")
     @Consumes(MediaType.APPLICATION_JSON)

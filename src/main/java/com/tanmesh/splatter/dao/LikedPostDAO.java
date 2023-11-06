@@ -17,7 +17,6 @@ public class LikedPostDAO extends BasicDAO<LikedPost, String> {
                 .createQuery(LikedPost.class)
                 .field("key").equal(compoundKey)
                 .get();
-        System.out.println(likedPost);
         return likedPost != null;
     }
 

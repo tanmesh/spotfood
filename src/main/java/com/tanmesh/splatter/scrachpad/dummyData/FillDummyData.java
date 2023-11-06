@@ -3,6 +3,7 @@ package com.tanmesh.splatter.scrachpad.dummyData;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tanmesh.splatter.wsRequestModel.UserData;
 
 import java.io.File;
 import java.util.*;
@@ -110,8 +111,9 @@ class Location {
 
 
 public class FillDummyData {
+    // https://docs.developer.yelp.com/reference/v3_business_search
 
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
 //        List<Set<String>> tags = getTags();
 //        List<String> imgPath = readImages();
 //        List<RestaurantInfo> restaurantInfos = getRestaurantInfo();
@@ -133,18 +135,52 @@ public class FillDummyData {
 //        }
     }
 
-    public static List<String> getEmailId() {
-        List<String> userEmailId = new ArrayList<>();
+//    public List<String> getEmailId() {
+//        List<String> userEmailId = new ArrayList<>();
+//
+//        userEmailId.add("tanmeshnm2@gmail.com");
+//        userEmailId.add("admin@gmail.com");
+//        userEmailId.add("jackinbox@gmail.com");
+//        userEmailId.add("happyjoe@gmail.com");
+//
+//        return userEmailId;
+//    }
 
-        userEmailId.add("tanmeshnm2@gmail.com");
-        userEmailId.add("admin@gmail.com");
-        userEmailId.add("jackinbox@gmail.com");
-        userEmailId.add("happyjoe@gmail.com");
+    public List<UserData> getDummyUser() {
+        List<UserData> users = new ArrayList<>();
 
-        return userEmailId;
+        UserData user1 = new UserData();
+        user1.setFirstName("tanmesh");
+        user1.setLastName("mishra");
+        user1.setEmailId("tanmeshnm2@gmail.com");
+        user1.setPassword("admin");
+        users.add(user1);
+
+        UserData user2 = new UserData();
+        user2.setFirstName("admin");
+        user2.setLastName("");
+        user2.setEmailId("admin@gmail.com");
+        user2.setPassword("admin");
+        users.add(user2);
+
+        UserData user3 = new UserData();
+        user3.setFirstName("jack");
+        user3.setLastName("gill");
+        user3.setEmailId("jackinbox@gmail.com");
+        user3.setPassword("admin");
+        users.add(user3);
+
+        UserData user4 = new UserData();
+        user4.setFirstName("joe");
+        user4.setLastName("rogen");
+        user4.setEmailId("happyjoe@gmail.com");
+        user4.setPassword("admin");
+        users.add(user4);
+
+        return users;
     }
 
-    public static List<RestaurantInfo> getRestaurantInfo() {
+    public List<RestaurantInfo> getRestaurantInfo() {
         List<RestaurantInfo> restaurantInfos = new ArrayList<>();
 
         String filePath = "src/main/java/com/tanmesh/splatter/scrachpad/dummyData/dummyDataFromYelp.json";
@@ -171,7 +207,7 @@ public class FillDummyData {
         return restaurantInfos;
     }
 
-    public static List<String> readImages() {
+    public List<String> readImages() {
         List<String> imgPath = new ArrayList<>();
 
         String folderPath = "src/main/java/com/tanmesh/splatter/scrachpad/dummyData/food-img";
@@ -194,7 +230,7 @@ public class FillDummyData {
         return imgPath;
     }
 
-    public static List<Set<String>> getTags() {
+    public List<Set<String>> getTags() {
         List<Set<String>> tags = new ArrayList<>();
 
         // Hardcoded lists of 3 tags each

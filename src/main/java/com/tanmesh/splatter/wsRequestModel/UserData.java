@@ -7,15 +7,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class UserData {
+    private String emailId;
     private String firstName;
     private String lastName;
     private String nickName;
-    private String emailId;
     private String password;
-    private Set<String> followTagList = new HashSet<>();
+    private Set<String> followingList = new HashSet<>();
     private Set<String> followersList = new HashSet<>();
     private Set<String> tagList = new HashSet<>();
-    private String token;
     private Double latitude;
     private Double longitude;
 
@@ -34,14 +33,6 @@ public class UserData {
                 this.tagList.add(tag.getName());
             }
         }
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public String getFirstName() {
@@ -84,12 +75,12 @@ public class UserData {
         this.password = password;
     }
 
-    public Set<String> getFollowTagList() {
-        return followTagList;
+    public Set<String> getFollowingList() {
+        return followingList;
     }
 
-    public void setFollowTagList(Set<String> followTagList) {
-        this.followTagList = followTagList;
+    public void setFollowingList(Set<String> followingList) {
+        this.followingList = followingList;
     }
 
     public Set<String> getFollowersList() {

@@ -3,7 +3,9 @@ package com.tanmesh.splatter.service;
 import com.tanmesh.splatter.dao.UserPostDAO;
 import com.tanmesh.splatter.entity.UserPost;
 import com.tanmesh.splatter.wsRequestModel.SearchData;
+import com.tanmesh.splatter.wsRequestModel.UserPostData;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -20,18 +22,35 @@ public class SearchService implements ISearchService {
         this.userPostDAO = userPostDAO;
     }
 
-    // TODO: incomplete
+    /*
+        currently used simple logic
+        TODO:
+         1. Need to use GeoIndex
+
+     */
     @Override
-    public Set<UserPost> getSearchResult(String emailId, SearchData searchEntity) {
+    public Set<UserPostData> getSearchTagsResults(String emailId, SearchData searchData) {
+        Set<UserPostData> feed = new HashSet<>();
 
-        Set<UserPost> searchFeed;
+        Set<UserPost> feeds = userPostDAO.getByTag(searchData.getTag(), searchData);
 
-        return userPostDAO.getNearBy("sweet", 26.803087, 80.891247);
+        for (UserPost feed_ : feeds) {
+            UserPostData userPostData = new UserPostData();
+            userPostData.setPostId(feed_.getPostId().toString());
+            userPostData.setTagList(feed_.getTagsString());
+            userPostData.setUpVotes(feed_.getUpVotes());
+            userPostData.setLocationName(feed_.getLocationName());
+            userPostData.setAuthorEmailId(feed_.getAuthorEmailId());
+            userPostData.setImgUrl(feed_.getImgUrl());
+            feed.add(userPostData);
+        }
+
+        return feed;
     }
 
     @Override
-    public Set<UserPost> getSearchTagsResults(String emailId, SearchData searchData) {
-//        Set<UserPost> userPosts = null;
+    public Set<UserPostData> getSearchLocalityResults(String emailId, SearchData searchData) {
+        //        Set<UserPost> userPosts = null;
 //        String tagName = searchData.getName();
 //        User user = userService.getUserProfile(emailId);
 //        if(user != null) {
@@ -42,7 +61,20 @@ public class SearchService implements ISearchService {
 //                userPosts = userPostDAO.getNearBy(tagName, latitude, longitude);
 //            }
 //        }
-//        return userPosts;
-        return null;
+
+        Set<UserPostData> feed = new HashSet<>();
+        Set<UserPost> feeds = userPostDAO.getNearBy(searchData);
+        for (UserPost feed_ : feeds) {
+            UserPostData userPostData = new UserPostData();
+            userPostData.setPostId(feed_.getPostId().toString());
+            userPostData.setTagList(feed_.getTagsString());
+            userPostData.setUpVotes(feed_.getUpVotes());
+            userPostData.setLocationName(feed_.getLocationName());
+            userPostData.setAuthorEmailId(feed_.getAuthorEmailId());
+            userPostData.setImgUrl(feed_.getImgUrl());
+            feed.add(userPostData);
+        }
+
+        return feed;
     }
 }
