@@ -5,8 +5,11 @@ import com.tanmesh.splatter.entity.UserPost;
 import com.tanmesh.splatter.wsRequestModel.SearchData;
 import com.tanmesh.splatter.wsRequestModel.UserPostData;
 
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by tanmesh
@@ -30,22 +33,25 @@ public class SearchService implements ISearchService {
      */
     @Override
     public Set<UserPostData> getSearchTagsResults(String emailId, SearchData searchData) {
-        Set<UserPostData> feed = new HashSet<>();
+        Set<UserPostData> outFeed = new HashSet<>();
 
-        Set<UserPost> feeds = userPostDAO.getByTag(searchData.getTag(), searchData);
+        for (String tag : searchData.getTag()) {
+            Set<UserPost> feeds = userPostDAO.getByTag(tag, searchData);
 
-        for (UserPost feed_ : feeds) {
-            UserPostData userPostData = new UserPostData();
-            userPostData.setPostId(feed_.getPostId().toString());
-            userPostData.setTagList(feed_.getTagsString());
-            userPostData.setUpVotes(feed_.getUpVotes());
-            userPostData.setLocationName(feed_.getLocationName());
-            userPostData.setAuthorEmailId(feed_.getAuthorEmailId());
-            userPostData.setImgUrl(feed_.getImgUrl());
-            feed.add(userPostData);
+            for (UserPost feed_ : feeds) {
+                UserPostData userPostData = new UserPostData();
+                userPostData.setPostId(feed_.getPostId().toString());
+                userPostData.setTagList(feed_.getTagsString());
+                userPostData.setUpVotes(feed_.getUpVotes());
+                userPostData.setLocationName(feed_.getLocationName());
+                userPostData.setAuthorEmailId(feed_.getAuthorEmailId());
+                userPostData.setAuthorName(feed_.getAuthorName());
+                userPostData.setImgUrl(feed_.getImgUrl());
+                outFeed.add(userPostData);
+            }
         }
 
-        return feed;
+        return outFeed;
     }
 
     @Override
@@ -71,10 +77,16 @@ public class SearchService implements ISearchService {
             userPostData.setUpVotes(feed_.getUpVotes());
             userPostData.setLocationName(feed_.getLocationName());
             userPostData.setAuthorEmailId(feed_.getAuthorEmailId());
+            userPostData.setAuthorName(feed_.getAuthorName());
             userPostData.setImgUrl(feed_.getImgUrl());
+            userPostData.setDistance(feed_.getDistance());
             feed.add(userPostData);
         }
 
-        return feed;
+        List<UserPostData> sortedFeedList = feed.stream().collect(Collectors.toList());
+        Comparator<UserPostData> distanceComparator = Comparator.comparing(UserPostData::getDistance);
+        sortedFeedList.sort(distanceComparator);
+
+        return new HashSet<>(sortedFeedList);
     }
 }

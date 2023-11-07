@@ -84,13 +84,16 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void unFollowUser(String connectionEmailId, String emailId) throws InvalidInputException {
+    public void unFollowUser(UserData userData, String emailId) throws InvalidInputException {
         User user = userDAO.getUserByEmailId(emailId);
         Set<String> followersList = user.getFollowersList();
         if (followersList == null) {
             return;
         }
-        followersList.remove(connectionEmailId);
+        for(String follower: userData.getFollowersList()) {
+            followersList.remove(follower);
+        }
+
         user.setFollowersList(followersList);
         userDAO.save(user);
     }
@@ -105,7 +108,7 @@ public class UserService implements IUserService {
         user.setTagList(tagListStringToTag(userData.getTagList()));
         userDAO.save(user);
 
-        return userData;
+        return new UserData(user);
     }
 
     @Override

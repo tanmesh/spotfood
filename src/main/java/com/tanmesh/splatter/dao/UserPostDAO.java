@@ -52,15 +52,35 @@ public class UserPostDAO extends BasicDAO<UserPost, String> {
         Set<UserPost> out = new HashSet<>();
 
         for (UserPost post : posts) {
+            // Constants for Earth's radius in kilometers
+            double EARTH_RADIUS = 6371.0;
+
             double[] postCoordinates = post.getLatLong().getCoordinates();
 
-            double distance = Math.pow((postCoordinates[0] - searchData.getLongitude()), 2) - Math.pow((postCoordinates[1] - searchData.getLatitude()), 2);
+            double lat1 = Math.toRadians(postCoordinates[1]);
+            double lon1 = Math.toRadians(postCoordinates[0]);
+            double lat2 = Math.toRadians(searchData.getLatitude());
+            double lon2 = Math.toRadians(searchData.getLongitude());
 
-            if (distance < Math.pow(searchData.getRadius(), 2)) {
+            double dlon = lon2 - lon1;
+            double dlat = lat2 - lat1;
+
+            double a = Math.pow(Math.sin(dlat / 2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon / 2), 2);
+            double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            double distance = EARTH_RADIUS * c; // The distance in kilometers
+
+            System.out.println("PostId: " + post.getPostId());
+            System.out.println("Distance: " + distance + " kilometers");
+            System.out.println("Radius: " + searchData.getRadius() + " kilometers");
+
+            if (distance < searchData.getRadius()) {
+                System.out.println("In");
+                post.setDistance((int) distance);
                 out.add(post);
             }
         }
-        
+
         return out;
     }
 
@@ -120,6 +140,10 @@ public class UserPostDAO extends BasicDAO<UserPost, String> {
                 .order("-creationTimestamp")
                 .asList();
 
-        return getWithRadius(posts, searchData);
+        if (searchData.getRadius() != -1) {
+            return getWithRadius(posts, searchData);
+        }
+
+        return new HashSet<>(posts);
     }
 }

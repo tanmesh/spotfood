@@ -27,7 +27,7 @@ public interface IUserService {
 
     void followUser(String connectionEmailId, String emailId) throws InvalidInputException;
 
-    void unFollowUser(String connectionEmailId, String emailId) throws InvalidInputException;
+    void unFollowUser(UserData userData, String emailId) throws InvalidInputException;
 
     UserData edit(String emailId, UserData userData) throws Exception;
 }

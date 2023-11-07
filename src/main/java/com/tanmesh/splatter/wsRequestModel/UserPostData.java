@@ -18,10 +18,12 @@ public class UserPostData {
     private long creationTimestamp;
     private boolean liked;
 
+    private int distance;
+
     public UserPostData() {
     }
 
-    public UserPostData(UserPost userPost) {
+    public UserPostData(UserPost userPost, int distance) {
         this.postId = userPost.getPostId().toString();
         this.tagList = userPost.getTagsString();
         this.locationName = userPost.getLocationName();
@@ -33,6 +35,15 @@ public class UserPostData {
         this.creationTimestamp = userPost.getCreationTimestamp();
         this.liked = userPost.getLiked();
         this.authorName = userPost.getAuthorName();
+        this.distance = distance;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
     }
 
     public String getAuthorName() {

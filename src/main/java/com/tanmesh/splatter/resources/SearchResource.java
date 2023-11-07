@@ -37,6 +37,7 @@ public class SearchResource {
         switch (searchData.getType()) {
             case TAG:
                 userPostsData = searchService.getSearchTagsResults(emailId, searchData);
+
                 break;
             case LOCALITY:
                 userPostsData = searchService.getSearchLocalityResults(emailId, searchData);

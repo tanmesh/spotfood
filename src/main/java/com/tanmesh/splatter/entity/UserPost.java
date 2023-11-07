@@ -36,7 +36,21 @@ public class UserPost {
 
     private String AuthorName;
 
+    private int distance;
+
     public UserPost() {
+    }
+
+    public boolean isLiked() {
+        return liked;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
     }
 
     public String getAuthorName() {

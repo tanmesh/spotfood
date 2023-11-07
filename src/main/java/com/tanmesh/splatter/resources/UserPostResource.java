@@ -145,14 +145,31 @@ public class UserPostResource {
         return Response.status(Response.Status.ACCEPTED).entity(feeds).build();
     }
 
-    // TODO: fix this
     @GET
     @Path("explore")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response userExplore(@Auth UserSession userSession) throws InvalidInputException {
-        String emailId = userSession.getEmailId();
-        Set<UserPostData> feeds = userPostService.getUserExplore(-1);
+    public Response userExplore() throws InvalidInputException {
+        Set<UserPostData> feeds;
+        try {
+            feeds = userPostService.getUserExplore(-1);
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
+        }
+        return Response.status(Response.Status.ACCEPTED).entity(feeds).build();
+    }
+
+    @GET
+    @Path("explore/{startAfter}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response userExplore(@PathParam("startAfter") int startAfter) throws InvalidInputException {
+        Set<UserPostData> feeds;
+        try {
+            feeds = userPostService.getUserExplore(startAfter);
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
+        }
         return Response.status(Response.Status.ACCEPTED).entity(feeds).build();
     }
 

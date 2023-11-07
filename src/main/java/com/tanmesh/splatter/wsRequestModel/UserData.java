@@ -15,8 +15,6 @@ public class UserData {
     private Set<String> followingList = new HashSet<>();
     private Set<String> followersList = new HashSet<>();
     private Set<String> tagList = new HashSet<>();
-    private Double latitude;
-    private Double longitude;
 
     public UserData() {
     }
@@ -27,12 +25,22 @@ public class UserData {
         this.nickName = user.getNickName();
         this.emailId = user.getEmailId();
         this.password = user.getPassword();
+        this.followersList = user.getFollowersList();
+        this.followingList = user.getFollowingList();
 
         if (user.getTagList() != null) {
             for (Tag tag : user.getTagList()) {
                 this.tagList.add(tag.getName());
             }
         }
+    }
+
+    public String getEmailId() {
+        return emailId;
+    }
+
+    public void setEmailId(String emailId) {
+        this.emailId = emailId;
     }
 
     public String getFirstName() {
@@ -43,12 +51,12 @@ public class UserData {
         this.firstName = firstName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
     public String getLastName() {
         return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getNickName() {
@@ -57,14 +65,6 @@ public class UserData {
 
     public void setNickName(String nickName) {
         this.nickName = nickName;
-    }
-
-    public String getEmailId() {
-        return emailId;
-    }
-
-    public void setEmailId(String emailId) {
-        this.emailId = emailId;
     }
 
     public String getPassword() {
@@ -97,21 +97,5 @@ public class UserData {
 
     public void setTagList(Set<String> tagList) {
         this.tagList = tagList;
-    }
-
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
     }
 }

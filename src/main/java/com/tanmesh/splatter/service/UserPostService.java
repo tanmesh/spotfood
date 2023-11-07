@@ -115,7 +115,7 @@ public class UserPostService implements IUserPostService {
                 Set<UserPost> postFromTags = userPostDAO.getAllPostForTags(tag);
                 if (postFromTags != null) {
                     for (UserPost userPost : postFromTags) {
-                        UserPostData userPostData = new UserPostData(userPost);
+                        UserPostData userPostData = new UserPostData(userPost, 0);
                         userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
                         feed.add(userPostData);
                     }
@@ -130,7 +130,7 @@ public class UserPostService implements IUserPostService {
                 List<UserPost> postFromEmailId = userPostDAO.getAllPostOfUser(followerEmailId);
                 if (postFromEmailId != null) {
                     for (UserPost userPost : postFromEmailId) {
-                        UserPostData userPostData = new UserPostData(userPost);
+                        UserPostData userPostData = new UserPostData(userPost, 0);
                         userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
                         feed.add(userPostData);
                     }
@@ -164,8 +164,9 @@ public class UserPostService implements IUserPostService {
                 Set<UserPost> postFromTags = userPostDAO.getAllPostForTags(tag);
                 if (postFromTags != null) {
                     for (UserPost userPost : postFromTags) {
-                        UserPostData userPostData = new UserPostData(userPost);
+                        UserPostData userPostData = new UserPostData(userPost, 0);
                         userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
+                        userPostData.setAuthorName(userDAO.getUserName(userPostData.getAuthorEmailId()));
                         feed_.add(userPostData);
                     }
                 }
@@ -179,8 +180,9 @@ public class UserPostService implements IUserPostService {
                 List<UserPost> postFromEmailId = userPostDAO.getAllPostOfUser(followerEmailId);
                 if (postFromEmailId != null) {
                     for (UserPost userPost : postFromEmailId) {
-                        UserPostData userPostData = new UserPostData(userPost);
+                        UserPostData userPostData = new UserPostData(userPost, 0);
                         userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
+                        userPostData.setAuthorName(userDAO.getUserName(userPostData.getAuthorEmailId()));
                         feed_.add(userPostData);
                     }
                 }
@@ -208,7 +210,7 @@ public class UserPostService implements IUserPostService {
                 Set<UserPost> postFromTags = userPostDAO.getAllPostForTags(tag);
                 if (postFromTags != null) {
                     for (UserPost userPost : postFromTags) {
-                        UserPostData userPostData = new UserPostData(userPost);
+                        UserPostData userPostData = new UserPostData(userPost, 0);
                         userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
                         feed.add(userPostData);
                     }
@@ -228,7 +230,7 @@ public class UserPostService implements IUserPostService {
                 List<UserPost> postFromEmailId = userPostDAO.getAllPostOfUser(followerEmailId);
                 if (postFromEmailId != null) {
                     for (UserPost userPost : postFromEmailId) {
-                        UserPostData userPostData = new UserPostData(userPost);
+                        UserPostData userPostData = new UserPostData(userPost, 0);
                         userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
                         feed.add(userPostData);
                     }
@@ -245,7 +247,7 @@ public class UserPostService implements IUserPostService {
         List<UserPost> userPosts = userPostDAO.getAllPost();
 
         for (UserPost userPost : userPosts) {
-            feed.add(new UserPostData(userPost));
+            feed.add(new UserPostData(userPost, 0));
         }
 
         return feed;

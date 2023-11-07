@@ -2,6 +2,8 @@ package com.tanmesh.splatter.wsRequestModel;
 
 import com.tanmesh.splatter.enums.SearchType;
 
+import java.util.List;
+
 /**
  * Created by tanmesh
  * Date: 2019-09-09
@@ -9,8 +11,8 @@ import com.tanmesh.splatter.enums.SearchType;
  */
 public class SearchData {
     private SearchType type;
-    private String tag;
-    private int radius;
+    private List<String> tag;
+    private int radius = -1;
     private Double longitude;
     private Double latitude;
 
@@ -33,11 +35,11 @@ public class SearchData {
         this.latitude = latitude;
     }
 
-    public String getTag() {
+    public List<String> getTag() {
         return tag;
     }
 
-    public void setTag(String tag) {
+    public void setTag(List<String> tag) {
         this.tag = tag;
     }
 

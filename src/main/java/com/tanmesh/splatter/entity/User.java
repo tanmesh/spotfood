@@ -24,7 +24,7 @@ public class User {
     }
 
     public void setTagList(Set<Tag> tagList) {
-        this.tagList = tagList;
+        this.tagList.addAll(tagList);
     }
 
     public String getEmailId() {

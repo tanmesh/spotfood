@@ -158,8 +158,7 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response unFollowUser(@Auth UserSession userSession, UserData userData) {
         try {
-            Preconditions.checkNotNull(userData.getEmailId(), "input password should not be null");
-            userService.unFollowUser(userData.getEmailId(), userSession.getEmailId());
+            userService.unFollowUser(userData, userSession.getEmailId());
         } catch (InvalidInputException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
