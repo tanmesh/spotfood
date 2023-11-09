@@ -7,7 +7,6 @@ import com.tanmesh.splatter.wsRequestModel.UserPostData;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 public interface IUserPostService {
     void addPost(UserPostData userPostData, String emailId) throws InvalidInputException, IOException;
@@ -20,13 +19,13 @@ public interface IUserPostService {
 
     UserPost getPost(String postId) throws InvalidInputException, PostNotFoundException;
 
-    List<UserPost> getAllPostOfUser(String emailId) throws InvalidInputException;
+    List<UserPostData> getAllPostOfUser(String emailId, int startAfter) throws InvalidInputException;
 
     boolean editPost(String postId, List<String> tagList, String location, String authorName) throws InvalidInputException;
 
-    Set<UserPostData> getUserFeed(String emailId, int startAfter);
+    List<UserPostData> getUserFeed(String emailId, int startAfter);
 
-    Set<UserPostData> getUserExplore(int startAfter);
+    List<UserPostData> getUserExplore(int startAfter);
 
     void addDummyPost() throws InvalidInputException, IOException;
 }

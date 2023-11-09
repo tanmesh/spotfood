@@ -5,10 +5,7 @@ import com.tanmesh.splatter.entity.UserPost;
 import com.tanmesh.splatter.wsRequestModel.SearchData;
 import com.tanmesh.splatter.wsRequestModel.UserPostData;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -32,8 +29,8 @@ public class SearchService implements ISearchService {
 
      */
     @Override
-    public Set<UserPostData> getSearchTagsResults(String emailId, SearchData searchData) {
-        Set<UserPostData> outFeed = new HashSet<>();
+    public List<UserPostData> getSearchTagsResults(String emailId, SearchData searchData) {
+        List<UserPostData> outFeed = new ArrayList<>();
 
         for (String tag : searchData.getTag()) {
             Set<UserPost> feeds = userPostDAO.getByTag(tag, searchData);
@@ -55,7 +52,7 @@ public class SearchService implements ISearchService {
     }
 
     @Override
-    public Set<UserPostData> getSearchLocalityResults(String emailId, SearchData searchData) {
+    public List<UserPostData> getSearchLocalityResults(String emailId, SearchData searchData) {
         //        Set<UserPost> userPosts = null;
 //        String tagName = searchData.getName();
 //        User user = userService.getUserProfile(emailId);
@@ -87,6 +84,6 @@ public class SearchService implements ISearchService {
         Comparator<UserPostData> distanceComparator = Comparator.comparing(UserPostData::getDistance);
         sortedFeedList.sort(distanceComparator);
 
-        return new HashSet<>(sortedFeedList);
+        return sortedFeedList;
     }
 }

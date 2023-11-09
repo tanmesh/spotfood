@@ -15,7 +15,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 @Path("/user_post")
 public class UserPostResource {
@@ -75,20 +74,6 @@ public class UserPostResource {
         return Response.status(Response.Status.ACCEPTED).entity(userPost).build();
     }
 
-    @GET
-    @Path("get_user_posts")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllPostDetails(@Auth UserSession userSession, @QueryParam("authorEmailId") String authorEmailId) {
-        List<UserPost> userPost;
-        try {
-            Preconditions.checkNotNull(authorEmailId, "author email id should not be null");
-            userPost = userPostService.getAllPostOfUser(authorEmailId);
-        } catch (InvalidInputException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-        }
-        return Response.status(Response.Status.ACCEPTED).entity(userPost).build();
-    }
-
     @POST
     @Path("like")
     @Produces(MediaType.APPLICATION_JSON)
@@ -141,30 +126,30 @@ public class UserPostResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response userFeeds(@Auth UserSession userSession) throws InvalidInputException {
         String emailId = userSession.getEmailId();
-        Set<UserPostData> feeds = userPostService.getUserFeed(emailId, -1);
+        List<UserPostData> feeds = userPostService.getUserFeed(emailId, -1);
         return Response.status(Response.Status.ACCEPTED).entity(feeds).build();
     }
 
     @GET
-    @Path("explore")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("get_user_posts/{startAfter}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response userExplore() throws InvalidInputException {
-        Set<UserPostData> feeds;
+    public Response getAllPostDetails(@Auth UserSession userSession, @QueryParam("authorEmailId") String authorEmailId, @PathParam("startAfter") int startAfter) {
+        List<UserPostData> userPostData;
         try {
-            feeds = userPostService.getUserExplore(-1);
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
+            Preconditions.checkNotNull(authorEmailId, "author email id should not be null");
+            userPostData = userPostService.getAllPostOfUser(authorEmailId, startAfter);
+        } catch (InvalidInputException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(feeds).build();
+        return Response.status(Response.Status.ACCEPTED).entity(userPostData).build();
     }
 
     @GET
     @Path("explore/{startAfter}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response userExplore(@PathParam("startAfter") int startAfter) throws InvalidInputException {
-        Set<UserPostData> feeds;
+    public Response userExplore(@PathParam("startAfter") int startAfter) {
+        List<UserPostData> feeds;
         try {
             feeds = userPostService.getUserExplore(startAfter);
         } catch (Exception e) {
@@ -179,7 +164,7 @@ public class UserPostResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response userFeeds(@Auth UserSession userSession, @PathParam("startAfter") int startAfter) throws InvalidInputException {
         String emailId = userSession.getEmailId();
-        Set<UserPostData> feeds = userPostService.getUserFeed(emailId, startAfter);
+        List<UserPostData> feeds = userPostService.getUserFeed(emailId, startAfter);
         return Response.status(Response.Status.ACCEPTED).entity(feeds).build();
     }
 

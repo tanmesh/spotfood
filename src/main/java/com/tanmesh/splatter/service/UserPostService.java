@@ -95,62 +95,18 @@ public class UserPostService implements IUserPostService {
 //        Image stdImage = imageService.getStdImage(original, bimg);
     }
 
+    // TODO:
     @Override
     public boolean editPost(String postId, List<String> tagList, String location, String authorName) {
         return true;
     }
 
-    public Set<UserPostData> getUserFeed(String emailId) {
-        Set<UserPostData> feed = Sets.newHashSet();
-
-        User user = userDAO.getUserByEmailId(emailId);
-        if (user == null) {
-            return feed;
-        }
-
-        // 1. all posts from followed tags
-        Set<Tag> followedTags = user.getTagList();
-        if (followedTags != null) {
-            for (Tag tag : followedTags) {
-                Set<UserPost> postFromTags = userPostDAO.getAllPostForTags(tag);
-                if (postFromTags != null) {
-                    for (UserPost userPost : postFromTags) {
-                        UserPostData userPostData = new UserPostData(userPost, 0);
-                        userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
-                        feed.add(userPostData);
-                    }
-                }
-            }
-        }
-
-        // 2. all posts from followed user;
-        Set<String> followers = user.getFollowersList();
-        if (followers != null) {
-            for (String followerEmailId : followers) {
-                List<UserPost> postFromEmailId = userPostDAO.getAllPostOfUser(followerEmailId);
-                if (postFromEmailId != null) {
-                    for (UserPost userPost : postFromEmailId) {
-                        UserPostData userPostData = new UserPostData(userPost, 0);
-                        userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
-                        feed.add(userPostData);
-                    }
-                }
-            }
-        }
-
-        return feed;
-    }
-
     /*
-    TODO: modify Feed logic
+        TODO: modify Feed logic
      */
     @Override
-    public Set<UserPostData> getUserFeed(String emailId, int startAfter) {
-        if (startAfter == -1) {
-            return getUserFeed(emailId);
-        }
-
-        Set<UserPostData> feed_ = Sets.newHashSet();
+    public List<UserPostData> getUserFeed(String emailId, int startAfter) {
+        List<UserPostData> feed_ = new ArrayList<>();
 
         User user = userDAO.getUserByEmailId(emailId);
         if (user == null) {
@@ -190,7 +146,7 @@ public class UserPostService implements IUserPostService {
         }
 
         List<UserPostData> list = new ArrayList<>(feed_);
-        Set<UserPostData> feed = new HashSet<>();
+        List<UserPostData> feed = new ArrayList<>();
         int i = 0;
 
         while (startAfter + i < list.size() && i < 2) {
@@ -241,25 +197,9 @@ public class UserPostService implements IUserPostService {
         return feed;
     }
 
-    public Set<UserPostData> getUserExplore() {
-        Set<UserPostData> feed = Sets.newHashSet();
-
-        List<UserPost> userPosts = userPostDAO.getAllPost();
-
-        for (UserPost userPost : userPosts) {
-            feed.add(new UserPostData(userPost, 0));
-        }
-
-        return feed;
-    }
-
     @Override
-    public Set<UserPostData> getUserExplore(int startAfter) {
-        if (startAfter == -1) {
-            return getUserExplore();
-        }
-
-        Set<UserPostData> feed = Sets.newHashSet();
+    public List<UserPostData> getUserExplore(int startAfter) {
+        List<UserPostData> feed = new ArrayList<>();
 
         List<User> users = userDAO.getAllUser();
 
@@ -276,13 +216,12 @@ public class UserPostService implements IUserPostService {
         }
 
         List<UserPostData> list = new ArrayList<>(feed);
-        Set<UserPostData> feed_ = new HashSet<>();
+        List<UserPostData> feed_ = new ArrayList<>();
         int i = 0;
         while (startAfter + i < list.size() && i < 2) {
-            feed.add(list.get(startAfter + i));
+            feed_.add(list.get(startAfter + i));
             i++;
         }
-
         return feed_;
     }
 
@@ -294,7 +233,7 @@ public class UserPostService implements IUserPostService {
         List<RestaurantInfo> restaurantInfos = fillDummyData.getRestaurantInfo();
         List<UserData> users = fillDummyData.getDummyUser();
 
-        for(UserData user: users) {
+        for (UserData user : users) {
 
             userService.signUpUser(user);
         }
@@ -430,7 +369,14 @@ public class UserPostService implements IUserPostService {
     }
 
     @Override
-    public List<UserPost> getAllPostOfUser(String authorEmailId) {
-        return userPostDAO.getAllPostOfUser(authorEmailId);
+    public List<UserPostData> getAllPostOfUser(String authorEmailId, int startAfter) {
+        List<UserPost> userPosts = userPostDAO.getAllPostOfUser(authorEmailId);
+
+        List<UserPostData> userPostDataList = new ArrayList<>();
+        for (UserPost userPost : userPosts) {
+            userPostDataList.add(new UserPostData(userPost, 0));
+        }
+
+        return userPostDataList;
     }
 }

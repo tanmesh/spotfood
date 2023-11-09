@@ -3,7 +3,7 @@ package com.tanmesh.splatter.service;
 import com.tanmesh.splatter.wsRequestModel.SearchData;
 import com.tanmesh.splatter.wsRequestModel.UserPostData;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by tanmesh
@@ -11,7 +11,7 @@ import java.util.Set;
  * Time: 11:32
  */
 public interface ISearchService {
-    Set<UserPostData> getSearchTagsResults(String emailId, SearchData searchData);
+    List<UserPostData> getSearchTagsResults(String emailId, SearchData searchData);
 
-    Set<UserPostData> getSearchLocalityResults(String emailId, SearchData searchData);
+    List<UserPostData> getSearchLocalityResults(String emailId, SearchData searchData);
 }

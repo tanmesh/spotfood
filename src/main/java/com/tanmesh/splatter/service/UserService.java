@@ -72,29 +72,31 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void followUser(String connectionEmailId, String emailId) throws InvalidInputException {
+    public void followUser(UserData userData, String emailId) throws InvalidInputException {
         User user = userDAO.getUserByEmailId(emailId);
-        Set<String> followersList = user.getFollowersList();
-        if (followersList == null) {
-            followersList = new HashSet<>();
+        Set<String> followingList = user.getFollowingList();
+        if (followingList == null) {
+            followingList = new HashSet<>();
         }
-        followersList.add(connectionEmailId);
-        user.setFollowersList(followersList);
+        for (String following : userData.getFollowingList()) {
+            followingList.add(following);
+        }
+        user.setFollowingList(followingList);
         userDAO.save(user);
     }
 
     @Override
     public void unFollowUser(UserData userData, String emailId) throws InvalidInputException {
         User user = userDAO.getUserByEmailId(emailId);
-        Set<String> followersList = user.getFollowersList();
-        if (followersList == null) {
+        Set<String> followingList = user.getFollowingList();
+        if (followingList == null) {
             return;
         }
-        for(String follower: userData.getFollowersList()) {
-            followersList.remove(follower);
+        for (String following : userData.getFollowingList()) {
+            followingList.remove(following);
         }
 
-        user.setFollowersList(followersList);
+        user.setFollowingList(followingList);
         userDAO.save(user);
     }
 

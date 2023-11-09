@@ -41,7 +41,12 @@ public class UserPostDAO extends BasicDAO<UserPost, String> {
             return null;
         }
         Set<UserPost> userPosts = Sets.newHashSet();
-        List<UserPost> posts = this.getDatastore().createQuery(UserPost.class).field("tagList.name").equal(tag.getName()).order("-creationTimestamp").asList();
+        List<UserPost> posts = this.getDatastore()
+                .createQuery(UserPost.class)
+                .field("tagList.name")
+                .equal(tag.getName())
+                .order("-creationTimestamp")
+                .asList();
         if (posts != null) {
             userPosts.addAll(posts);
         }
@@ -70,12 +75,7 @@ public class UserPostDAO extends BasicDAO<UserPost, String> {
 
             double distance = EARTH_RADIUS * c; // The distance in kilometers
 
-            System.out.println("PostId: " + post.getPostId());
-            System.out.println("Distance: " + distance + " kilometers");
-            System.out.println("Radius: " + searchData.getRadius() + " kilometers");
-
             if (distance < searchData.getRadius()) {
-                System.out.println("In");
                 post.setDistance((int) distance);
                 out.add(post);
             }

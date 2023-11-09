@@ -144,8 +144,7 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response followUser(@Auth UserSession userSession, UserData userData) {
         try {
-            Preconditions.checkNotNull(userData.getEmailId(), "input password should not be null");
-            userService.followUser(userData.getEmailId(), userSession.getEmailId());
+            userService.followUser(userData, userSession.getEmailId());
         } catch (InvalidInputException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
