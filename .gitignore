@@ -4,4 +4,4 @@ dump.rdb
 dropwizard-activity*.log
 splatter.iml
 target/
-src/main/resources/splatter.config.local.yaml
+.env
