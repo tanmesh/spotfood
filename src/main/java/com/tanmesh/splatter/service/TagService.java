@@ -3,15 +3,11 @@ package com.tanmesh.splatter.service;
 import com.tanmesh.splatter.autocomplete.TagTrie;
 import com.tanmesh.splatter.dao.TagDAO;
 import com.tanmesh.splatter.entity.Tag;
+import com.tanmesh.splatter.wsRequestModel.TagData;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-    TODO:
-    1. complete autocomplete feature using WebSockets
-    https://chat.openai.com/share/108778f7-483f-40ae-b608-fc26d234513f
- */
 public class TagService implements ITagService {
     private TagDAO tagDAO;
     private TagTrie tagTrie;
@@ -19,6 +15,11 @@ public class TagService implements ITagService {
     public TagService(TagDAO tagDAO, TagTrie tagTrie) {
         this.tagDAO = tagDAO;
         this.tagTrie = tagTrie;
+
+        List<TagData> allTagList = getAllTag();
+        for (TagData inputPrefix : allTagList) {
+            tagTrie.insert(inputPrefix.getName());
+        }
     }
 
     public void addTag(String tagName) {
@@ -28,16 +29,16 @@ public class TagService implements ITagService {
         tagTrie.insert(tagName);
     }
 
-    public List<Tag> getAllTag() {
+    public List<TagData> getAllTag() {
         List<String> tagIdList = tagDAO.findIds();
-        List<Tag> tagList = new ArrayList<>();
+        List<TagData> outTagList = new ArrayList<>();
         if (tagIdList == null) {
-            return tagList;
+            return outTagList;
         }
         for (String id : tagIdList) {
-            tagList.add(tagDAO.get(id));
+            outTagList.add(new TagData(tagDAO.get(id).getName()));
         }
-        return tagList;
+        return outTagList;
     }
 
     public void deleteTag(String name) {
@@ -48,12 +49,5 @@ public class TagService implements ITagService {
 
     public List<String> autocompleteTags(String inputPrefix) {
         return tagTrie.autocomplete(inputPrefix);
-    }
-
-    public void insertAllTagForAutocomplete() {
-        List<Tag> allTagList = getAllTag();
-        for (Tag inputPrefix : allTagList) {
-            tagTrie.insert(inputPrefix.getName());
-        }
     }
 }

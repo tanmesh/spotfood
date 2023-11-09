@@ -64,19 +64,4 @@ public class DebugResource {
         }
         return Response.status(Response.Status.ACCEPTED).entity(tags).build();
     }
-
-    @GET
-    @Path("addAllTagForAutocomplete")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response insertAllTagForAutocomplete(@QueryParam("inputPrefix") String inputPrefix) {
-        try {
-            Preconditions.checkNotNull(inputPrefix, "input prefix should not be null");
-            tagService.insertAllTagForAutocomplete();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-        }
-        return Response.status(Response.Status.ACCEPTED).entity(true).build();
-    }
-
 }

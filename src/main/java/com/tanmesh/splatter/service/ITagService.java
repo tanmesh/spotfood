@@ -1,6 +1,6 @@
 package com.tanmesh.splatter.service;
 
-import com.tanmesh.splatter.entity.Tag;
+import com.tanmesh.splatter.wsRequestModel.TagData;
 
 import java.util.List;
 
@@ -12,11 +12,9 @@ import java.util.List;
 public interface ITagService {
     void addTag(String tagName);
 
-    List<Tag> getAllTag();
+    List<TagData> getAllTag();
 
     void deleteTag(String name);
 
     List<String> autocompleteTags(String inputPrefix);
-
-    void insertAllTagForAutocomplete();
 }

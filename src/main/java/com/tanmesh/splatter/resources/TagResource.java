@@ -3,7 +3,6 @@ package com.tanmesh.splatter.resources;
 
 import com.google.common.base.Preconditions;
 import com.tanmesh.splatter.authentication.UserSession;
-import com.tanmesh.splatter.entity.Tag;
 import com.tanmesh.splatter.service.ITagService;
 import com.tanmesh.splatter.wsRequestModel.TagData;
 import io.dropwizard.auth.Auth;
@@ -31,16 +30,31 @@ public class TagResource {
         return Response.status(Response.Status.ACCEPTED).entity(true).build();
     }
 
+    @GET
     @Path("get_all")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getAllTag(@Auth UserSession userSession) {
-        List<Tag> tags;
+        List<TagData> tags;
         try {
             tags = tagService.getAllTag();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(tags).build();
+    }
+
+    @GET
+    @Path("autocomplete/{prefix}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getAllTag(@Auth UserSession userSession, @PathParam("prefix") String prefix) {
+        List<String> suggestedTags;
+        try {
+            suggestedTags = tagService.autocompleteTags(prefix);
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+        return Response.status(Response.Status.ACCEPTED).entity(suggestedTags).build();
     }
 }
