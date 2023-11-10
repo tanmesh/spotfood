@@ -183,7 +183,7 @@ public class FillDummyData {
     public List<RestaurantInfo> getRestaurantInfo() {
         List<RestaurantInfo> restaurantInfos = new ArrayList<>();
 
-        String filePath = "src/main/java/com/tanmesh/splatter/scrachpad/dummyData/dummyDataFromYelp.json";
+        String filePath = "./src/main/java/com/tanmesh/splatter/scrachpad/dummyData/dummyDataFromYelp.json";
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 
