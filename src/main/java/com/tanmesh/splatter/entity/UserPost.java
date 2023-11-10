@@ -10,11 +10,6 @@ import java.util.Set;
 
 import static org.mongodb.morphia.utils.IndexType.DESC;
 
-/*
-    TODO:
-    1. how to add secondary index on `lastTimestamp`
-    https://morphia.dev/morphia/1.6/indexing.html
- */
 @Entity(value = "user_posts", noClassnameStored = true)
 @Indexes({
         @Index(fields = @Field(value = "latLong", type = IndexType.GEO2DSPHERE)),

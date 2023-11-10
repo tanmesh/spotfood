@@ -31,7 +31,7 @@ public class UserResource {
     public UserResource(IUserService userService, AccessTokenService accessTokenService) {
         this.userService = userService;
         this.accessTokenService = accessTokenService;
-        this._producer = new CustomKafkaProducer("topic-user");
+//        this._producer = new CustomKafkaProducer("topic-user");
     }
 
     @POST
@@ -65,7 +65,7 @@ public class UserResource {
         }
 
         Response response = Response.status(Response.Status.ACCEPTED).entity(userData).build();
-        _producer.send(response);
+//        _producer.send(response);
         return response;
     }
 
