@@ -233,11 +233,10 @@ public class UserPostService implements IUserPostService {
         List<RestaurantInfo> restaurantInfos = fillDummyData.getRestaurantInfo();
         List<UserData> users = fillDummyData.getDummyUser();
 
-        for (UserData user : users) {
-
-            userService.signUpUser(user);
-        }
-
+//        for (UserData user : users) {
+//            userService.signUpUser(user);
+//        }
+//
         for (int i = 0; i < 20; ++i) {
             String emailId = users.get(i % 4).getEmailId();
             String imgUrl = setImgUrl(imgPath.get(i), restaurantInfos.get(i).getName());
@@ -248,9 +247,9 @@ public class UserPostService implements IUserPostService {
             userPostData.setLatitude(restaurantInfos.get(i).getLatitude());
             userPostData.setLongitude(restaurantInfos.get(i).getLongitude());
             userPostData.setLocationName(restaurantInfos.get(i).getName());
-            userPostData.setImgUrl(imgUrl);
+//            userPostData.setImgUrl(imgUrl);
 
-            addPost(userPostData, emailId);
+//            addPost(userPostData, emailId);
 
             System.out.println("user post " + i + " added.");
         }
