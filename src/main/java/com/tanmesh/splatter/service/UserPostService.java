@@ -15,7 +15,6 @@ import com.tanmesh.splatter.dao.TagDAO;
 import com.tanmesh.splatter.dao.UserDAO;
 import com.tanmesh.splatter.dao.UserPostDAO;
 import com.tanmesh.splatter.entity.*;
-import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.exception.PostNotFoundException;
 import com.tanmesh.splatter.scrachpad.dummyData.FillDummyData;
 import com.tanmesh.splatter.scrachpad.dummyData.RestaurantInfo;
@@ -226,7 +225,21 @@ public class UserPostService implements IUserPostService {
     }
 
     @Override
-    public void addDummyPost() throws InvalidInputException, IOException {
+    public List<UserPostData> getAllPostOfUser(String authorEmailId, int startAfter) {
+        List<UserPost> userPosts = userPostDAO.getAllPostOfUser(authorEmailId);
+
+        List<UserPostData> userPostDataList = new ArrayList<>();
+        int i = 0;
+        while (startAfter + i < userPosts.size() && i < 2) {
+            UserPost userPost = userPosts.get(startAfter + i);
+            userPostDataList.add(new UserPostData(userPost, 0));
+            i++;
+        }
+        return userPostDataList;
+    }
+
+    @Override
+    public void addDummyPost() throws IOException {
         FillDummyData fillDummyData = new FillDummyData();
         List<Set<String>> tags = fillDummyData.getTags();
         List<String> imgPath = fillDummyData.readImages();
@@ -367,15 +380,4 @@ public class UserPostService implements IUserPostService {
         return userPost;
     }
 
-    @Override
-    public List<UserPostData> getAllPostOfUser(String authorEmailId, int startAfter) {
-        List<UserPost> userPosts = userPostDAO.getAllPostOfUser(authorEmailId);
-
-        List<UserPostData> userPostDataList = new ArrayList<>();
-        for (UserPost userPost : userPosts) {
-            userPostDataList.add(new UserPostData(userPost, 0));
-        }
-
-        return userPostDataList;
-    }
 }
