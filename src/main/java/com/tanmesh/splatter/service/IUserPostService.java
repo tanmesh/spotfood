@@ -25,7 +25,7 @@ public interface IUserPostService {
 
     List<UserPostData> getUserFeed(String emailId, int startAfter);
 
-    List<UserPostData> getUserExplore(int startAfter);
+    List<UserPostData> getUserExplore(int startAfter, String emailId);
 
     void addDummyPost() throws InvalidInputException, IOException;
 }

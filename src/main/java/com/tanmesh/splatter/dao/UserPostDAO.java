@@ -23,6 +23,21 @@ public class UserPostDAO extends BasicDAO<UserPost, String> {
         return this.getDatastore().createQuery(UserPost.class).asList();
     }
 
+    public List<UserPost> getAllPost(int offset, int limit) {
+        return this.getDatastore().createQuery(UserPost.class)
+                .offset(offset)
+                .limit(limit)
+                .asList();
+    }
+
+    public List<UserPost> getAllPostExcept(String emailId, int offset, int limit) {
+        return this.getDatastore().createQuery(UserPost.class)
+                .filter("authorEmailId !=", emailId)
+                .offset(offset)
+                .limit(limit)
+                .asList();
+    }
+
     public List<UserPost> getAllPostOfUser(String emailId) {
         Query<UserPost> query = this.getDatastore().createQuery(UserPost.class).filter("authorEmailId", emailId).order("-creationTimestamp");
         List<UserPost> post = this.find(query).asList();
@@ -30,6 +45,15 @@ public class UserPostDAO extends BasicDAO<UserPost, String> {
             return new ArrayList<>();
         }
         return post;
+    }
+
+    public List<UserPost> getAllPostOfUser(String emailId, int offset, int limit) {
+        Query<UserPost> query = this.getDatastore().createQuery(UserPost.class).filter("authorEmailId", emailId).order("-creationTimestamp")
+                .offset(offset)
+                .limit(limit);
+        List<UserPost> post = this.find(query).asList();
+
+        return (post == null) ? new ArrayList<>() : post;
     }
 
     public UserPost getPostFromIds(ObjectId postId) {

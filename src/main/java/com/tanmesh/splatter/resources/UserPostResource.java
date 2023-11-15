@@ -148,10 +148,10 @@ public class UserPostResource {
     @Path("explore/{startAfter}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response userExplore(@PathParam("startAfter") int startAfter) {
+    public Response userExplore(@PathParam("startAfter") int startAfter, @QueryParam("emailId") String emailId) {
         List<UserPostData> feeds;
         try {
-            feeds = userPostService.getUserExplore(startAfter);
+            feeds = userPostService.getUserExplore(startAfter, emailId);
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
         }

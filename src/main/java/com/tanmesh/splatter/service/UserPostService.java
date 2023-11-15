@@ -26,10 +26,7 @@ import org.mongodb.morphia.Key;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class UserPostService implements IUserPostService {
     private UserPostDAO userPostDAO;
@@ -196,44 +193,36 @@ public class UserPostService implements IUserPostService {
         return feed;
     }
 
+    /**
+     * Pick all post except the current user post.
+     * <p>
+     * emailId can be null
+     */
     @Override
-    public List<UserPostData> getUserExplore(int startAfter) {
-        List<UserPostData> feed = new ArrayList<>();
+    public List<UserPostData> getUserExplore(int startAfter, String emailId) {
+        List<UserPost> feeds;
 
-        List<User> users = userDAO.getAllUser();
-
-        for (User user : users) {
-            Set<UserPostData> feed_;
-
-            // 1. all posts from followed tags
-            feed_ = addPostsFromFollowedTags(user, user.getEmailId());
-            feed.addAll(feed_);
-
-            // 2. all posts from followed user;
-            feed_ = addPostFromFollowedUser(user, user.getEmailId());
-            feed.addAll(feed_);
+        if (!Objects.equals(emailId, "")) {
+            feeds = userPostDAO.getAllPostExcept(emailId, startAfter, 2);
+        } else {
+            feeds = userPostDAO.getAllPost(startAfter, 2);
         }
 
-        List<UserPostData> list = new ArrayList<>(feed);
         List<UserPostData> feed_ = new ArrayList<>();
-        int i = 0;
-        while (startAfter + i < list.size() && i < 2) {
-            feed_.add(list.get(startAfter + i));
-            i++;
+        for (UserPost feed : feeds) {
+            feed_.add(new UserPostData(feed, 0));
         }
         return feed_;
     }
 
     @Override
     public List<UserPostData> getAllPostOfUser(String authorEmailId, int startAfter) {
-        List<UserPost> userPosts = userPostDAO.getAllPostOfUser(authorEmailId);
+        List<UserPost> userPosts = userPostDAO.getAllPostOfUser(authorEmailId, startAfter, 2);
 
         List<UserPostData> userPostDataList = new ArrayList<>();
-        int i = 0;
-        while (startAfter + i < userPosts.size() && i < 2) {
-            UserPost userPost = userPosts.get(startAfter + i);
+
+        for(UserPost userPost: userPosts) {
             userPostDataList.add(new UserPostData(userPost, 0));
-            i++;
         }
         return userPostDataList;
     }
