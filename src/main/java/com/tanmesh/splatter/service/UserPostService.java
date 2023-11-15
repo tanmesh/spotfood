@@ -36,6 +36,7 @@ public class UserPostService implements IUserPostService {
     private IUserService userService;
     private UserDAO userDAO;
     private AwsConfig awsConfig;
+    private Map<String, List<UserPostData>> feed = new HashMap<>();
 
     public UserPostService(UserPostDAO userPostDAO, TagDAO tagDAO, LikedPostDAO likedPostDAO, IImageService imageService, IUserService userService, UserDAO userDAO, AwsConfig awsConfig) {
         this.userPostDAO = userPostDAO;
@@ -97,11 +98,7 @@ public class UserPostService implements IUserPostService {
         return true;
     }
 
-    /*
-        TODO: modify Feed logic
-     */
-    @Override
-    public List<UserPostData> getUserFeed(String emailId, int startAfter) {
+    private List<UserPostData> getFeed(String emailId) {
         List<UserPostData> feed_ = new ArrayList<>();
 
         User user = userDAO.getUserByEmailId(emailId);
@@ -126,10 +123,10 @@ public class UserPostService implements IUserPostService {
         }
 
         // 2. all posts from followed user;
-        Set<String> followers = user.getFollowersList();
-        if (followers != null) {
-            for (String followerEmailId : followers) {
-                List<UserPost> postFromEmailId = userPostDAO.getAllPostOfUser(followerEmailId);
+        Set<String> followings = user.getFollowingList();
+        if (followings != null) {
+            for (String followingEmailId : followings) {
+                List<UserPost> postFromEmailId = userPostDAO.getAllPostOfUser(followingEmailId);
                 if (postFromEmailId != null) {
                     for (UserPost userPost : postFromEmailId) {
                         UserPostData userPostData = new UserPostData(userPost, 0);
@@ -141,13 +138,71 @@ public class UserPostService implements IUserPostService {
             }
         }
 
-        List<UserPostData> list = new ArrayList<>(feed_);
-        List<UserPostData> feed = new ArrayList<>();
-        int i = 0;
+        return feed_;
+    }
 
-        while (startAfter + i < list.size() && i < 2) {
-            feed.add(list.get(startAfter + i));
-            i++;
+    /*
+        TODO: modify Feed logic
+     */
+    @Override
+    public List<UserPostData> getUserFeed(String emailId, int startAfter) {
+//        List<UserPostData> feed_ = new ArrayList<>();
+//
+//        User user = userDAO.getUserByEmailId(emailId);
+//        if (user == null) {
+//            return feed_;
+//        }
+//
+//        // 1. all posts from followed tags
+//        Set<Tag> followedTags = user.getTagList();
+//        if (followedTags != null) {
+//            for (Tag tag : followedTags) {
+//                Set<UserPost> postFromTags = userPostDAO.getAllPostForTags(tag);
+//                if (postFromTags != null) {
+//                    for (UserPost userPost : postFromTags) {
+//                        UserPostData userPostData = new UserPostData(userPost, 0);
+//                        userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
+//                        userPostData.setAuthorName(userDAO.getUserName(userPostData.getAuthorEmailId()));
+//                        feed_.add(userPostData);
+//                    }
+//                }
+//            }
+//        }
+//
+//        // 2. all posts from followed user;
+//        Set<String> followers = user.getFollowersList();
+//        if (followers != null) {
+//            for (String followerEmailId : followers) {
+//                List<UserPost> postFromEmailId = userPostDAO.getAllPostOfUser(followerEmailId);
+//                if (postFromEmailId != null) {
+//                    for (UserPost userPost : postFromEmailId) {
+//                        UserPostData userPostData = new UserPostData(userPost, 0);
+//                        userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
+//                        userPostData.setAuthorName(userDAO.getUserName(userPostData.getAuthorEmailId()));
+//                        feed_.add(userPostData);
+//                    }
+//                }
+//            }
+//        }
+//
+//        List<UserPostData> list = new ArrayList<>(feed_);
+//        List<UserPostData> feed = new ArrayList<>();
+//        int i = 0;
+//
+//        while (startAfter + i < list.size() && i < 2) {
+//            feed.add(list.get(startAfter + i));
+//            i++;
+//        }
+//
+//        return feed;
+
+        List<UserPostData> feed_ = feed.get(emailId) == null ? getFeed(emailId) : feed.get(emailId);
+
+        List<UserPostData> feed = new ArrayList<>();
+        int itemsToAdd = Math.min(2, feed_.size() - startAfter);
+
+        if (startAfter >= 0 && startAfter < feed_.size()) {
+            feed.addAll(feed_.subList(startAfter, startAfter + itemsToAdd));
         }
 
         return feed;
@@ -221,7 +276,7 @@ public class UserPostService implements IUserPostService {
 
         List<UserPostData> userPostDataList = new ArrayList<>();
 
-        for(UserPost userPost: userPosts) {
+        for (UserPost userPost : userPosts) {
             userPostDataList.add(new UserPostData(userPost, 0));
         }
         return userPostDataList;
