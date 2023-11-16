@@ -38,9 +38,7 @@ public class UserPostResource {
             Preconditions.checkNotNull(userPostData.getLatitude(), "latitude should not be null");
             Preconditions.checkNotNull(userPostData.getLongitude(), "longitude should not be null");
 
-            String emailId = userSession.getEmailId();
-
-            userPostService.addPost(userPostData, emailId);
+            userPostService.addPost(userPostData, userSession.getEmailId());
         } catch (InvalidInputException | IOException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
@@ -167,6 +165,4 @@ public class UserPostResource {
         List<UserPostData> feeds = userPostService.getUserFeed(emailId, startAfter);
         return Response.status(Response.Status.ACCEPTED).entity(feeds).build();
     }
-
-    // TODO: add edit User Post
 }

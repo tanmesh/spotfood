@@ -3,7 +3,6 @@ package com.tanmesh.splatter.dao;
 import com.tanmesh.splatter.entity.User;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
-import org.mongodb.morphia.query.Query;
 
 import java.util.List;
 
@@ -29,8 +28,14 @@ public class UserDAO extends BasicDAO<User, String> {
     }
 
     public List<User> getAllUser() {
-        Query<User> query = this.getDatastore().createQuery(User.class);
-        return query.asList();
+        return this.getDatastore().createQuery(User.class).asList();
+    }
+
+    public List<User> getAllUserExcept(String emailId) {
+        return this.getDatastore()
+                .createQuery(User.class)
+                .filter("emailId !=", emailId)
+                .asList();
     }
 
 //    public List<UserPost> getAllFeed(String tag) {

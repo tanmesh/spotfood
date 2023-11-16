@@ -37,6 +37,7 @@ public class UserPostService implements IUserPostService {
     private UserDAO userDAO;
     private AwsConfig awsConfig;
     private Map<String, List<UserPostData>> feed = new HashMap<>();
+    private Map<String, List<UserPostData>> exploreFeed = new HashMap<>();
 
     public UserPostService(UserPostDAO userPostDAO, TagDAO tagDAO, LikedPostDAO likedPostDAO, IImageService imageService, IUserService userService, UserDAO userDAO, AwsConfig awsConfig) {
         this.userPostDAO = userPostDAO;
@@ -48,8 +49,16 @@ public class UserPostService implements IUserPostService {
         this.userDAO = userDAO;
     }
 
+//    public clearExploreFeed(String emailId) {
+//        try {
+//            exploreFeed.get(emailId).clear();
+//        } catch (Exception e) {
+//            System.out.println(e);
+//        }
+//    }
+
     @Override
-    public void addPost(UserPostData userPostData, String emailId) throws IOException {
+    public void addPost(UserPostData userPostData, String emailId) {
         UserPost userPost = new UserPost();
 
         String locationName = userPostData.getLocationName();
@@ -83,6 +92,12 @@ public class UserPostService implements IUserPostService {
 
         userPostDAO.save(userPost);
 
+        try {
+            feed.get(emailId).clear();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
         // TODO: thumbnail, lowImage, stdImage, original
 //        BufferedImage bimg = ImageIO.read(file);
 //        String fileExtention = ".jpeg";
@@ -99,11 +114,11 @@ public class UserPostService implements IUserPostService {
     }
 
     private List<UserPostData> getFeed(String emailId) {
-        List<UserPostData> feed_ = new ArrayList<>();
+        List<UserPostData> feed = new ArrayList<>();
 
         User user = userDAO.getUserByEmailId(emailId);
         if (user == null) {
-            return feed_;
+            return null;
         }
 
         // 1. all posts from followed tags
@@ -113,10 +128,15 @@ public class UserPostService implements IUserPostService {
                 Set<UserPost> postFromTags = userPostDAO.getAllPostForTags(tag);
                 if (postFromTags != null) {
                     for (UserPost userPost : postFromTags) {
-                        UserPostData userPostData = new UserPostData(userPost, 0);
-                        userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
-                        userPostData.setAuthorName(userDAO.getUserName(userPostData.getAuthorEmailId()));
-                        feed_.add(userPostData);
+                        boolean postIdExists = feed.stream()
+                                .anyMatch(postData -> Objects.equals(postData.getPostId(), userPost.getPostId().toString()));
+
+                        if (!postIdExists) {
+                            UserPostData userPostData = new UserPostData(userPost, 0);
+                            userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
+                            userPostData.setAuthorName(userDAO.getUserName(userPostData.getAuthorEmailId()));
+                            feed.add(userPostData);
+                        }
                     }
                 }
             }
@@ -129,78 +149,47 @@ public class UserPostService implements IUserPostService {
                 List<UserPost> postFromEmailId = userPostDAO.getAllPostOfUser(followingEmailId);
                 if (postFromEmailId != null) {
                     for (UserPost userPost : postFromEmailId) {
-                        UserPostData userPostData = new UserPostData(userPost, 0);
-                        userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
-                        userPostData.setAuthorName(userDAO.getUserName(userPostData.getAuthorEmailId()));
-                        feed_.add(userPostData);
+                        boolean postIdExists = feed.stream().anyMatch(postData -> Objects.equals(postData.getPostId(), userPost.getPostId().toString()));
+
+                        if (!postIdExists) {
+                            UserPostData userPostData = new UserPostData(userPost, 0);
+                            userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
+                            userPostData.setAuthorName(userDAO.getUserName(userPostData.getAuthorEmailId()));
+                            feed.add(userPostData);
+                        }
                     }
                 }
             }
         }
 
-        return feed_;
+        // 3. all post of current user
+        List<UserPost> posts = userPostDAO.getAllPostOfUser(emailId);
+        for (UserPost userPost : posts) {
+            boolean postIdExists = feed.stream().anyMatch(postData -> Objects.equals(postData.getPostId(), userPost.getPostId().toString()));
+
+            if (!postIdExists) {
+                UserPostData userPostData = new UserPostData(userPost, 0);
+                userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
+                userPostData.setAuthorName(userDAO.getUserName(userPostData.getAuthorEmailId()));
+                feed.add(userPostData);
+            }
+        }
+
+        Collections.sort(feed, Comparator.comparingLong(UserPostData::getCreationTimestamp).reversed());
+
+        return feed;
     }
 
-    /*
-        TODO: modify Feed logic
-     */
     @Override
     public List<UserPostData> getUserFeed(String emailId, int startAfter) {
-//        List<UserPostData> feed_ = new ArrayList<>();
-//
-//        User user = userDAO.getUserByEmailId(emailId);
-//        if (user == null) {
-//            return feed_;
+//        if(feed.get(emailId) == null) {
+//            feed.put(emailId, getFeed(emailId));
 //        }
-//
-//        // 1. all posts from followed tags
-//        Set<Tag> followedTags = user.getTagList();
-//        if (followedTags != null) {
-//            for (Tag tag : followedTags) {
-//                Set<UserPost> postFromTags = userPostDAO.getAllPostForTags(tag);
-//                if (postFromTags != null) {
-//                    for (UserPost userPost : postFromTags) {
-//                        UserPostData userPostData = new UserPostData(userPost, 0);
-//                        userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
-//                        userPostData.setAuthorName(userDAO.getUserName(userPostData.getAuthorEmailId()));
-//                        feed_.add(userPostData);
-//                    }
-//                }
-//            }
-//        }
-//
-//        // 2. all posts from followed user;
-//        Set<String> followers = user.getFollowersList();
-//        if (followers != null) {
-//            for (String followerEmailId : followers) {
-//                List<UserPost> postFromEmailId = userPostDAO.getAllPostOfUser(followerEmailId);
-//                if (postFromEmailId != null) {
-//                    for (UserPost userPost : postFromEmailId) {
-//                        UserPostData userPostData = new UserPostData(userPost, 0);
-//                        userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
-//                        userPostData.setAuthorName(userDAO.getUserName(userPostData.getAuthorEmailId()));
-//                        feed_.add(userPostData);
-//                    }
-//                }
-//            }
-//        }
-//
-//        List<UserPostData> list = new ArrayList<>(feed_);
-//        List<UserPostData> feed = new ArrayList<>();
-//        int i = 0;
-//
-//        while (startAfter + i < list.size() && i < 2) {
-//            feed.add(list.get(startAfter + i));
-//            i++;
-//        }
-//
-//        return feed;
 
-        List<UserPostData> feed_ = feed.get(emailId) == null ? getFeed(emailId) : feed.get(emailId);
-
+        feed.put(emailId, getFeed(emailId)); // Temporary fix
+        List<UserPostData> feed_ = feed.get(emailId);
         List<UserPostData> feed = new ArrayList<>();
         int itemsToAdd = Math.min(2, feed_.size() - startAfter);
-
         if (startAfter >= 0 && startAfter < feed_.size()) {
             feed.addAll(feed_.subList(startAfter, startAfter + itemsToAdd));
         }
@@ -253,21 +242,47 @@ public class UserPostService implements IUserPostService {
      * <p>
      * emailId can be null
      */
+    private List<UserPostData> getExploreFeed(String emailId) {
+        List<UserPost> exploreFeed_ = new ArrayList<>();
+
+        if (Objects.equals(emailId, "")) {
+            exploreFeed_ = userPostDAO.getAllPost();
+        } else {
+            Set<String> following = userDAO.getUserByEmailId(emailId).getFollowingList();
+            for(User user: userDAO.getAllUserExcept(emailId)) {
+                if(!following.contains(user.getEmailId())) {
+                    exploreFeed_.addAll(userPostDAO.getAllPostOfUser(user.getEmailId()));
+                }
+            }
+        }
+
+        List<UserPostData> exploreFeed = new ArrayList<>();
+        for(UserPost userPost: exploreFeed_) {
+            UserPostData userPostData = new UserPostData(userPost, 0);
+            userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
+            exploreFeed.add(userPostData);
+        }
+
+        exploreFeed.sort(Comparator.comparingLong(UserPostData::getCreationTimestamp).reversed());
+
+        return exploreFeed;
+    }
+
     @Override
     public List<UserPostData> getUserExplore(int startAfter, String emailId) {
-        List<UserPost> feeds;
+//        if(exploreFeed.get(emailId) == null) {
+//            exploreFeed.put(emailId, getExploreFeed(emailId));
+//        }
+        exploreFeed.put(emailId, getExploreFeed(emailId)); // Temporary fix
 
-        if (!Objects.equals(emailId, "")) {
-            feeds = userPostDAO.getAllPostExcept(emailId, startAfter, 2);
-        } else {
-            feeds = userPostDAO.getAllPost(startAfter, 2);
+        List<UserPostData> exploreFeed_ = exploreFeed.get(emailId);
+        List<UserPostData> exploreFeed = new ArrayList<>();
+        int itemsToAdd = Math.min(2, exploreFeed_.size() - startAfter);
+        if (startAfter >= 0 && startAfter < exploreFeed_.size()) {
+            exploreFeed.addAll(exploreFeed_.subList(startAfter, startAfter + itemsToAdd));
         }
 
-        List<UserPostData> feed_ = new ArrayList<>();
-        for (UserPost feed : feeds) {
-            feed_.add(new UserPostData(feed, 0));
-        }
-        return feed_;
+        return exploreFeed;
     }
 
     @Override
@@ -335,10 +350,7 @@ public class UserPostService implements IUserPostService {
             InputStream inputStream = new ByteArrayInputStream(imageBytes);
 
             AWSCredentials credentials = new BasicAWSCredentials(awsConfig.getAccessKey(), awsConfig.getSecretKey());
-            AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                    .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                    .withRegion(awsConfig.getRegion())
-                    .build();
+            AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials)).withRegion(awsConfig.getRegion()).build();
             PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, filePath, inputStream, new ObjectMetadata());
             s3Client.putObject(putObjectRequest);
 

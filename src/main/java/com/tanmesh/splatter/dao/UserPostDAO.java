@@ -30,6 +30,12 @@ public class UserPostDAO extends BasicDAO<UserPost, String> {
                 .asList();
     }
 
+    public List<UserPost> getAllPostExcept(String emailId) {
+        return this.getDatastore().createQuery(UserPost.class)
+                .filter("authorEmailId !=", emailId)
+                .asList();
+    }
+
     public List<UserPost> getAllPostExcept(String emailId, int offset, int limit) {
         return this.getDatastore().createQuery(UserPost.class)
                 .filter("authorEmailId !=", emailId)
