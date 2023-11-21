@@ -6,6 +6,7 @@ import com.tanmesh.splatter.entity.UserPost;
 import com.tanmesh.splatter.exception.InvalidInputException;
 import com.tanmesh.splatter.exception.PostNotFoundException;
 import com.tanmesh.splatter.service.AccessTokenService;
+import com.tanmesh.splatter.service.IFeedService;
 import com.tanmesh.splatter.service.IUserPostService;
 import com.tanmesh.splatter.wsRequestModel.UserPostData;
 import io.dropwizard.auth.Auth;
@@ -14,16 +15,19 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Path("/user_post")
 public class UserPostResource {
     private IUserPostService userPostService;
+    private IFeedService feedService;
     private AccessTokenService accessTokenService;
 
-    public UserPostResource(IUserPostService userPostService, AccessTokenService accessTokenService) {
+    public UserPostResource(IUserPostService userPostService, AccessTokenService accessTokenService, IFeedService feedService) {
         this.userPostService = userPostService;
         this.accessTokenService = accessTokenService;
+        this.feedService = feedService;
     }
 
     @POST
@@ -124,7 +128,7 @@ public class UserPostResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response userFeeds(@Auth UserSession userSession) throws InvalidInputException {
         String emailId = userSession.getEmailId();
-        List<UserPostData> feeds = userPostService.getUserFeed(emailId, -1);
+        List<UserPostData> feeds = feedService.getUserFeed(emailId, -1);
         return Response.status(Response.Status.ACCEPTED).entity(feeds).build();
     }
 
@@ -143,13 +147,14 @@ public class UserPostResource {
     }
 
     @GET
-    @Path("explore/{startAfter}")
+    @Path("feeds/{startAfter}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response userExplore(@PathParam("startAfter") int startAfter, @QueryParam("emailId") String emailId) {
-        List<UserPostData> feeds;
+    public Response userFeeds(@Auth UserSession userSession, @PathParam("startAfter") int startAfter) throws InvalidInputException {
+        List<UserPostData> feeds = new ArrayList<>();
         try {
-            feeds = userPostService.getUserExplore(startAfter, emailId);
+            String emailId = userSession.getEmailId();
+            feeds = feedService.getUserFeed(emailId, startAfter);
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
         }
@@ -157,12 +162,42 @@ public class UserPostResource {
     }
 
     @GET
-    @Path("feeds/{startAfter}")
+    @Path("explore/{startAfter}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response userFeeds(@Auth UserSession userSession, @PathParam("startAfter") int startAfter) throws InvalidInputException {
-        String emailId = userSession.getEmailId();
-        List<UserPostData> feeds = userPostService.getUserFeed(emailId, startAfter);
+    public Response userExplore(@PathParam("startAfter") int startAfter, @QueryParam("emailId") String emailId) {
+        List<UserPostData> feeds;
+        try {
+            feeds = feedService.getUserExplore(emailId, startAfter);
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
+        }
         return Response.status(Response.Status.ACCEPTED).entity(feeds).build();
+    }
+
+    @POST
+    @Path("/generateFeed")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response generateFeed() {
+        try {
+            feedService.generateFeed();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
+        }
+        return Response.status(Response.Status.ACCEPTED).build();
+    }
+
+    @POST
+    @Path("/generateExplore")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response generateExplore() {
+        try {
+            feedService.generateExplore();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
+        }
+        return Response.status(Response.Status.ACCEPTED).build();
     }
 }

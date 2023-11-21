@@ -162,18 +162,4 @@ public class UserPostDAO extends BasicDAO<UserPost, String> {
 //
 //        return userPostResponseSet;
     }
-
-    public Set<UserPost> getByTag(String tag, SearchData searchData) {
-        List<UserPost> posts = this.getDatastore()
-                .createQuery(UserPost.class)
-                .field("tagList.name").equal(tag)
-                .order("-creationTimestamp")
-                .asList();
-
-        if (searchData.getRadius() != -1) {
-            return getWithRadius(posts, searchData);
-        }
-
-        return new HashSet<>(posts);
-    }
 }

@@ -3,10 +3,7 @@ package com.tanmesh.splatter;
 import com.tanmesh.splatter.authentication.AccessTokenAuthenticator;
 import com.tanmesh.splatter.authentication.AccessTokenSecurityProvider;
 import com.tanmesh.splatter.autocomplete.TagTrie;
-import com.tanmesh.splatter.dao.LikedPostDAO;
-import com.tanmesh.splatter.dao.TagDAO;
-import com.tanmesh.splatter.dao.UserDAO;
-import com.tanmesh.splatter.dao.UserPostDAO;
+import com.tanmesh.splatter.dao.*;
 import com.tanmesh.splatter.resources.*;
 import com.tanmesh.splatter.service.*;
 import com.tanmesh.splatter.utils.MongoUtils;
@@ -56,12 +53,15 @@ public class App extends Application<SplatterConfiguration> {
         LikedPostDAO likedPostDAO = new LikedPostDAO(ds);
         UserPostDAO userPostDAO = new UserPostDAO(ds);
 
+        FeedDAO feedDAO = new FeedDAO(ds);
+        ExploreDAO exploreDAO = new ExploreDAO(ds);
+
         AccessTokenService accessTokenService = new RedisAccessTokenService();
         IUserService userService = new UserService(userDAO, accessTokenService);
 
         TagTrie tagTrie = new TagTrie();
 
-        ISearchService searchService = new SearchService(userService, userPostDAO);
+        ISearchService searchService = new SearchService(userPostDAO, feedDAO, exploreDAO);
         ITagService tagService = new TagService(tagDAO, tagTrie);
         IImageService imageService = new ImageService();
 
@@ -72,8 +72,9 @@ public class App extends Application<SplatterConfiguration> {
         TagResource tagResource = new TagResource(tagService);
         AdminResource adminResource = new AdminResource(userService, tagService);
 
-        IUserPostService userPostService = new UserPostService(userPostDAO, tagDAO, likedPostDAO, imageService, userService, userDAO, configuration.getAwsConfig());
-        UserPostResource userPostResource = new UserPostResource(userPostService, accessTokenService);
+        IFeedService feedService = new FeedService(userDAO, feedDAO, userPostDAO, likedPostDAO, exploreDAO);
+        IUserPostService userPostService = new UserPostService(userPostDAO, tagDAO, likedPostDAO, imageService, userService, userDAO, configuration.getAwsConfig(), exploreDAO, feedDAO);
+        UserPostResource userPostResource = new UserPostResource(userPostService, accessTokenService, feedService);
         AccessTokenAuthenticator accessTokenAuthenticator = new AccessTokenAuthenticator(accessTokenService);
 
         environment.jersey().register(userResource);

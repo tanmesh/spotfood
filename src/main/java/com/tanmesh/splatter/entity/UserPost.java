@@ -28,9 +28,7 @@ public class UserPost {
     private String imgUrl;
     private LatLong latLong;
     private boolean liked;
-
     private String AuthorName;
-
     private int distance;
 
     public UserPost() {

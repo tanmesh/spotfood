@@ -1,5 +1,7 @@
 package com.tanmesh.splatter.service;
 
+import com.tanmesh.splatter.dao.ExploreDAO;
+import com.tanmesh.splatter.dao.FeedDAO;
 import com.tanmesh.splatter.dao.UserPostDAO;
 import com.tanmesh.splatter.entity.UserPost;
 import com.tanmesh.splatter.wsRequestModel.SearchData;
@@ -14,12 +16,15 @@ import java.util.stream.Collectors;
  * Time: 11:35
  */
 public class SearchService implements ISearchService {
-    private IUserService userService;
     private UserPostDAO userPostDAO;
+    private FeedDAO feedDAO;
+    private ExploreDAO exploreDAO;
+    private List<UserPostData> outFeed = new ArrayList<>();
 
-    public SearchService(IUserService userService, UserPostDAO userPostDAO) {
-        this.userService = userService;
+    public SearchService(UserPostDAO userPostDAO, FeedDAO feedDAO, ExploreDAO exploreDAO) {
         this.userPostDAO = userPostDAO;
+        this.feedDAO = feedDAO;
+        this.exploreDAO = exploreDAO;
     }
 
     /*
@@ -29,44 +34,48 @@ public class SearchService implements ISearchService {
 
      */
     @Override
-    public List<UserPostData> getSearchTagsResults(String emailId, SearchData searchData) {
-        List<UserPostData> outFeed = new ArrayList<>();
-
-        for (String tag : searchData.getTag()) {
-            Set<UserPost> feeds = userPostDAO.getByTag(tag, searchData);
-
-            for (UserPost feed_ : feeds) {
-                UserPostData userPostData = new UserPostData();
-                userPostData.setPostId(feed_.getPostId().toString());
-                userPostData.setTagList(feed_.getTagsString());
-                userPostData.setUpVotes(feed_.getUpVotes());
-                userPostData.setLocationName(feed_.getLocationName());
-                userPostData.setAuthorEmailId(feed_.getAuthorEmailId());
-                userPostData.setAuthorName(feed_.getAuthorName());
-                userPostData.setImgUrl(feed_.getImgUrl());
-                outFeed.add(userPostData);
-            }
+    public List<UserPostData> getSearchTagsResults(String emailId, SearchData searchData, int offset) {
+        if (offset == 0 || outFeed.isEmpty()) {
+            setFeedSearchTagsResults(emailId, searchData);
         }
 
-        return outFeed;
+        int itemsToAdd = 2;
+        List<UserPostData> feed = new ArrayList<>();
+        if (offset >= 0 && offset < outFeed.size()) {
+            feed.addAll(outFeed.subList(offset, offset + itemsToAdd));
+        }
+
+        return feed;
     }
 
     @Override
-    public List<UserPostData> getSearchLocalityResults(String emailId, SearchData searchData) {
-        //        Set<UserPost> userPosts = null;
-//        String tagName = searchData.getName();
-//        User user = userService.getUserProfile(emailId);
-//        if(user != null) {
-//            LatLong latlong = user.getLastUpdatedLocation();
-//            if (latlong != null) {
-//                double latitude = latlong.getCoordinates()[0];
-//                double longitude = latlong.getCoordinates()[1];
-//                userPosts = userPostDAO.getNearBy(tagName, latitude, longitude);
-//            }
-//        }
+    public List<UserPostData> getSearchLocalityResults(String emailId, SearchData searchData, int offset) {
+        if (offset == 0 || outFeed.isEmpty()) {
+            setFeedSearchLocalityResults(emailId, searchData);
+        }
 
+        int itemsToAdd = 2;
+        List<UserPostData> feed = new ArrayList<>();
+        if (offset >= 0 && offset < outFeed.size()) {
+            feed.addAll(outFeed.subList(offset, offset + itemsToAdd));
+        }
+
+        return feed;
+    }
+
+    private void setFeedSearchLocalityResults(String emailId, SearchData searchData) {
         Set<UserPostData> feed = new HashSet<>();
-        Set<UserPost> feeds = userPostDAO.getNearBy(searchData);
+
+        Set<UserPost> feeds = new HashSet<>();
+        switch (searchData.getSearchOn()) {
+            case FEED:
+                feeds = feedDAO.getNearBy(emailId, searchData);
+                break;
+            case EXPLORE:
+                feeds = exploreDAO.getNearBy(emailId, searchData);
+                break;
+        }
+
         for (UserPost feed_ : feeds) {
             UserPostData userPostData = new UserPostData();
             userPostData.setPostId(feed_.getPostId().toString());
@@ -80,10 +89,41 @@ public class SearchService implements ISearchService {
             feed.add(userPostData);
         }
 
-        List<UserPostData> sortedFeedList = feed.stream().collect(Collectors.toList());
+        outFeed = feed.stream().collect(Collectors.toList());
         Comparator<UserPostData> distanceComparator = Comparator.comparing(UserPostData::getDistance);
-        sortedFeedList.sort(distanceComparator);
+        outFeed.sort(distanceComparator);
+    }
 
-        return sortedFeedList;
+    private void setFeedSearchTagsResults(String emailId, SearchData searchData) {
+        Set<UserPostData> feed = new HashSet<>();
+
+        for (String tag : searchData.getTag()) {
+            Set<UserPost> feeds = new HashSet<>();
+
+            switch (searchData.getSearchOn()) {
+                case FEED:
+                    feeds = feedDAO.getByTag(emailId, tag, searchData);
+                    break;
+                case EXPLORE:
+                    feeds = exploreDAO.getByTag(emailId, tag, searchData);
+                    break;
+            }
+
+            for (UserPost feed_ : feeds) {
+                UserPostData userPostData = new UserPostData();
+                userPostData.setPostId(feed_.getPostId().toString());
+                userPostData.setTagList(feed_.getTagsString());
+                userPostData.setUpVotes(feed_.getUpVotes());
+                userPostData.setLocationName(feed_.getLocationName());
+                userPostData.setAuthorEmailId(feed_.getAuthorEmailId());
+                userPostData.setAuthorName(feed_.getAuthorName());
+                userPostData.setImgUrl(feed_.getImgUrl());
+                feed.add(userPostData);
+            }
+        }
+
+        outFeed = feed.stream().collect(Collectors.toList());
+        Comparator<UserPostData> distanceComparator = Comparator.comparing(UserPostData::getCreationTimestamp);
+        outFeed.sort(distanceComparator);
     }
 }

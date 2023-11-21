@@ -1,5 +1,6 @@
 package com.tanmesh.splatter.wsRequestModel;
 
+import com.tanmesh.splatter.enums.SearchOn;
 import com.tanmesh.splatter.enums.SearchType;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
  * Time: 12:45
  */
 public class SearchData {
+    private SearchOn searchOn;
     private SearchType type;
     private List<String> tag;
     private int radius = -1;
@@ -17,6 +19,14 @@ public class SearchData {
     private Double latitude;
 
     public SearchData() {
+    }
+
+    public SearchOn getSearchOn() {
+        return searchOn;
+    }
+
+    public void setSearchOn(SearchOn searchOn) {
+        this.searchOn = searchOn;
     }
 
     public Double getLongitude() {

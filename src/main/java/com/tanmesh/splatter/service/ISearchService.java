@@ -11,7 +11,7 @@ import java.util.List;
  * Time: 11:32
  */
 public interface ISearchService {
-    List<UserPostData> getSearchTagsResults(String emailId, SearchData searchData);
+    List<UserPostData> getSearchTagsResults(String emailId, SearchData searchData, int offset);
 
-    List<UserPostData> getSearchLocalityResults(String emailId, SearchData searchData);
+    List<UserPostData> getSearchLocalityResults(String emailId, SearchData searchData, int offset);
 }
