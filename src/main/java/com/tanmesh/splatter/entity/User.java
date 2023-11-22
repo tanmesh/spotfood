@@ -18,6 +18,15 @@ public class User {
     private Set<String> followersList = new HashSet<>();
     private Set<Tag> tagList = new HashSet<>();
     private LatLong lastUpdatedLocation;
+    private String profilePicUrl;
+
+    public String getProfilePicUrl() {
+        return profilePicUrl;
+    }
+
+    public void setProfilePicUrl(String profilePicUrl) {
+        this.profilePicUrl = profilePicUrl;
+    }
 
     public Set<Tag> getTagList() {
         return tagList;

@@ -15,6 +15,7 @@ public class UserData {
     private Set<String> followingList = new HashSet<>();
     private Set<String> followersList = new HashSet<>();
     private Set<String> tagList = new HashSet<>();
+    private String profilePicUrl;
 
     public UserData() {
     }
@@ -27,12 +28,21 @@ public class UserData {
         this.password = user.getPassword();
         this.followersList = user.getFollowersList();
         this.followingList = user.getFollowingList();
+        this.profilePicUrl = user.getProfilePicUrl();
 
         if (user.getTagList() != null) {
             for (Tag tag : user.getTagList()) {
                 this.tagList.add(tag.getName());
             }
         }
+    }
+
+    public String getProfilePicUrl() {
+        return profilePicUrl;
+    }
+
+    public void setProfilePicUrl(String profilePicUrl) {
+        this.profilePicUrl = profilePicUrl;
     }
 
     public String getEmailId() {

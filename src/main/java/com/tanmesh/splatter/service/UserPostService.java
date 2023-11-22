@@ -39,9 +39,11 @@ public class UserPostService implements IUserPostService {
     private LikedPostDAO likedPostDAO;
     private FeedDAO feedDAO;
     private ExploreDAO exploreDAO;
+
+    private IFeedService feedService;
     private AwsConfig awsConfig;
 
-    public UserPostService(UserPostDAO userPostDAO, TagDAO tagDAO, LikedPostDAO likedPostDAO, IImageService imageService, IUserService userService, UserDAO userDAO, AwsConfig awsConfig, ExploreDAO exploreDAO, FeedDAO feedDAO) {
+    public UserPostService(UserPostDAO userPostDAO, TagDAO tagDAO, LikedPostDAO likedPostDAO, IImageService imageService, IUserService userService, UserDAO userDAO, AwsConfig awsConfig, ExploreDAO exploreDAO, FeedDAO feedDAO, IFeedService feedService) {
         this.userPostDAO = userPostDAO;
         this.tagDAO = tagDAO;
         this.likedPostDAO = likedPostDAO;
@@ -51,15 +53,8 @@ public class UserPostService implements IUserPostService {
         this.userDAO = userDAO;
         this.exploreDAO = exploreDAO;
         this.feedDAO = feedDAO;
+        this.feedService = feedService;
     }
-
-//    public clearExploreFeed(String emailId) {
-//        try {
-//            exploreFeed.get(emailId).clear();
-//        } catch (Exception e) {
-//            System.out.println(e);
-//        }
-//    }
 
     @Override
     public void addPost(UserPostData userPostData, String emailId) {
@@ -96,15 +91,8 @@ public class UserPostService implements IUserPostService {
 
         userPostDAO.save(userPost);
 
-        // TODO: update feed
-        // TODO: update explore
-//        FeedItem feedItem = new FeedItem();
-//        feedItem.setUserPostId(userPost.getPostId());
-//        feedItem.setCreationTimestamp(userPost.getCreationTimestamp());
-//        Feed feed = new Feed();
-//        feed.setEmailId(emailId);
-//        feed.setFeedItem((List<FeedItem>) feedItem);
-//        feedDAO.save(feed);
+        feedService.generateFeed();
+        feedService.generateExplore();
 
         // TODO: thumbnail, lowImage, stdImage, original
 //        BufferedImage bimg = ImageIO.read(file);
@@ -163,39 +151,6 @@ public class UserPostService implements IUserPostService {
         }
     }
 
-    private String setImgUrl(String imagePath, String locationName) {
-        String bucketName = "spotfood-images";
-        String filePath = "location/" + locationName + ".jpg";
-        try {
-            File imageFile = new File(imagePath);
-            if (!imageFile.exists()) {
-                throw new RuntimeException("Image file not found at the specified path: " + imagePath);
-            }
-
-            BufferedImage bufferedImage = ImageIO.read(imageFile);
-            if (bufferedImage == null) {
-                throw new RuntimeException("Failed to read the image file.");
-            }
-
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ImageIO.write(bufferedImage, "jpg", outputStream);
-
-            // Encode the byte array to base64
-            byte[] imageBytes = outputStream.toByteArray();
-
-            InputStream inputStream = new ByteArrayInputStream(imageBytes);
-
-            AWSCredentials credentials = new BasicAWSCredentials(awsConfig.getAccessKey(), awsConfig.getSecretKey());
-            AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials)).withRegion(awsConfig.getRegion()).build();
-            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, filePath, inputStream, new ObjectMetadata());
-            s3Client.putObject(putObjectRequest);
-
-            return s3Client.getUrl(bucketName, filePath).toString();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public void deletePost(String postId) throws PostNotFoundException {
         UserPost userPost = userPostDAO.getPostFromIds(new ObjectId(postId));
@@ -203,6 +158,9 @@ public class UserPostService implements IUserPostService {
             throw new PostNotFoundException("user post is NULL");
         }
         userPostDAO.delete(userPost);
+
+        feedService.generateFeed();
+        feedService.generateExplore();
     }
 
     /*
@@ -240,6 +198,9 @@ public class UserPostService implements IUserPostService {
             LikedPost likedPost = new LikedPost(userPost.getPostId(), emailId);
             likedPostDAO.save(likedPost);
 
+            feedService.generateFeed();
+            feedService.generateExplore();
+
             return userPost;
         } catch (Exception e) {
             System.out.println(e);
@@ -258,6 +219,9 @@ public class UserPostService implements IUserPostService {
             }
 
             likedPostDAO.dislikedPost(emailId, userPost.getPostId());
+
+            feedService.generateFeed();
+            feedService.generateExplore();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -270,5 +234,38 @@ public class UserPostService implements IUserPostService {
             throw new PostNotFoundException("user post is NULL");
         }
         return userPost;
+    }
+
+    private String setImgUrl(String imagePath, String locationName) {
+        String bucketName = "spotfood-images";
+        String filePath = "location/" + locationName + ".jpg";
+        try {
+            File imageFile = new File(imagePath);
+            if (!imageFile.exists()) {
+                throw new RuntimeException("Image file not found at the specified path: " + imagePath);
+            }
+
+            BufferedImage bufferedImage = ImageIO.read(imageFile);
+            if (bufferedImage == null) {
+                throw new RuntimeException("Failed to read the image file.");
+            }
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, "jpg", outputStream);
+
+            // Encode the byte array to base64
+            byte[] imageBytes = outputStream.toByteArray();
+
+            InputStream inputStream = new ByteArrayInputStream(imageBytes);
+
+            AWSCredentials credentials = new BasicAWSCredentials(awsConfig.getAccessKey(), awsConfig.getSecretKey());
+            AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials)).withRegion(awsConfig.getRegion()).build();
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, filePath, inputStream, new ObjectMetadata());
+            s3Client.putObject(putObjectRequest);
+
+            return s3Client.getUrl(bucketName, filePath).toString();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

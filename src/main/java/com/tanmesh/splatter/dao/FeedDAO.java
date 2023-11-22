@@ -106,4 +106,12 @@ public class FeedDAO extends BasicDAO<Feed, String> {
 
         return outFeeds;
     }
+
+    public void deleteAllFeeds() {
+        try {
+            this.getCollection().drop();
+        } catch (Exception e) {
+            System.out.println("Unable to delete collection 'feed'" + e.getMessage());
+        }
+    }
 }

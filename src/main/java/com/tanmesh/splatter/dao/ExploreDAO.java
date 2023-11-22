@@ -104,4 +104,12 @@ public class ExploreDAO extends BasicDAO<Explore, String> {
 
         return outFeeds;
     }
+
+    public void deleteAllExplores() {
+        try {
+            this.getCollection().drop();
+        } catch (Exception e) {
+            System.out.println("Unable to delete collection 'explore'" + e.getMessage());
+        }
+    }
 }

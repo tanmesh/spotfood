@@ -28,9 +28,21 @@ public class FeedService implements IFeedService {
     // Generate Feed for each User
     @Override
     public void generateFeed() {
+        feedDAO.deleteAllFeeds();
+
         List<User> users = userDAO.getAllUser();
         for (User user : users) {
             updateFeed(user.getEmailId());
+        }
+    }
+
+    @Override
+    public void generateExplore() {
+        exploreDAO.deleteAllExplores();
+
+        List<User> users = userDAO.getAllUser();
+        for (User user : users) {
+            updateExplore(user.getEmailId());
         }
     }
 
@@ -66,15 +78,6 @@ public class FeedService implements IFeedService {
         }
 
         return explore_;
-    }
-
-    // Generate Explore for each User
-    @Override
-    public void generateExplore() {
-        List<User> users = userDAO.getAllUser();
-        for (User user : users) {
-            updateExplore(user.getEmailId());
-        }
     }
 
     private void updateExplore(String emailId) {
@@ -163,15 +166,15 @@ public class FeedService implements IFeedService {
             }
         }
 
-//        // 3. all post of current user
-//        List<UserPost> posts = userPostDAO.getAllPostOfUser(emailId);
-//        for (UserPost userPost : posts) {
-//            Feed feedItem = new Feed();
-//            feedItem.setUserPostId(userPost.getPostId());
-//            feedItem.setCreationTimestamp(userPost.getCreationTimestamp());
-//            feedItem.setEmailId(emailId);
-//            feedSet.add(feedItem);
-//        }
+        // 3. all post of current user
+        List<UserPost> posts = userPostDAO.getAllPostOfUser(emailId);
+        for (UserPost userPost : posts) {
+            Feed feedItem = new Feed();
+            feedItem.setUserPostId(userPost.getPostId());
+            feedItem.setCreationTimestamp(userPost.getCreationTimestamp());
+            feedItem.setEmailId(emailId);
+            feedSet.add(feedItem);
+        }
 
 //        Collections.sort(feed, Comparator.comparingLong(UserPostData::getCreationTimestamp).reversed());
 

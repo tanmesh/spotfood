@@ -41,7 +41,7 @@ public class SearchService implements ISearchService {
 
         int itemsToAdd = 2;
         List<UserPostData> feed = new ArrayList<>();
-        if (offset >= 0 && offset < outFeed.size()) {
+        if (offset >= 0 && offset + itemsToAdd < outFeed.size()) {
             feed.addAll(outFeed.subList(offset, offset + itemsToAdd));
         }
 
@@ -56,7 +56,7 @@ public class SearchService implements ISearchService {
 
         int itemsToAdd = 2;
         List<UserPostData> feed = new ArrayList<>();
-        if (offset >= 0 && offset < outFeed.size()) {
+        if (offset >= 0 && offset + itemsToAdd < outFeed.size()) {
             feed.addAll(outFeed.subList(offset, offset + itemsToAdd));
         }
 

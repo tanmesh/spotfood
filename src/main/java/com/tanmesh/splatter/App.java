@@ -56,8 +56,10 @@ public class App extends Application<SplatterConfiguration> {
         FeedDAO feedDAO = new FeedDAO(ds);
         ExploreDAO exploreDAO = new ExploreDAO(ds);
 
+        IFeedService feedService = new FeedService(userDAO, feedDAO, userPostDAO, likedPostDAO, exploreDAO);
+
         AccessTokenService accessTokenService = new RedisAccessTokenService();
-        IUserService userService = new UserService(userDAO, accessTokenService);
+        IUserService userService = new UserService(userDAO, accessTokenService, feedService);
 
         TagTrie tagTrie = new TagTrie();
 
@@ -72,8 +74,7 @@ public class App extends Application<SplatterConfiguration> {
         TagResource tagResource = new TagResource(tagService);
         AdminResource adminResource = new AdminResource(userService, tagService);
 
-        IFeedService feedService = new FeedService(userDAO, feedDAO, userPostDAO, likedPostDAO, exploreDAO);
-        IUserPostService userPostService = new UserPostService(userPostDAO, tagDAO, likedPostDAO, imageService, userService, userDAO, configuration.getAwsConfig(), exploreDAO, feedDAO);
+        IUserPostService userPostService = new UserPostService(userPostDAO, tagDAO, likedPostDAO, imageService, userService, userDAO, configuration.getAwsConfig(), exploreDAO, feedDAO, feedService);
         UserPostResource userPostResource = new UserPostResource(userPostService, accessTokenService, feedService);
         AccessTokenAuthenticator accessTokenAuthenticator = new AccessTokenAuthenticator(accessTokenService);
 

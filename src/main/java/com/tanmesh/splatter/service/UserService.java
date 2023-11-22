@@ -11,11 +11,15 @@ import java.util.*;
 
 public class UserService implements IUserService {
     private UserDAO userDAO;
+
+    private IFeedService feedService;
+
     private AccessTokenService accessTokenService;
 
-    public UserService(UserDAO userDAO, AccessTokenService accessTokenService) {
+    public UserService(UserDAO userDAO, AccessTokenService accessTokenService, IFeedService feedService) {
         this.userDAO = userDAO;
         this.accessTokenService = accessTokenService;
+        this.feedService = feedService;
     }
 
     @Override
@@ -83,6 +87,9 @@ public class UserService implements IUserService {
         }
         user.setFollowingList(followingList);
         userDAO.save(user);
+
+        feedService.generateFeed();
+        feedService.generateExplore();
     }
 
     @Override
@@ -98,6 +105,9 @@ public class UserService implements IUserService {
 
         user.setFollowingList(followingList);
         userDAO.save(user);
+
+        feedService.generateFeed();
+        feedService.generateExplore();
     }
 
     @Override
@@ -108,6 +118,7 @@ public class UserService implements IUserService {
         user.setLastName(userData.getLastName());
         user.setNickName(userData.getNickName());
         user.setTagList(tagListStringToTag(userData.getTagList()));
+        user.setProfilePicUrl(userData.getProfilePicUrl());
         userDAO.save(user);
 
         return new UserData(user);
@@ -124,6 +135,9 @@ public class UserService implements IUserService {
             tagList.add(new Tag(tag));
         }
         userDAO.save(user);
+
+        feedService.generateFeed();
+        feedService.generateExplore();
     }
 
     @Override
@@ -143,6 +157,9 @@ public class UserService implements IUserService {
         }
         user.setTagList(tagList);
         userDAO.save(user);
+
+        feedService.generateFeed();
+        feedService.generateExplore();
     }
 
     @Override
