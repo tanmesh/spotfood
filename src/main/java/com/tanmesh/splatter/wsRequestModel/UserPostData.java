@@ -3,6 +3,7 @@ package com.tanmesh.splatter.wsRequestModel;
 import com.tanmesh.splatter.entity.UserPost;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class UserPostData {
@@ -12,7 +13,7 @@ public class UserPostData {
     private String authorEmailId;
     private String authorName;
     private int upVotes;
-    private String imgUrl;
+    private List<String> imgUrl;
     private Double latitude;
     private Double longitude;
     private long creationTimestamp;
@@ -78,11 +79,11 @@ public class UserPostData {
         this.longitude = longitude;
     }
 
-    public String getImgUrl() {
+    public List<String> getImgUrl() {
         return imgUrl;
     }
 
-    public void setImgUrl(String imgUrl) {
+    public void setImgUrl(List<String> imgUrl) {
         this.imgUrl = imgUrl;
     }
 

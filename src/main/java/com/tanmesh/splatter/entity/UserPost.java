@@ -5,6 +5,7 @@ import org.mongodb.morphia.annotations.*;
 import org.mongodb.morphia.utils.IndexType;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -25,7 +26,7 @@ public class UserPost {
     private String locationName;
     private String authorEmailId;
     private int upVotes;
-    private String imgUrl;
+    private List<String> imgUrl;
     private LatLong latLong;
     private boolean liked;
     private String AuthorName;
@@ -78,11 +79,11 @@ public class UserPost {
         this.postId = postId;
     }
 
-    public String getImgUrl() {
+    public List<String> getImgUrl() {
         return imgUrl;
     }
 
-    public void setImgUrl(String imgUrl) {
+    public void setImgUrl(List<String> imgUrl) {
         this.imgUrl = imgUrl;
     }
 

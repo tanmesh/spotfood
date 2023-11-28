@@ -25,10 +25,7 @@ import org.mongodb.morphia.Key;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class UserPostService implements IUserPostService {
     private IImageService imageService;
@@ -125,7 +122,7 @@ public class UserPostService implements IUserPostService {
     public void addDummyPost() throws IOException {
         FillDummyData fillDummyData = new FillDummyData();
         List<Set<String>> tags = fillDummyData.getTags();
-        List<String> imgPath = fillDummyData.readImages();
+        List<String> imgPaths = fillDummyData.readImages();
         List<RestaurantInfo> restaurantInfos = fillDummyData.getRestaurantInfo();
         List<UserData> users = fillDummyData.getDummyUser();
 
@@ -135,7 +132,10 @@ public class UserPostService implements IUserPostService {
 
         for (int i = 0; i < 20; ++i) {
             String emailId = users.get(i % 4).getEmailId();
-            String imgUrl = setImgUrl(imgPath.get(i), restaurantInfos.get(i).getName());
+            List<String> imgUrl = new ArrayList<>();
+            imgUrl.add(setImgUrl(imgPaths.get(i * 3), restaurantInfos.get(i).getName(), i * 3));
+            imgUrl.add(setImgUrl(imgPaths.get(i * 3 + 1), restaurantInfos.get(i).getName(), i * 3 + 1));
+            imgUrl.add(setImgUrl(imgPaths.get(i * 3 + 2), restaurantInfos.get(i).getName(), i * 3 + 2));
 
             UserPostData userPostData = new UserPostData();
             userPostData.setAuthorEmailId(emailId);
@@ -149,6 +149,9 @@ public class UserPostService implements IUserPostService {
 
             System.out.println("user post " + i + " added.");
         }
+
+        feedService.generateExplore();
+        feedService.generateFeed();
     }
 
     @Override
@@ -236,9 +239,9 @@ public class UserPostService implements IUserPostService {
         return userPost;
     }
 
-    private String setImgUrl(String imagePath, String locationName) {
+    private String setImgUrl(String imagePath, String locationName, int index) {
         String bucketName = "spotfood-images";
-        String filePath = "location/" + locationName + ".jpg";
+        String filePath = "location/" + locationName + "_" + index + ".jpg";
         try {
             File imageFile = new File(imagePath);
             if (!imageFile.exists()) {
