@@ -27,12 +27,6 @@ public class SearchService implements ISearchService {
         this.exploreDAO = exploreDAO;
     }
 
-    /*
-        currently used simple logic
-        TODO:
-         1. Need to use GeoIndex
-
-     */
     @Override
     public List<UserPostData> getSearchTagsResults(String emailId, SearchData searchData, int offset) {
         if (offset == 0 || outFeed.isEmpty()) {
@@ -48,6 +42,12 @@ public class SearchService implements ISearchService {
         return feed;
     }
 
+    /*
+        currently used simple logic
+        TODO:
+         1. Need to use GeoIndex
+
+     */
     @Override
     public List<UserPostData> getSearchLocalityResults(String emailId, SearchData searchData, int offset) {
         if (offset == 0 || outFeed.isEmpty()) {

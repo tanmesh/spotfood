@@ -5,3 +5,4 @@ dropwizard-activity*.log
 splatter.iml
 target/
 .env
+./certificates
