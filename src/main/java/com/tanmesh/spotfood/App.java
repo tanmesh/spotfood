@@ -78,6 +78,9 @@ public class App extends Application<SpotfoodConfiguration> {
         UserPostResource userPostResource = new UserPostResource(userPostService, accessTokenService, feedService);
         AccessTokenAuthenticator accessTokenAuthenticator = new AccessTokenAuthenticator(accessTokenService);
 
+        ExecutorService scheduler = new ExecutorService(feedService);
+        scheduler.executorService();
+
         environment.jersey().register(userResource);
         environment.jersey().register(userPostResource);
         environment.jersey().register(debugResource);

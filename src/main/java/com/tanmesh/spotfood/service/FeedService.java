@@ -28,6 +28,7 @@ public class FeedService implements IFeedService {
     // Generate Feed for each User
     @Override
     public void generateFeed() {
+        System.out.println("Generating feed");
         feedDAO.deleteAllFeeds();
 
         List<User> users = userDAO.getAllUser();
@@ -38,6 +39,7 @@ public class FeedService implements IFeedService {
 
     @Override
     public void generateExplore() {
+        System.out.println("Generating explore");
         exploreDAO.deleteAllExplores();
 
         List<User> users = userDAO.getAllUser();
