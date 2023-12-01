@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>splatter</groupId>
-    <artifactId>splatter</artifactId>
+    <groupId>spotfood</groupId>
+    <artifactId>spotfood</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <dependencies>
@@ -138,7 +138,7 @@
                             <addClasspath>false</addClasspath>
                             <classpathLayoutType>repository</classpathLayoutType>
                             <classpathPrefix>${settings.localRepository}</classpathPrefix>
-                            <mainClass>com.tanmesh.splatter.App</mainClass>
+                            <mainClass>com.tanmesh.spotfood.App</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -173,7 +173,7 @@
                                         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.tanmesh.splatter.App</mainClass>
+                                    <mainClass>com.tanmesh.spotfood.App</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
