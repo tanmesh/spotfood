@@ -23,13 +23,13 @@ server:
   applicationConnectors:
     - type: http
       port: 39114
-    - type: https
-      port: 39116
-      keyStorePath: ./keystore.jks
-      keyStorePassword: "spotfood_server"
-      keyStoreType: JKS
-      validateCerts: false
-      validatePeers: false
+#    - type: https
+#      port: 39116
+#      keyStorePath: ./keystore.jks
+#      keyStorePassword: "spotfood_server"
+#      keyStoreType: JKS
+#      validateCerts: false
+#      validatePeers: false
   adminConnectors:
     - type: http
       port: 39115

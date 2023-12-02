@@ -55,7 +55,7 @@ public class FeedService implements IFeedService {
         List<Feed> feedItems = feedDAO.getFeed(emailId, startAfter, 2);
         for (Feed feedItem : feedItems) {
             UserPost userPost = userPostDAO.getPostFromIds(feedItem.getUserPostId());
-            UserPostData userPostData = new UserPostData(userPost, 0);
+            UserPostData userPostData = new UserPostData(userPost, -1);
             userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
             userPostData.setAuthorName(userDAO.getUserName(userPostData.getAuthorEmailId()));
             feed_.add(userPostData);
@@ -73,7 +73,7 @@ public class FeedService implements IFeedService {
         for (Explore exploreItem : exploreItems) {
             UserPost userPost = userPostDAO.getPostFromIds(exploreItem.getUserPostId());
 
-            UserPostData userPostData = new UserPostData(userPost, 0);
+            UserPostData userPostData = new UserPostData(userPost, -1);
             userPostData.setLiked(likedPostDAO.exist(emailId, userPost.getPostId()));
             userPostData.setAuthorName(userDAO.getUserName(userPostData.getAuthorEmailId()));
             explore_.add(userPostData);

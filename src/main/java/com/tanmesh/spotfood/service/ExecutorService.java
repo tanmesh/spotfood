@@ -26,7 +26,7 @@ public class ExecutorService {
     };
 
     public void executorService() {
-        final ScheduledFuture<?> beeperHandle = scheduler.scheduleAtFixedRate(beeper, 2, 60, SECONDS);
+        final ScheduledFuture<?> beeperHandle = scheduler.scheduleAtFixedRate(beeper, 2, 60*4, SECONDS);
         scheduler.schedule(
                 new Runnable() {
                     public void run() {

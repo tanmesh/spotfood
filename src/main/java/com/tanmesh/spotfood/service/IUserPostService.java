@@ -21,6 +21,8 @@ public interface IUserPostService {
 
     List<UserPostData> getAllPostOfUser(String emailId, int startAfter) throws InvalidInputException;
 
+    List<UserPostData> getAllPost(int startAfter) throws InvalidInputException;
+
     // TODO: add edit User Post
     boolean editPost(String postId, List<String> tagList, String location, String authorName) throws InvalidInputException;
 

@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Path("/user_post")
 public class UserPostResource {
@@ -167,8 +168,13 @@ public class UserPostResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response userExplore(@PathParam("startAfter") int startAfter, @QueryParam("emailId") String emailId) {
         List<UserPostData> feeds;
+        System.out.println(emailId);
         try {
-            feeds = feedService.getUserExplore(emailId, startAfter);
+            if(Objects.equals(emailId, "null")) {
+                feeds = userPostService.getAllPost(startAfter);
+            } else {
+                feeds = feedService.getUserExplore(emailId, startAfter);
+            }
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
         }

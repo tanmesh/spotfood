@@ -14,6 +14,7 @@ import com.tanmesh.spotfood.entity.LatLong;
 import com.tanmesh.spotfood.entity.LikedPost;
 import com.tanmesh.spotfood.entity.Tag;
 import com.tanmesh.spotfood.entity.UserPost;
+import com.tanmesh.spotfood.exception.InvalidInputException;
 import com.tanmesh.spotfood.exception.PostNotFoundException;
 import com.tanmesh.spotfood.scrachpad.dummyData.FillDummyData;
 import com.tanmesh.spotfood.scrachpad.dummyData.RestaurantInfo;
@@ -113,7 +114,18 @@ public class UserPostService implements IUserPostService {
         List<UserPostData> userPostDataList = new ArrayList<>();
 
         for (UserPost userPost : userPosts) {
-            userPostDataList.add(new UserPostData(userPost, 0));
+            userPostDataList.add(new UserPostData(userPost, -1));
+        }
+        return userPostDataList;
+    }
+
+    @Override
+    public List<UserPostData> getAllPost(int startAfter) throws InvalidInputException {
+        List<UserPost> userPosts = userPostDAO.getAllPost(startAfter, 2);
+
+        List<UserPostData> userPostDataList = new ArrayList<>();
+        for (UserPost userPost : userPosts) {
+            userPostDataList.add(new UserPostData(userPost, -1));
         }
         return userPostDataList;
     }
