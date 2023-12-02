@@ -25,10 +25,11 @@ server:
       port: 39114
     - type: https
       port: 39116
-      keyStorePath: keystore.jks
+      keyStorePath: ./keystore.jks
       keyStorePassword: "spotfood_server"
       keyStoreType: JKS
-      supportedProtocols: [ TLSv1, TLSv1.1, TLSv1.2 ]
+      validateCerts: false
+      validatePeers: false
   adminConnectors:
     - type: http
       port: 39115
