@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tanmesh.spotfood.wsRequestModel.UserData;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -146,6 +147,8 @@ public class FillDummyData {
 //        return userEmailId;
 //    }
 
+    String path = Paths.get("").toAbsolutePath().toString();
+
     public List<UserData> getDummyUser() {
         List<UserData> users = new ArrayList<>();
 
@@ -183,7 +186,7 @@ public class FillDummyData {
     public List<RestaurantInfo> getRestaurantInfo() {
         List<RestaurantInfo> restaurantInfos = new ArrayList<>();
 
-        String filePath = "src/main/java/com/tanmesh/splatter/scrachpad/dummyData/dummyDataFromYelp.json";
+        String filePath = path + "/src/main/java/com/tanmesh/spotfood/scrachpad/dummyData/dummyDataFromYelp.json";
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -210,7 +213,7 @@ public class FillDummyData {
     public List<String> readImages() {
         List<String> imgPath = new ArrayList<>();
 
-        String folderPath = "src/main/java/com/tanmesh/splatter/scrachpad/dummyData/food-img";
+        String folderPath = path + "/src/main/java/com/tanmesh/spotfood/scrachpad/dummyData/food-img";
 
         File folder = new File(folderPath);
 

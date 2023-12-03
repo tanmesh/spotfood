@@ -20,8 +20,8 @@ public class ExecutorService {
 
     final Runnable beeper = new Runnable() {
         public void run() {
-            feedService.generateFeed();
-            feedService.generateExplore();
+//            feedService.generateFeed();
+//            feedService.generateExplore();
         }
     };
 
