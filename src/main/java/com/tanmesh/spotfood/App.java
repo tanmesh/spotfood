@@ -16,7 +16,9 @@ import org.mongodb.morphia.Datastore;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
+import java.io.FileInputStream;
 import java.util.EnumSet;
+import java.util.Properties;
 
 public class App extends Application<SpotfoodConfiguration> {
     public static void main(String[] args) {
@@ -48,6 +50,12 @@ public class App extends Application<SpotfoodConfiguration> {
     public void run(SpotfoodConfiguration configuration, Environment environment) throws Exception {
         Datastore ds = MongoUtils.createDatastore(configuration.getDbConfig());
 
+        // Extracting variables from .env file
+        Properties props = new Properties();
+        FileInputStream fis = new FileInputStream(".env");
+        props.load(fis);
+        fis.close();
+
         UserDAO userDAO = new UserDAO(ds);
         TagDAO tagDAO = new TagDAO(ds);
         LikedPostDAO likedPostDAO = new LikedPostDAO(ds);
@@ -67,6 +75,9 @@ public class App extends Application<SpotfoodConfiguration> {
         ITagService tagService = new TagService(tagDAO, tagTrie);
         IImageService imageService = new ImageService();
 
+        IRestaurantService restaurantService = new RestaurantService(props);
+        RestaurantResource restaurantResource = new RestaurantResource(restaurantService);
+
 //        UserResource userResource = new UserResource(userService, accessTokenService, configuration.getKafkaProducerConfig());
         UserResource userResource = new UserResource(userService, accessTokenService);
         SearchResource searchResource = new SearchResource(searchService);
@@ -74,7 +85,7 @@ public class App extends Application<SpotfoodConfiguration> {
         TagResource tagResource = new TagResource(tagService);
         AdminResource adminResource = new AdminResource(userService, tagService);
 
-        IUserPostService userPostService = new UserPostService(userPostDAO, tagDAO, likedPostDAO, imageService, userService, userDAO, configuration.getAwsConfig(), exploreDAO, feedDAO, feedService);
+        IUserPostService userPostService = new UserPostService(userPostDAO, tagDAO, likedPostDAO, imageService, userService, userDAO, configuration.getAwsConfig(), exploreDAO, feedDAO, feedService, props);
         UserPostResource userPostResource = new UserPostResource(userPostService, accessTokenService, feedService);
         AccessTokenAuthenticator accessTokenAuthenticator = new AccessTokenAuthenticator(accessTokenService);
 
@@ -87,6 +98,7 @@ public class App extends Application<SpotfoodConfiguration> {
         environment.jersey().register(tagResource);
         environment.jersey().register(searchResource);
         environment.jersey().register(adminResource);
+        environment.jersey().register(restaurantResource);
         environment.jersey().register(new JsonProcessingExceptionMapper());
         environment.jersey().register(new AccessTokenSecurityProvider<>(accessTokenAuthenticator));
         configureCors(environment);

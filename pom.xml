@@ -101,6 +101,12 @@
             <artifactId>aws-java-sdk-s3</artifactId>
             <version>1.12.552</version>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+            <scope>compile</scope>
+        </dependency>
         <!--        &lt;!&ndash; API, java.xml.bind module &ndash;&gt;-->
         <!--        <dependency>-->
         <!--            <groupId>jakarta.xml.bind</groupId>-->

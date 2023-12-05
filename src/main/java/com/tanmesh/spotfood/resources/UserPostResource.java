@@ -39,7 +39,6 @@ public class UserPostResource {
             Preconditions.checkNotNull(userPostData.getTagList(), "tags should not be null");
             Preconditions.checkNotNull(userPostData.getLocationName(), "location should not be null");
             Preconditions.checkNotNull(userPostData.getImgUrl(), "image should not be null");
-            Preconditions.checkNotNull(userPostData.getAddress(), "Address should not be null");
 
             userPostService.addPost(userPostData, userSession.getEmailId());
         } catch (Exception e) {

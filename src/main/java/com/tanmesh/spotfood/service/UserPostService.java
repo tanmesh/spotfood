@@ -18,7 +18,6 @@ import com.tanmesh.spotfood.exception.InvalidInputException;
 import com.tanmesh.spotfood.exception.PostNotFoundException;
 import com.tanmesh.spotfood.scrachpad.dummyData.FillDummyData;
 import com.tanmesh.spotfood.scrachpad.dummyData.RestaurantInfo;
-import com.tanmesh.spotfood.utils.GoogleMapAPIs;
 import com.tanmesh.spotfood.wsRequestModel.UserData;
 import com.tanmesh.spotfood.wsRequestModel.UserPostData;
 import org.bson.types.ObjectId;
@@ -44,7 +43,7 @@ public class UserPostService implements IUserPostService {
 
     private Properties props;
 
-    public UserPostService(UserPostDAO userPostDAO, TagDAO tagDAO, LikedPostDAO likedPostDAO, IImageService imageService, IUserService userService, UserDAO userDAO, AwsConfig awsConfig, ExploreDAO exploreDAO, FeedDAO feedDAO, IFeedService feedService) throws IOException {
+    public UserPostService(UserPostDAO userPostDAO, TagDAO tagDAO, LikedPostDAO likedPostDAO, IImageService imageService, IUserService userService, UserDAO userDAO, AwsConfig awsConfig, ExploreDAO exploreDAO, FeedDAO feedDAO, IFeedService feedService, Properties props) throws IOException {
         this.userPostDAO = userPostDAO;
         this.tagDAO = tagDAO;
         this.likedPostDAO = likedPostDAO;
@@ -55,12 +54,7 @@ public class UserPostService implements IUserPostService {
         this.exploreDAO = exploreDAO;
         this.feedDAO = feedDAO;
         this.feedService = feedService;
-
-        // Extracting variables from .env file
-        this.props = new Properties();
-        FileInputStream fis = new FileInputStream(".env");
-        props.load(fis);
-        fis.close();
+        this.props = props;
     }
 
     @Override
@@ -74,17 +68,12 @@ public class UserPostService implements IUserPostService {
         userPost.setCreationTimestamp(System.currentTimeMillis());
 
         // handle lat/long
-        double[] coordinates = GoogleMapAPIs.getLatLong(props, userPostData.getAddress());
-        System.out.println(coordinates[0]);
-        System.out.println(coordinates[1]);
+        double[] coordinates = {userPostData.getLatitude(), userPostData.getLongitude()};
         userPost.setLatLong(new LatLong(coordinates));
 
         userPost.setImgUrl(userPostData.getImgUrl());
 
-        Set<Tag> postTags = userPost.getTagList();
-        if (postTags == null) {
-            postTags = new HashSet<>();
-        }
+        Set<Tag> postTags = new HashSet<>();
         for (String tag : userPostData.getTagList()) {
             postTags.add(new Tag(tag));
         }
