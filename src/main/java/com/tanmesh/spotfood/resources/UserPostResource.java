@@ -14,7 +14,6 @@ import io.dropwizard.auth.Auth;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -40,11 +39,10 @@ public class UserPostResource {
             Preconditions.checkNotNull(userPostData.getTagList(), "tags should not be null");
             Preconditions.checkNotNull(userPostData.getLocationName(), "location should not be null");
             Preconditions.checkNotNull(userPostData.getImgUrl(), "image should not be null");
-            Preconditions.checkNotNull(userPostData.getLatitude(), "latitude should not be null");
-            Preconditions.checkNotNull(userPostData.getLongitude(), "longitude should not be null");
+            Preconditions.checkNotNull(userPostData.getAddress(), "Address should not be null");
 
             userPostService.addPost(userPostData, userSession.getEmailId());
-        } catch (InvalidInputException | IOException e) {
+        } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(true).build();
@@ -57,7 +55,7 @@ public class UserPostResource {
     public Response addDummyPostDetails() {
         try {
             userPostService.addDummyPost();
-        } catch (InvalidInputException | IOException e) {
+        } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(true).build();
@@ -170,7 +168,7 @@ public class UserPostResource {
         List<UserPostData> feeds;
         System.out.println(emailId);
         try {
-            if(Objects.equals(emailId, "null")) {
+            if (Objects.equals(emailId, "null")) {
                 feeds = userPostService.getAllPost(startAfter);
             } else {
                 feeds = feedService.getUserExplore(emailId, startAfter);

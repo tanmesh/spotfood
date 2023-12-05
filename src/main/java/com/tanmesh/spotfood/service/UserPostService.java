@@ -18,6 +18,7 @@ import com.tanmesh.spotfood.exception.InvalidInputException;
 import com.tanmesh.spotfood.exception.PostNotFoundException;
 import com.tanmesh.spotfood.scrachpad.dummyData.FillDummyData;
 import com.tanmesh.spotfood.scrachpad.dummyData.RestaurantInfo;
+import com.tanmesh.spotfood.utils.GoogleMapAPIs;
 import com.tanmesh.spotfood.wsRequestModel.UserData;
 import com.tanmesh.spotfood.wsRequestModel.UserPostData;
 import org.bson.types.ObjectId;
@@ -41,7 +42,9 @@ public class UserPostService implements IUserPostService {
     private IFeedService feedService;
     private AwsConfig awsConfig;
 
-    public UserPostService(UserPostDAO userPostDAO, TagDAO tagDAO, LikedPostDAO likedPostDAO, IImageService imageService, IUserService userService, UserDAO userDAO, AwsConfig awsConfig, ExploreDAO exploreDAO, FeedDAO feedDAO, IFeedService feedService) {
+    private Properties props;
+
+    public UserPostService(UserPostDAO userPostDAO, TagDAO tagDAO, LikedPostDAO likedPostDAO, IImageService imageService, IUserService userService, UserDAO userDAO, AwsConfig awsConfig, ExploreDAO exploreDAO, FeedDAO feedDAO, IFeedService feedService) throws IOException {
         this.userPostDAO = userPostDAO;
         this.tagDAO = tagDAO;
         this.likedPostDAO = likedPostDAO;
@@ -52,10 +55,16 @@ public class UserPostService implements IUserPostService {
         this.exploreDAO = exploreDAO;
         this.feedDAO = feedDAO;
         this.feedService = feedService;
+
+        // Extracting variables from .env file
+        this.props = new Properties();
+        FileInputStream fis = new FileInputStream(".env");
+        props.load(fis);
+        fis.close();
     }
 
     @Override
-    public void addPost(UserPostData userPostData, String emailId) {
+    public void addPost(UserPostData userPostData, String emailId) throws Exception {
         UserPost userPost = new UserPost();
 
         String locationName = userPostData.getLocationName();
@@ -64,9 +73,10 @@ public class UserPostService implements IUserPostService {
         userPost.setAuthorName(userDAO.getUserName(emailId));
         userPost.setCreationTimestamp(System.currentTimeMillis());
 
-        double[] coordinates = new double[2];
-        coordinates[0] = userPostData.getLongitude();
-        coordinates[1] = userPostData.getLatitude();
+        // handle lat/long
+        double[] coordinates = GoogleMapAPIs.getLatLong(props, userPostData.getAddress());
+        System.out.println(coordinates[0]);
+        System.out.println(coordinates[1]);
         userPost.setLatLong(new LatLong(coordinates));
 
         userPost.setImgUrl(userPostData.getImgUrl());
@@ -131,7 +141,7 @@ public class UserPostService implements IUserPostService {
     }
 
     @Override
-    public void addDummyPost() throws IOException {
+    public void addDummyPost() throws Exception {
         FillDummyData fillDummyData = new FillDummyData();
         List<Set<String>> tags = fillDummyData.getTags();
         List<String> imgPaths = fillDummyData.readImages();

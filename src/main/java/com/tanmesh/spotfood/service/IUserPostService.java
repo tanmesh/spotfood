@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface IUserPostService {
-    void addPost(UserPostData userPostData, String emailId) throws InvalidInputException, IOException;
+    void addPost(UserPostData userPostData, String emailId) throws Exception;
 
     void deletePost(String postid) throws InvalidInputException, PostNotFoundException;
 
@@ -26,5 +26,5 @@ public interface IUserPostService {
     // TODO: add edit User Post
     boolean editPost(String postId, List<String> tagList, String location, String authorName) throws InvalidInputException;
 
-    void addDummyPost() throws InvalidInputException, IOException;
+    void addDummyPost() throws Exception;
 }

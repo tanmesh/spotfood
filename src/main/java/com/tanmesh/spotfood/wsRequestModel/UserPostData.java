@@ -16,9 +16,9 @@ public class UserPostData {
     private List<String> imgUrl;
     private Double latitude;
     private Double longitude;
+    private String address;
     private long creationTimestamp;
     private boolean liked;
-
     private int distance;
 
     public UserPostData() {
@@ -37,6 +37,14 @@ public class UserPostData {
         this.liked = userPost.getLiked();
         this.authorName = userPost.getAuthorName();
         this.distance = distance;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public int getDistance() {
