@@ -1,38 +1,23 @@
 package com.tanmesh.spotfood.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 
+import java.util.List;
+
 @Entity(value = "restaurant", noClassnameStored = true)
+@Getter
+@Setter
 public class Restaurant {
     @Id
+    private String id;
     private String name;
-
+    private List<String> imgUrls;
     private String address;
-
     private LatLong latLong;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public LatLong getLatLong() {
-        return latLong;
-    }
-
-    public void setLatLong(LatLong latLong) {
-        this.latLong = latLong;
-    }
+    private String phoneNumber;
+    private String url;
+    private double rating;
 }

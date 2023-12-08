@@ -37,7 +37,7 @@ public class UserPostResource {
     public Response addPostDetails(@Auth UserSession userSession, UserPostData userPostData) {
         try {
             Preconditions.checkNotNull(userPostData.getTagList(), "tags should not be null");
-            Preconditions.checkNotNull(userPostData.getLocationName(), "location should not be null");
+            Preconditions.checkNotNull(userPostData.getRestaurantName(), "location should not be null");
             Preconditions.checkNotNull(userPostData.getImgUrl(), "image should not be null");
 
             userPostService.addPost(userPostData, userSession.getEmailId());

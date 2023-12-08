@@ -81,7 +81,7 @@ public class SearchService implements ISearchService {
             userPostData.setPostId(feed_.getPostId().toString());
             userPostData.setTagList(feed_.getTagsString());
             userPostData.setUpVotes(feed_.getUpVotes());
-            userPostData.setLocationName(feed_.getLocationName());
+            userPostData.setRestaurantName(feed_.getRestaurantName());
             userPostData.setAuthorEmailId(feed_.getAuthorEmailId());
             userPostData.setAuthorName(feed_.getAuthorName());
             userPostData.setImgUrl(feed_.getImgUrl());
@@ -114,7 +114,7 @@ public class SearchService implements ISearchService {
                 userPostData.setPostId(feed_.getPostId().toString());
                 userPostData.setTagList(feed_.getTagsString());
                 userPostData.setUpVotes(feed_.getUpVotes());
-                userPostData.setLocationName(feed_.getLocationName());
+                userPostData.setRestaurantName(feed_.getRestaurantName());
                 userPostData.setAuthorEmailId(feed_.getAuthorEmailId());
                 userPostData.setAuthorName(feed_.getAuthorName());
                 userPostData.setImgUrl(feed_.getImgUrl());

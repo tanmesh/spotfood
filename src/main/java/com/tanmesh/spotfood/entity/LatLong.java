@@ -8,11 +8,21 @@ package com.tanmesh.spotfood.entity;
 public class LatLong {
     private String type;
     private double[] coordinates;
+
     public LatLong() {
     }
 
     public LatLong(double[] coordinates) {
         this.type = "Point";
+        this.coordinates = coordinates;
+    }
+
+    public LatLong(double lat, double lng) {
+        this.type = "Point";
+
+        double[] coordinates = new double[2];
+        coordinates[0] = lat;
+        coordinates[1] = lng;
         this.coordinates = coordinates;
     }
 

@@ -75,7 +75,8 @@ public class App extends Application<SpotfoodConfiguration> {
         ITagService tagService = new TagService(tagDAO, tagTrie);
         IImageService imageService = new ImageService();
 
-        IRestaurantService restaurantService = new RestaurantService(props);
+        RestaurantDAO restaurantDAO = new RestaurantDAO(ds);
+        IRestaurantService restaurantService = new RestaurantService(props, restaurantDAO);
         RestaurantResource restaurantResource = new RestaurantResource(restaurantService);
 
 //        UserResource userResource = new UserResource(userService, accessTokenService, configuration.getKafkaProducerConfig());
@@ -85,7 +86,7 @@ public class App extends Application<SpotfoodConfiguration> {
         TagResource tagResource = new TagResource(tagService);
         AdminResource adminResource = new AdminResource(userService, tagService);
 
-        IUserPostService userPostService = new UserPostService(userPostDAO, tagDAO, likedPostDAO, imageService, userService, userDAO, configuration.getAwsConfig(), exploreDAO, feedDAO, feedService, props);
+        IUserPostService userPostService = new UserPostService(userPostDAO, tagDAO, likedPostDAO, imageService, userService, userDAO, configuration.getAwsConfig(), exploreDAO, feedDAO, feedService, props, restaurantDAO, restaurantService);
         UserPostResource userPostResource = new UserPostResource(userPostService, accessTokenService, feedService);
         AccessTokenAuthenticator accessTokenAuthenticator = new AccessTokenAuthenticator(accessTokenService);
 

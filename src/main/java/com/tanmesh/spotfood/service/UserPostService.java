@@ -10,14 +10,12 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.google.common.base.Preconditions;
 import com.tanmesh.spotfood.configuration.AwsConfig;
 import com.tanmesh.spotfood.dao.*;
-import com.tanmesh.spotfood.entity.LatLong;
-import com.tanmesh.spotfood.entity.LikedPost;
-import com.tanmesh.spotfood.entity.Tag;
-import com.tanmesh.spotfood.entity.UserPost;
+import com.tanmesh.spotfood.entity.*;
 import com.tanmesh.spotfood.exception.InvalidInputException;
 import com.tanmesh.spotfood.exception.PostNotFoundException;
 import com.tanmesh.spotfood.scrachpad.dummyData.FillDummyData;
 import com.tanmesh.spotfood.scrachpad.dummyData.RestaurantInfo;
+import com.tanmesh.spotfood.wsRequestModel.RestaurantData;
 import com.tanmesh.spotfood.wsRequestModel.UserData;
 import com.tanmesh.spotfood.wsRequestModel.UserPostData;
 import org.bson.types.ObjectId;
@@ -37,13 +35,15 @@ public class UserPostService implements IUserPostService {
     private LikedPostDAO likedPostDAO;
     private FeedDAO feedDAO;
     private ExploreDAO exploreDAO;
-
     private IFeedService feedService;
     private AwsConfig awsConfig;
-
     private Properties props;
 
-    public UserPostService(UserPostDAO userPostDAO, TagDAO tagDAO, LikedPostDAO likedPostDAO, IImageService imageService, IUserService userService, UserDAO userDAO, AwsConfig awsConfig, ExploreDAO exploreDAO, FeedDAO feedDAO, IFeedService feedService, Properties props) throws IOException {
+    private RestaurantDAO restaurantDAO;
+
+    private IRestaurantService restaurantService;
+
+    public UserPostService(UserPostDAO userPostDAO, TagDAO tagDAO, LikedPostDAO likedPostDAO, IImageService imageService, IUserService userService, UserDAO userDAO, AwsConfig awsConfig, ExploreDAO exploreDAO, FeedDAO feedDAO, IFeedService feedService, Properties props, RestaurantDAO restaurantDAO, IRestaurantService restaurantService) throws IOException {
         this.userPostDAO = userPostDAO;
         this.tagDAO = tagDAO;
         this.likedPostDAO = likedPostDAO;
@@ -55,17 +55,29 @@ public class UserPostService implements IUserPostService {
         this.feedDAO = feedDAO;
         this.feedService = feedService;
         this.props = props;
+        this.restaurantDAO = restaurantDAO;
+        this.restaurantService = restaurantService;
     }
 
     @Override
     public void addPost(UserPostData userPostData, String emailId) throws Exception {
         UserPost userPost = new UserPost();
 
-        String locationName = userPostData.getLocationName();
-        userPost.setLocationName(locationName);
+        String locationName = userPostData.getRestaurantName();
+        userPost.setRestaurantName(locationName);
         userPost.setAuthorEmailId(emailId);
         userPost.setAuthorName(userDAO.getUserName(emailId));
         userPost.setCreationTimestamp(System.currentTimeMillis());
+
+        // handle new Restaurant
+        if (restaurantDAO.get(userPostData.getRestaurantId()) == null) {
+            RestaurantData restaurant = restaurantService.addRestaurant(userPostData.getRestaurantId());
+            userPost.setRestaurantName(restaurant.getName());
+            userPost.setRestaurantId(restaurant.getId());
+        } else {
+            userPost.setRestaurantName(userPostData.getRestaurantName());
+            userPost.setRestaurantId(userPostData.getRestaurantId());
+        }
 
         // handle lat/long
         double[] coordinates = {userPostData.getLatitude(), userPostData.getLongitude()};
@@ -153,7 +165,7 @@ public class UserPostService implements IUserPostService {
             userPostData.setTagList(tags.get(i));
             userPostData.setLatitude(restaurantInfos.get(i).getLatitude());
             userPostData.setLongitude(restaurantInfos.get(i).getLongitude());
-            userPostData.setLocationName(restaurantInfos.get(i).getName());
+            userPostData.setRestaurantName(restaurantInfos.get(i).getName());
             userPostData.setImgUrl(imgUrl);
 
             addPost(userPostData, emailId);
