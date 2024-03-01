@@ -9,11 +9,14 @@ public class RestaurantInfo {
 
     private Double longitude;
 
-    public RestaurantInfo(String name, String address, Double latitude, Double longitude) {
+    private String id;
+
+    public RestaurantInfo(String name, String address, Double latitude, Double longitude, String id) {
         this.name = name;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.id = id;
     }
 
     public String getName() {
@@ -46,5 +49,13 @@ public class RestaurantInfo {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

@@ -25,7 +25,7 @@ class Businesses {
 @JsonIgnoreProperties(ignoreUnknown = true)
 class Business {
     private String name;
-
+    private String id;
     private String image_url;
     private Location location;
 
@@ -61,6 +61,14 @@ class Business {
 
     public void setImage_url(String image_url) {
         this.image_url = image_url;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
 
@@ -147,7 +155,7 @@ public class FillDummyData {
 //        return userEmailId;
 //    }
 
-    String path = Paths.get("").toAbsolutePath().toString();
+    static String path = Paths.get("").toAbsolutePath().toString();
 
     public List<UserData> getDummyUser() {
         List<UserData> users = new ArrayList<>();
@@ -202,7 +210,8 @@ public class FillDummyData {
                                 business.getName(),
                                 String.join(", ", location.getDisplayAddress()),
                                 coordinates.getLatitude(),
-                                coordinates.getLongitude()));
+                                coordinates.getLongitude(),
+                                business.getId()));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -233,7 +242,7 @@ public class FillDummyData {
         return imgPath;
     }
 
-    public List<Set<String>> getTags() {
+    public static List<Set<String>> getTags() {
         List<Set<String>> tags = new ArrayList<>();
 
         // Hardcoded lists of 3 tags each

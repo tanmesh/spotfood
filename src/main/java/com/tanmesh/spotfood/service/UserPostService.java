@@ -165,9 +165,9 @@ public class UserPostService implements IUserPostService {
             userPostData.setTagList(tags.get(i));
             userPostData.setLatitude(restaurantInfos.get(i).getLatitude());
             userPostData.setLongitude(restaurantInfos.get(i).getLongitude());
-            userPostData.setRestaurantName(restaurantInfos.get(i).getName());
+            userPostData.setRestaurantId(restaurantInfos.get(i).getId());
             userPostData.setImgUrl(imgUrl);
-
+//
             addPost(userPostData, emailId);
 
             System.out.println("user post " + i + " added.");
@@ -263,7 +263,7 @@ public class UserPostService implements IUserPostService {
     }
 
     private String setImgUrl(String imagePath, String locationName, int index) {
-        String bucketName = "spotfood-images";
+        String bucketName = "spotfood";
         String filePath = "location/" + locationName + "_" + index + ".jpg";
         try {
             File imageFile = new File(imagePath);
@@ -284,8 +284,8 @@ public class UserPostService implements IUserPostService {
 
             InputStream inputStream = new ByteArrayInputStream(imageBytes);
 
-            AWSCredentials credentials = new BasicAWSCredentials(awsConfig.getAccessKey(), awsConfig.getSecretKey());
-            AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials)).withRegion(awsConfig.getRegion()).build();
+            AWSCredentials credentials = new BasicAWSCredentials(props.getProperty("AWS_ACCESS_KEY"), props.getProperty("AWS_SECRET_KEY"));
+            AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials)).withRegion(props.getProperty("AWS_REGION")).build();
             PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, filePath, inputStream, new ObjectMetadata());
             s3Client.putObject(putObjectRequest);
 
